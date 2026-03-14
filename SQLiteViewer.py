@@ -71,7 +71,7 @@ class SqlViewer(tk.Tk):
         file_menu.add_separator()
         file_menu.add_command(label="Als CSV exportieren…", command=self.export_csv, accelerator="Ctrl+E")
         file_menu.add_separator()
-        file_menu.add_command(label="Beenden", command=self.destroy, accelerator="Ctrl+Q")
+        file_menu.add_command(label="Beenden", command=self._on_close, accelerator="Ctrl+Q")
         menubar.add_cascade(label="Datei", menu=file_menu)
 
         # Bearbeiten-Menü
@@ -98,7 +98,7 @@ class SqlViewer(tk.Tk):
 
         # Shortcuts
         self.bind_all("<Control-o>", lambda e: self.open_db())
-        self.bind_all("<Control-q>", lambda e: self.destroy())
+        self.bind_all("<Control-q>", lambda e: self._on_close())
         self.bind_all("<Control-e>", lambda e: self.export_csv())
         self.bind_all("<Control-f>", lambda e: self._focus_search())
         self.bind_all("<Control-a>", lambda e: self._select_all())
@@ -306,7 +306,7 @@ class SqlViewer(tk.Tk):
         if self.conn is not None:
             try:
                 self.conn.close()
-            except Exception:
+            except sqlite3.Error:
                 pass
             self.conn = None
             self.db_path = None
