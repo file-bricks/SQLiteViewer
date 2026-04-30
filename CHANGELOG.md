@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- Local release bundle in `releases/v2.0.0/` refreshed from the current `dist/SQLiteViewer.exe` build.
+- Application icon support in the Tk window.
+- Optional startup argument for opening a database file directly.
+- `RELEASES.md` documents the local release bundle layout.
+- `SQLiteViewer.spec` is tracked for reproducible PyInstaller builds.
+
+### Changed
+- README now embeds the existing GUI screenshot from `README/screenshots/main.png`.
+- Repository URLs and community health files now point to `file-bricks/SQLiteViewer`.
+- `START.bat` now forwards command-line arguments and reports missing Python cleanly.
+
 ## [2.0.0] - 2026-02-01
 
 ### Added

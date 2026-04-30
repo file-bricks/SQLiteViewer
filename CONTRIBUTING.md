@@ -28,9 +28,9 @@ Vielen Dank fuer Ihr Interesse, zu diesem Projekt beizutragen!
 ### Erste Schritte
 
 ```bash
-git clone https://github.com/lukisch/SQLiteViewer.git
+git clone https://github.com/file-bricks/SQLiteViewer.git
 cd SQLiteViewer
-python main.py
+python SQLiteViewer.py
 ```
 
 ---
@@ -63,7 +63,7 @@ Thank you for your interest in contributing to this project!
 ### Getting Started
 
 ```bash
-git clone https://github.com/lukisch/SQLiteViewer.git
+git clone https://github.com/file-bricks/SQLiteViewer.git
 cd SQLiteViewer
-python main.py
+python SQLiteViewer.py
 ```

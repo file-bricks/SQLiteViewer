@@ -15,8 +15,13 @@ Ein leichtgewichtiger, schneller SQLite-Datenbank-Browser mit Python und Tkinter
 - **CSV-Export** - Tabellen oder Abfrageergebnisse als CSV exportieren
 - **Sortierung** - Spaltenkoepfe anklicken fuer auf-/absteigende Sortierung
 - **Tastenkuerzel** - Ctrl+O (Oeffnen), Ctrl+F (Suche), Ctrl+E (Export), F5 (Aktualisieren), F9 (SQL ausfuehren)
+- **Direktstart mit Datei** - Optional eine Datenbankdatei beim Start uebergeben
 
 ## Screenshots
+
+![SQLite Viewer Pro - Hauptfenster](README/screenshots/main.png)
+
+Die aktuelle Aufnahme zeigt den Daten-Browser mit den integrierten Tabs fuer Schema-Ansicht und SQL-Editor.
 
 ### Daten-Browser
 Oeffne beliebige `.db`-, `.sqlite`- oder `.sqlite3`-Dateien und durchsuche Tabellen sofort.
@@ -39,7 +44,7 @@ Keine zusaetzlichen Abhaengigkeiten -- nutzt ausschliesslich die Python-Standard
 ### Aus dem Quellcode starten
 
 ```bash
-git clone https://github.com/lukisch/SQLiteViewer.git
+git clone https://github.com/file-bricks/SQLiteViewer.git
 cd SQLiteViewer
 python SQLiteViewer.py
 ```
@@ -52,9 +57,15 @@ Doppelklick auf `START.bat` oder:
 python SQLiteViewer.py
 ```
 
+Eine Datenbank kann direkt beim Start geoeffnet werden:
+
+```cmd
+python SQLiteViewer.py pfad\zur\datenbank.sqlite
+```
+
 ## Verwendung
 
-1. **Datenbank oeffnen**: `File > Open Database` oder `Ctrl+O`
+1. **Datenbank oeffnen**: `File > Open Database`, `Ctrl+O` oder per Startargument
 2. **Tabellen durchsuchen**: Tabelle aus dem Dropdown waehlen
 3. **Suchen**: Im Suchfeld tippen, um Zeilen zu filtern
 4. **Schema ansehen**: Zum Schema-Tab wechseln
@@ -92,7 +103,7 @@ python SQLiteViewer.py
 - **Framework**: Tkinter + ttk
 - **Datenbank**: sqlite3 (stdlib)
 - **Abhaengigkeiten**: Keine (reines Python stdlib)
-- **Einzelne Datei**: ~750 Zeilen Python
+- **Einzelne Datei**: ~780 Zeilen Python
 
 ---
 
@@ -109,8 +120,13 @@ A lightweight, fast SQLite database browser built with Python and Tkinter. Open,
 - **CSV Export** - Export any table or query result to CSV
 - **Sorting** - Click column headers to sort ascending/descending
 - **Keyboard Shortcuts** - Ctrl+O (open), Ctrl+F (search), Ctrl+E (export), F5 (refresh), F9 (execute SQL)
+- **Direct file launch** - Optionally pass a database file when starting the app
 
 ### Screenshots
+
+![SQLite Viewer Pro - Main Window](README/screenshots/main.png)
+
+The current screenshot shows the data browser together with the integrated schema and SQL workflow tabs.
 
 #### Data Browser
 Open any `.db`, `.sqlite`, or `.sqlite3` file and browse tables instantly.
@@ -133,7 +149,7 @@ No additional dependencies required - uses only Python standard library.
 #### Run from Source
 
 ```bash
-git clone https://github.com/lukisch/SQLiteViewer.git
+git clone https://github.com/file-bricks/SQLiteViewer.git
 cd SQLiteViewer
 python SQLiteViewer.py
 ```
@@ -146,9 +162,15 @@ Double-click `START.bat` or run:
 python SQLiteViewer.py
 ```
 
+You can open a database directly at startup:
+
+```cmd
+python SQLiteViewer.py path\to\database.sqlite
+```
+
 ### Usage
 
-1. **Open a database**: `File > Open Database` or `Ctrl+O`
+1. **Open a database**: `File > Open Database`, `Ctrl+O`, or a startup argument
 2. **Browse tables**: Select a table from the dropdown
 3. **Search**: Type in the search field to filter rows
 4. **View schema**: Switch to the Schema tab
@@ -186,7 +208,7 @@ python SQLiteViewer.py
 - **Framework**: Tkinter + ttk
 - **Database**: sqlite3 (stdlib)
 - **Dependencies**: None (pure Python stdlib)
-- **Single file**: ~750 lines of Python
+- **Single file**: ~780 lines of Python
 
 ## License
 

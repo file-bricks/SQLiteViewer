@@ -6,14 +6,33 @@ __pycache__/
 dist/
 build/
 *.spec
+!SQLiteViewer.spec
 *.exe
+*.msi
+*.msix
+*.appx
 
 # Virtuelle Umgebungen
 .venv/
 venv/
 
+# BACH Interne Steuerungsdateien (NIEMALS in Git!)
+AUFGABEN.txt
+TEST.txt
+TESTS.txt
+TESTERGEBNISSE.txt
+BUGREPORT.md
+DIAGNOSE_REPORT.md
+
 # Secrets
 .env
+.env.*
+credentials.json
+client_secret*.json
+token.json
+*.pem
+*.key
+keyring/
 
 # Planung & Interne Doku
 PLAN.txt
@@ -32,10 +51,15 @@ releases/
 *.sqlite3
 
 # IDE
+.claude/
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 desktop.ini
+ehthumbs.db

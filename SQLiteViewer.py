@@ -14,6 +14,7 @@ Features:
 """
 
 import os
+import sys
 import re
 import csv
 import sqlite3
@@ -25,6 +26,7 @@ from typing import Optional, List, Tuple, Any
 APP_TITLE = "SQLite Viewer Pro"
 APP_VERSION = "2.0.0"
 DEFAULT_LIMIT = 1000
+APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 
 
 class SqlViewer(tk.Tk):
@@ -33,6 +35,11 @@ class SqlViewer(tk.Tk):
         self.title(f"{APP_TITLE} v{APP_VERSION}")
         self.geometry("1200x800")
         self.minsize(800, 600)
+        if os.path.exists(APP_ICON_PATH):
+            try:
+                self.iconbitmap(default=APP_ICON_PATH)
+            except tk.TclError:
+                pass
 
         # State
         self.conn: sqlite3.Connection | None = None
@@ -287,7 +294,11 @@ class SqlViewer(tk.Tk):
         )
         if not path:
             return
+        self.open_db_path(path)
 
+    def open_db_path(self, path: str):
+        if not path:
+            return
         self.close_db()
 
         try:
@@ -761,4 +772,6 @@ class SqlViewer(tk.Tk):
 
 if __name__ == "__main__":
     app = SqlViewer()
+    if len(sys.argv) > 1:
+        app.after(100, lambda: app.open_db_path(sys.argv[1]))
     app.mainloop()
