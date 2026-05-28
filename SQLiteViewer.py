@@ -16,8 +16,11 @@ Features:
 import os
 import sys
 import re
+import json
+import base64
 import csv
 import sqlite3
+from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
@@ -46,6 +49,7 @@ class SqlViewer(tk.Tk):
         self.db_path: str | None = None
         self.current_columns: List[str] = []
         self.current_data: List[Tuple] = []
+        self.export_context: dict[str, Any] = {}
         self.sort_column: str | None = None
         self.sort_reverse: bool = False
 
@@ -77,6 +81,7 @@ class SqlViewer(tk.Tk):
         file_menu.add_command(label="Datenbank schließen", command=self.close_db)
         file_menu.add_separator()
         file_menu.add_command(label="Als CSV exportieren…", command=self.export_csv, accelerator="Ctrl+E")
+        file_menu.add_command(label="Als JSON exportieren…", command=self.export_json)
         file_menu.add_separator()
         file_menu.add_command(label="Beenden", command=self._on_close, accelerator="Ctrl+Q")
         menubar.add_cascade(label="Datei", menu=file_menu)
@@ -299,11 +304,13 @@ class SqlViewer(tk.Tk):
     def open_db_path(self, path: str):
         if not path:
             return
-        self.close_db()
 
         try:
-            conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+            # Path wird als echtes file://-URI kodiert, damit Sonderzeichen wie
+            # "#" oder Leerzeichen nicht als URI-Markup fehlinterpretiert werden.
+            conn = sqlite3.connect(f"{Path(path).resolve().as_uri()}?mode=ro", uri=True)
             conn.row_factory = sqlite3.Row
+            self.close_db()
             self.conn = conn
             self.db_path = path
             self.db_label.config(text=f"DB: {os.path.basename(path)}")
@@ -322,12 +329,29 @@ class SqlViewer(tk.Tk):
             self.conn = None
             self.db_path = None
             self.db_label.config(text="DB: –")
+            self.current_columns = []
+            self.current_data = []
+            self.export_context = {}
+            self.sort_column = None
+            self.sort_reverse = False
+            if hasattr(self, "search_var"):
+                self.search_var.set("")
+            if hasattr(self, "table_var"):
+                self.table_var.set("")
+            if hasattr(self, "schema_table_var"):
+                self.schema_table_var.set("")
+            if hasattr(self, "row_count_var"):
+                self.row_count_var.set("")
+            if hasattr(self, "sql_status"):
+                self.sql_status.config(text="")
             self._clear_tree()
+            self._clear_sql_result()
+            self._clear_schema_text()
             self.table_combo["values"] = []
             self.schema_combo["values"] = []
             self._set_status("Datenbank geschlossen")
 
-    def _load_tables(self):
+    def _load_tables(self, selected_table: str | None = None):
         if not self.conn:
             return
         try:
@@ -339,13 +363,15 @@ class SqlViewer(tk.Tk):
             self.schema_combo["values"] = tables
 
             if tables:
-                self.table_combo.current(0)
-                self.schema_combo.current(0)
+                target_table = selected_table if selected_table in tables else tables[0]
+                self.table_combo.set(target_table)
+                self.schema_combo.set(target_table)
                 self.load_selected_table()
                 self._load_schema()
             else:
                 self.table_combo.set("")
                 self._clear_tree()
+                self._clear_schema_text()
                 self._set_status("Keine Tabellen gefunden")
         except Exception as e:
             messagebox.showerror("Fehler", f"Tabellen konnten nicht geladen werden:\n{e}")
@@ -369,8 +395,6 @@ class SqlViewer(tk.Tk):
                 self._set_status("Tabelle hat keine Spalten")
                 return
 
-            self.current_columns = cols
-
             # Sortierung
             order_clause = ""
             if self.sort_column and self.sort_column in cols:
@@ -381,7 +405,16 @@ class SqlViewer(tk.Tk):
             query = f"SELECT * FROM {self._ident(table)}{order_clause} LIMIT ?"
             cur = self.conn.execute(query, (limit,))
             rows = cur.fetchall()
-            self.current_data = [tuple(row) for row in rows]
+            self._set_current_view_data(cols, rows)
+            self._set_export_context(
+                view="table",
+                table=table,
+                query=None,
+                row_limit=limit,
+                search_term=None,
+                sort_column=self.sort_column,
+                sort_descending=self.sort_reverse,
+            )
 
             self._populate_tree(cols, rows)
 
@@ -518,28 +551,35 @@ class SqlViewer(tk.Tk):
             start_time = datetime.now()
             cur = self.conn.execute(sql)
 
-            # Prüfe ob SELECT-artiges Statement (BUG 2: WITH/EXPLAIN/PRAGMA eingeschlossen)
-            sql_upper = sql.upper().strip()
-            if sql_upper.startswith(("SELECT", "WITH", "EXPLAIN", "PRAGMA")):
+            # sqlite3 signalisiert ergebnisliefernde Statements über description.
+            # Das ist robuster als ein Prefix-Check und fängt auch Kommentare
+            # vor SELECT/WITH/PRAGMA/EXPLAIN korrekt ab.
+            if cur.description is not None:
                 rows = cur.fetchall()
-                # BUG 3: Spaltenheader auch bei leeren Ergebnissen auslesen
-                cols = [desc[0] for desc in cur.description] if cur.description else []
+                cols = [desc[0] for desc in cur.description]
+                self._set_current_view_data(cols, rows)
+                self._set_export_context(
+                    view="query",
+                    table=self.table_var.get() or None,
+                    query=sql,
+                    row_limit=None,
+                    search_term=None,
+                    sort_column=None,
+                    sort_descending=None,
+                )
+                self._populate_sql_result(cols, rows)
+                elapsed = (datetime.now() - start_time).total_seconds()
                 if rows:
-                    self._populate_sql_result(cols, rows)
-                    elapsed = (datetime.now() - start_time).total_seconds()
                     self.sql_status.config(text=f"✓ {len(rows)} Zeilen in {elapsed:.3f}s")
                 else:
-                    if cols:
-                        self._populate_sql_result(cols, [])
-                    else:
-                        self._clear_sql_result()
                     self.sql_status.config(text="✓ Keine Ergebnisse")
             else:
+                current_table = self.table_var.get()
                 self.conn.commit()
                 affected = cur.rowcount
                 self._clear_sql_result()
                 self.sql_status.config(text=f"✓ {affected} Zeilen betroffen")
-                self._load_tables()  # Aktualisiere Tabellenliste
+                self._load_tables(current_table)  # Tabellenliste + aktuelle Auswahl neu laden
 
         except Exception as e:
             self.sql_status.config(text=f"✗ Fehler")
@@ -558,9 +598,26 @@ class SqlViewer(tk.Tk):
             values = [self._format_value(v) for v in row]
             self.sql_result_tree.insert("", tk.END, values=values)
 
+    def _set_current_view_data(self, columns: List[str], rows: List[Any]):
+        """Merkt sich die aktuell sichtbaren Daten fuer Export und Folgeaktionen."""
+        self.current_columns = list(columns)
+        self.current_data = [tuple(row) for row in rows]
+
+    def _set_export_context(self, **kwargs):
+        """Merkt sich Metadaten der aktuellen Ansicht für Export-Companions."""
+        self.export_context = dict(kwargs)
+
     def _clear_sql_result(self):
         self.sql_result_tree.delete(*self.sql_result_tree.get_children())
         self.sql_result_tree["columns"] = ()
+
+    def _clear_schema_text(self):
+        if not hasattr(self, "schema_text"):
+            return
+
+        self.schema_text.config(state=tk.NORMAL)
+        self.schema_text.delete("1.0", tk.END)
+        self.schema_text.config(state=tk.DISABLED)
 
     def _highlight_sql(self, event=None):
         """Einfaches SQL-Highlighting."""
@@ -608,10 +665,90 @@ class SqlViewer(tk.Tk):
         except Exception as e:
             messagebox.showerror("Export-Fehler", str(e))
 
+    def _serialize_export_value(self, value: Any):
+        """Konvertiert SQLite-Werte in ein stabiles JSON-kompatibles Format."""
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        if isinstance(value, bytes):
+            return {
+                "type": "blob",
+                "encoding": "base64",
+                "size_bytes": len(value),
+                "data": base64.b64encode(value).decode("ascii"),
+            }
+        return str(value)
+
+    def _build_export_payload(self) -> dict[str, Any]:
+        """Erzeugt den Companion-Export für Web/PWA- oder Review-Workflows."""
+        context = getattr(self, "export_context", {}) or {}
+        database_path = self.db_path
+        database_name = os.path.basename(database_path) if database_path else None
+        result_rows = []
+
+        for row in self.current_data:
+            result_rows.append(
+                {
+                    column: self._serialize_export_value(row[index] if index < len(row) else None)
+                    for index, column in enumerate(self.current_columns)
+                }
+            )
+
+        return {
+            "schema_version": "sqliteviewer-export-v1",
+            "app_name": APP_TITLE,
+            "app_version": APP_VERSION,
+            "exported_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+            "source": {
+                "database_path": database_path,
+                "database_name": database_name,
+                "view": context.get("view") or "unknown",
+                "table": context.get("table"),
+                "query": context.get("query"),
+                "row_limit": context.get("row_limit"),
+                "search_term": context.get("search_term"),
+                "sort_column": context.get("sort_column"),
+                "sort_descending": context.get("sort_descending"),
+            },
+            "columns": list(self.current_columns),
+            "row_count": len(result_rows),
+            "result_rows": result_rows,
+        }
+
+    def export_json(self):
+        if not self.current_columns:
+            messagebox.showwarning("Export", "Keine Daten zum Exportieren.")
+            return
+
+        table = self.table_var.get() or self.export_context.get("view") or "export"
+        default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        path = filedialog.asksaveasfilename(
+            title="Als JSON exportieren",
+            defaultextension=".json",
+            initialfile=default_name,
+            filetypes=[("JSON-Dateien", "*.json"), ("Alle Dateien", "*.*")],
+        )
+
+        if not path:
+            return
+
+        try:
+            payload = self._build_export_payload()
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle, indent=2, ensure_ascii=False)
+
+            self._set_status(f"Exportiert: {os.path.basename(path)}")
+            messagebox.showinfo("Export", f"Erfolgreich exportiert:\n{path}\n\n{payload['row_count']} Zeilen")
+        except Exception as e:
+            messagebox.showerror("Export-Fehler", str(e))
+
     # ==================== SEARCH ====================
+    def _escape_like_pattern(self, value: str) -> str:
+        """Escaped wildcards for LIKE-based search."""
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
     def _search_data(self):
         """Filtert die Daten basierend auf dem Suchbegriff."""
-        search_term = self.search_var.get().strip().lower()
+        search_term = self.search_var.get().strip()
 
         if not search_term:
             # Zeige alle Daten
@@ -627,14 +764,32 @@ class SqlViewer(tk.Tk):
 
         # Suche in allen Spalten
         try:
-            conditions = " OR ".join([f"{self._ident(col)} LIKE ?" for col in self.current_columns])
+            try:
+                limit = int(self.limit_var.get())
+            except (ValueError, TypeError):
+                limit = DEFAULT_LIMIT
+            if limit < 1:
+                limit = DEFAULT_LIMIT
+
+            conditions = " OR ".join([f"{self._ident(col)} LIKE ? ESCAPE '\\'" for col in self.current_columns])
             query = f"SELECT * FROM {self._ident(table)} WHERE {conditions} LIMIT ?"
-            params = [f"%{search_term}%" for _ in self.current_columns]
-            params.append(self.limit_var.get())
+            escaped_term = self._escape_like_pattern(search_term)
+            params = [f"%{escaped_term}%" for _ in self.current_columns]
+            params.append(limit)
 
             cur = self.conn.execute(query, params)
             rows = cur.fetchall()
 
+            self._set_current_view_data(self.current_columns, rows)
+            self._set_export_context(
+                view="table_search",
+                table=table,
+                query=None,
+                row_limit=limit,
+                search_term=search_term,
+                sort_column=self.sort_column,
+                sort_descending=self.sort_reverse,
+            )
             self._clear_tree()
             self.tree["columns"] = self.current_columns
             for c in self.current_columns:
@@ -763,7 +918,7 @@ class SqlViewer(tk.Tk):
             "• Datenbank durchsuchen\n"
             "• Schema-Ansicht\n"
             "• SQL-Editor\n"
-            "• CSV-Export\n"
+            "• CSV-/JSON-Export\n"
             "• Volltext-Suche\n"
             "• Sortierung\n\n"
             "© 2026 lukisch"

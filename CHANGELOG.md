@@ -3,16 +3,33 @@
 ## [Unreleased]
 
 ### Added
-- Local release bundle in `releases/v2.0.0/` refreshed from the current `dist/SQLiteViewer.exe` build.
+- Local release bundle workflow documented for the ignored `releases/` workspace; public source files stay lightweight.
 - Application icon support in the Tk window.
 - Optional startup argument for opening a database file directly.
 - `RELEASES.md` documents the local release bundle layout.
 - `SQLiteViewer.spec` is tracked for reproducible PyInstaller builds.
+- Optional JSON companion export `sqliteviewer-export-v1.json` with source metadata, row limits, visible columns, and serialized result rows.
+- `EXPORTFORMAT.md` documents the JSON export contract for desktop-to-web/mobile companion workflows.
+- Reproducible Windows Store screenshot generation under `_WARTUNG/generate_store_screenshots.py`; generated screenshots stay in the ignored local `releases/windowsstore/screenshots/` workspace while `README/screenshots/main.png` is refreshed for GitHub.
+- Local WACK notes remain in the ignored `releases/windowsstore/` workspace; public root docs now describe only the source-controlled workflow.
 
 ### Changed
 - README now embeds the existing GUI screenshot from `README/screenshots/main.png`.
 - Repository URLs and community health files now point to `file-bricks/SQLiteViewer`.
 - `START.bat` now forwards command-line arguments and reports missing Python cleanly.
+- Store listings and Store metadata now reflect the current CSV/JSON export feature set and the active `file-bricks/SQLiteViewer` privacy/support links.
+- `PORTIERUNGSPLAN.md` marks the Store listing and screenshot workflow refresh as completed without requiring ignored release artifacts in the public repo.
+- Community workflows now use `actions/stale@v10` and `actions/first-interaction@v3` with current input names.
+
+### Fixed
+- SQL Editor now detects result-returning statements via `cursor.description`, so
+  queries with leading comments are rendered correctly instead of being treated as DML.
+- SQL Editor now refreshes the currently selected table after data-changing
+  statements instead of jumping back to the first table in the database.
+- Search now escapes `%`, `_`, and `\` correctly so literal LIKE searches do not
+  fail on wildcard-containing terms.
+- Opening a database now only closes the current session after the new read-only
+  connection succeeds, so failed open attempts keep the existing database in place.
 
 ## [2.0.0] - 2026-02-01
 

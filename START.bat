@@ -1,6 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+if exist "%~dp0dist\SQLiteViewer.exe" (
+    start "" "%~dp0dist\SQLiteViewer.exe" %*
+    exit /b 0
+)
 where py >nul 2>&1
 if not errorlevel 1 (
     py -3 "%~dp0SQLiteViewer.py" %*
