@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- `llms.txt` with canonical repository, use cases, key files, discovery phrases, and boundaries for LLM/search crawlers.
 - Local release bundle workflow documented for the ignored `releases/` workspace; public source files stay lightweight.
 - Application icon support in the Tk window.
 - Optional startup argument for opening a database file directly.
@@ -14,6 +15,7 @@
 - Local WACK notes remain in the ignored `releases/windowsstore/` workspace; public root docs now describe only the source-controlled workflow.
 
 ### Changed
+- README is now English-first with a Start Here table, clearer local-first positioning, search/disambiguation context, and repaired German umlauts.
 - README now embeds the existing GUI screenshot from `README/screenshots/main.png`.
 - Repository URLs and community health files now point to `file-bricks/SQLiteViewer`.
 - `START.bat` now forwards command-line arguments and reports missing Python cleanly.

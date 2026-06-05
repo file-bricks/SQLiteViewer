@@ -1,0 +1,43 @@
+# SQLiteViewer
+
+Canonical repository: https://github.com/file-bricks/SQLiteViewer
+
+SQLiteViewer is a local-first Python/Tkinter desktop application for opening, browsing, searching, querying, and exporting SQLite database files. It is maintained under the `file-bricks` GitHub organization.
+
+## Primary Use Cases
+
+- Inspect `.db`, `.sqlite`, and `.sqlite3` files locally.
+- Browse tables and schema without a hosted backend.
+- Run custom SQL queries in a lightweight desktop UI.
+- Export visible rows to CSV or `sqliteviewer-export-v1.json`.
+- Package a simple Windows desktop release from source.
+
+## Key Files
+
+- `SQLiteViewer.py`: main desktop application.
+- `README.md`: user-facing landing page and quickstart.
+- `README/screenshots/main.png`: current UI screenshot.
+- `EXPORTFORMAT.md`: JSON companion export contract.
+- `CHANGELOG.md`: project history.
+- `STORE_LISTING.md`: Windows Store-style listing text.
+- `SQLiteViewer.spec`: PyInstaller build specification.
+- `build_exe.bat`: Windows build helper.
+- `tests/`: regression tests for SQL execution and screenshot tooling.
+
+## Discovery Phrases
+
+- file-bricks SQLiteViewer
+- local-first SQLite viewer Python Tkinter
+- portable SQLite database browser with CSV JSON export
+- offline SQLite browser for Windows Python
+- SQLite table browser SQL editor Tkinter
+
+## Boundaries
+
+- SQLiteViewer is not DB Browser for SQLite, DBeaver, an Android SQLite viewer, an iOS debug library, or a web database admin panel.
+- It is local-first and does not upload database content.
+- It is a lightweight desktop utility, not a multi-user database management system.
+
+## License
+
+MIT.
