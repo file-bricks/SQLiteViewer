@@ -91,7 +91,7 @@ class SqlViewer(tk.Tk):
         edit_menu.add_command(label="Suchen…", command=self._focus_search, accelerator="Ctrl+F")
         edit_menu.add_command(label="Alle auswählen", command=self._select_all, accelerator="Ctrl+A")
         edit_menu.add_separator()
-        edit_menu.add_command(label="Refresh", command=self.load_selected_table, accelerator="F5")
+        edit_menu.add_command(label="Aktualisieren", command=self.load_selected_table, accelerator="F5")
         menubar.add_cascade(label="Bearbeiten", menu=edit_menu)
 
         # Ansicht-Menü
@@ -140,7 +140,7 @@ class SqlViewer(tk.Tk):
         self.limit_entry.pack(side=tk.LEFT, padx=6)
 
         # Suchfeld
-        ttk.Label(bar, text="🔍").pack(side=tk.LEFT, padx=(15, 0))
+        ttk.Label(bar, text="Suche:").pack(side=tk.LEFT, padx=(15, 0))
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(bar, textvariable=self.search_var, width=20)
         self.search_entry.pack(side=tk.LEFT, padx=4)
@@ -148,7 +148,7 @@ class SqlViewer(tk.Tk):
         self.search_entry.bind("<KeyRelease>", lambda e: self._search_data())
 
         # Buttons
-        ttk.Button(bar, text="⟳ Refresh", command=self.load_selected_table, width=10).pack(side=tk.LEFT, padx=4)
+        ttk.Button(bar, text="⟳ Aktualisieren", command=self.load_selected_table, width=13).pack(side=tk.LEFT, padx=4)
         ttk.Button(bar, text="📋 Export", command=self.export_csv, width=10).pack(side=tk.LEFT, padx=4)
 
     # ==================== NOTEBOOK (Tabs) ====================
@@ -191,9 +191,6 @@ class SqlViewer(tk.Tk):
         hsb.grid(row=1, column=0, sticky="ew")
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-
-        # Sortierung bei Klick auf Header
-        self.tree.bind("<Button-1>", self._on_header_click)
 
     def _build_schema_tab(self):
         """Schema-Tab mit CREATE TABLE Statements."""
@@ -636,7 +633,7 @@ class SqlViewer(tk.Tk):
 
     # ==================== EXPORT ====================
     def export_csv(self):
-        if not self.current_columns or not self.current_data:
+        if not self.current_columns:
             messagebox.showwarning("Export", "Keine Daten zum Exportieren.")
             return
 
@@ -772,7 +769,11 @@ class SqlViewer(tk.Tk):
                 limit = DEFAULT_LIMIT
 
             conditions = " OR ".join([f"{self._ident(col)} LIKE ? ESCAPE '\\'" for col in self.current_columns])
-            query = f"SELECT * FROM {self._ident(table)} WHERE {conditions} LIMIT ?"
+            order_clause = ""
+            if self.sort_column and self.sort_column in self.current_columns:
+                direction = "DESC" if self.sort_reverse else "ASC"
+                order_clause = f" ORDER BY {self._ident(self.sort_column)} {direction}"
+            query = f"SELECT * FROM {self._ident(table)} WHERE {conditions}{order_clause} LIMIT ?"
             escaped_term = self._escape_like_pattern(search_term)
             params = [f"%{escaped_term}%" for _ in self.current_columns]
             params.append(limit)
@@ -793,7 +794,10 @@ class SqlViewer(tk.Tk):
             self._clear_tree()
             self.tree["columns"] = self.current_columns
             for c in self.current_columns:
-                self.tree.heading(c, text=c, command=lambda col=c: self._sort_by_column(col))
+                indicator = ""
+                if c == self.sort_column:
+                    indicator = " ↓" if self.sort_reverse else " ↑"
+                self.tree.heading(c, text=c + indicator, command=lambda col=c: self._sort_by_column(col))
                 self.tree.column(c, width=120, anchor="w")
 
             for row in rows:
@@ -810,15 +814,6 @@ class SqlViewer(tk.Tk):
         self.search_entry.select_range(0, tk.END)
 
     # ==================== SORTING ====================
-    def _on_header_click(self, event):
-        """Handler für Klicks auf Spalten-Header."""
-        region = self.tree.identify_region(event.x, event.y)
-        if region == "heading":
-            column = self.tree.identify_column(event.x)
-            col_idx = int(column.replace("#", "")) - 1
-            if 0 <= col_idx < len(self.current_columns):
-                self._sort_by_column(self.current_columns[col_idx])
-
     def _sort_by_column(self, column: str):
         """Sortiert die Tabelle nach einer Spalte."""
         if self.sort_column == column:
@@ -827,7 +822,14 @@ class SqlViewer(tk.Tk):
             self.sort_column = column
             self.sort_reverse = False
 
-        self.load_selected_table()
+        search_term = ""
+        if hasattr(self, "search_var") and self.search_var is not None:
+            search_term = (self.search_var.get() or "").strip()
+
+        if search_term:
+            self._search_data()
+        else:
+            self.load_selected_table()
 
     # ==================== TREE HELPERS ====================
     def _clear_tree(self):

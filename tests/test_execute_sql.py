@@ -292,6 +292,66 @@ def test_export_json_allows_empty_visible_results(tmp_path, monkeypatch):
     assert payload["result_rows"] == []
 
 
+class _ToolbarVar:
+    def __init__(self, value=None):
+        self.value = value
+
+    def get(self):
+        return self.value
+
+    def set(self, value):
+        self.value = value
+
+
+class _ToolbarWidget:
+    def __init__(self, widget_kind: str, **kwargs):
+        self.widget_kind = widget_kind
+        self.kwargs = kwargs
+        self.pack_calls = []
+        self.bind_calls = []
+
+    def pack(self, **kwargs):
+        self.pack_calls.append(kwargs)
+
+    def bind(self, event, callback):
+        self.bind_calls.append((event, callback))
+
+
+def test_toolbar_uses_visible_search_label_and_german_refresh(monkeypatch):
+    created_widgets = []
+
+    def _make_widget(widget_kind):
+        def _factory(*_args, **kwargs):
+            widget = _ToolbarWidget(widget_kind, **kwargs)
+            created_widgets.append(widget)
+            return widget
+        return _factory
+
+    monkeypatch.setattr(SQLiteViewer.ttk, "Frame", _make_widget("frame"))
+    monkeypatch.setattr(SQLiteViewer.ttk, "Label", _make_widget("label"))
+    monkeypatch.setattr(SQLiteViewer.ttk, "Combobox", _make_widget("combobox"))
+    monkeypatch.setattr(SQLiteViewer.ttk, "Spinbox", _make_widget("spinbox"))
+    monkeypatch.setattr(SQLiteViewer.ttk, "Entry", _make_widget("entry"))
+    monkeypatch.setattr(SQLiteViewer.ttk, "Button", _make_widget("button"))
+    monkeypatch.setattr(SQLiteViewer.tk, "StringVar", _ToolbarVar)
+    monkeypatch.setattr(SQLiteViewer.tk, "IntVar", _ToolbarVar)
+
+    fake = SimpleNamespace(
+        load_selected_table=lambda: None,
+        export_csv=lambda: None,
+        _search_data=lambda: None,
+    )
+
+    SQLiteViewer.SqlViewer._build_toolbar(fake)
+
+    label_texts = [widget.kwargs.get("text") for widget in created_widgets if widget.widget_kind == "label"]
+    button_texts = [widget.kwargs.get("text") for widget in created_widgets if widget.widget_kind == "button"]
+
+    assert "Suche:" in label_texts
+    assert "⟳ Aktualisieren" in button_texts
+    assert "⟳ Refresh" not in button_texts
+
+
 def test_open_db_path_handles_hash_in_filename(tmp_path):
     db_path = tmp_path / "hash#name.sqlite"
     conn = sqlite3.connect(db_path)
@@ -541,3 +601,194 @@ def test_search_data_escapes_like_wildcards():
     assert row_count.get() == "Gefunden: 1"
     assert tree.inserted == [("", SQLiteViewer.tk.END, (1, "a_b"))]
     assert "Suchfehler" not in status.get("text", "")
+
+
+def test_sorting_keeps_filtered_search_results():
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    conn.execute("CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT)")
+    conn.executemany(
+        "INSERT INTO items (id, name) VALUES (?, ?)",
+        [(1, "alpha"), (2, "beta"), (3, "algae")],
+    )
+    conn.commit()
+
+    status = {}
+    row_count = _MutableVar("")
+    tree = _FakeTree()
+    fake = SimpleNamespace(
+        conn=conn,
+        search_var=_MutableVar("al"),
+        table_var=_MutableVar("items"),
+        limit_var=_MutableVar(100),
+        current_columns=["id", "name"],
+        current_data=[],
+        sort_column=None,
+        sort_reverse=False,
+        tree=tree,
+        row_count_var=row_count,
+        _SQLITE_KEYWORDS=SQLiteViewer.SqlViewer._SQLITE_KEYWORDS,
+        _ident=lambda name: SQLiteViewer.SqlViewer._ident(fake, name),
+        _escape_like_pattern=lambda value: SQLiteViewer.SqlViewer._escape_like_pattern(fake, value),
+        _format_value=lambda value: value,
+        _clear_tree=lambda: tree.inserted.clear(),
+        _set_current_view_data=lambda columns, rows: (
+            setattr(fake, "current_columns", list(columns)),
+            setattr(fake, "current_data", [tuple(row) for row in rows]),
+        ),
+        _set_export_context=lambda **kwargs: setattr(fake, "export_context", kwargs),
+        _set_status=lambda text: status.__setitem__("text", text),
+        load_selected_table=lambda: (_ for _ in ()).throw(AssertionError("load_selected_table should not run for active search sorting")),
+    )
+    fake._search_data = lambda: SQLiteViewer.SqlViewer._search_data(fake)
+
+    try:
+        SQLiteViewer.SqlViewer._search_data(fake)
+        SQLiteViewer.SqlViewer._sort_by_column(fake, "id")
+        SQLiteViewer.SqlViewer._sort_by_column(fake, "id")
+    finally:
+        conn.close()
+
+    assert fake.current_columns == ["id", "name"]
+    assert fake.current_data == [(3, "algae"), (1, "alpha")]
+    assert fake.export_context == {
+        "view": "table_search",
+        "table": "items",
+        "query": None,
+        "row_limit": 100,
+        "search_term": "al",
+        "sort_column": "id",
+        "sort_descending": True,
+    }
+    assert row_count.get() == "Gefunden: 2"
+    assert tree.inserted == [
+        ("", SQLiteViewer.tk.END, (3, "algae")),
+        ("", SQLiteViewer.tk.END, (1, "alpha")),
+    ]
+    assert "Suchfehler" not in status.get("text", "")
+
+
+def test_export_csv_allows_empty_table(tmp_path, monkeypatch):
+    """Regression: export_csv blockierte leere Tabellen mit 'Keine Daten'.
+
+    export_json erlaubt leere Exports (nur Spalten, keine Zeilen) korrekt.
+    export_csv prüfte fälschlich auch 'not current_data', was valide Header-only-
+    CSVs verhinderte. Beide Funktionen sollen konsistent nur current_columns prüfen.
+    """
+    export_path = tmp_path / "empty_table.csv"
+    fake = SimpleNamespace(
+        current_columns=["id", "name"],
+        current_data=[],
+        table_var=SimpleNamespace(get=lambda: "items"),
+        _set_status=lambda *_args, **_kwargs: None,
+    )
+
+    warnings = []
+    monkeypatch.setattr(SQLiteViewer.messagebox, "showwarning", lambda *a, **_k: warnings.append(a))
+    monkeypatch.setattr(SQLiteViewer.filedialog, "asksaveasfilename", lambda **_k: str(export_path))
+    monkeypatch.setattr(SQLiteViewer.messagebox, "showinfo", lambda *_a, **_k: None)
+
+    SQLiteViewer.SqlViewer.export_csv(fake)
+
+    assert not warnings, f"Kein Warning erwartet für leere Tabelle, bekam: {warnings}"
+    lines = export_path.read_text(encoding="utf-8-sig").splitlines()
+    assert lines == ["id;name"], f"Erwartet nur Header-Zeile, bekam: {lines}"
+
+
+def test_heading_command_sorts_once_per_click():
+    """Regression: <Button-1>-Binding rief _sort_by_column doppelt auf.
+
+    Erster Klick auf eine neue Spalte ergab immer DESC statt ASC, weil
+    _on_header_click und der Heading-Command beide feuerten. Nach dem Fix
+    sorgt ausschließlich der Heading-Command für die Sortierung (einmaliger
+    Aufruf pro Klick).
+    """
+    sort_calls = []
+    tree = _FakeTree()
+    fake = SimpleNamespace(
+        tree=tree,
+        sort_column=None,
+        sort_reverse=False,
+    )
+
+    def _fake_sort(col):
+        sort_calls.append(col)
+        if fake.sort_column == col:
+            fake.sort_reverse = not fake.sort_reverse
+        else:
+            fake.sort_column = col
+            fake.sort_reverse = False
+
+    fake._sort_by_column = _fake_sort
+    fake._clear_tree = lambda: None
+
+    SQLiteViewer.SqlViewer._populate_tree(fake, ["id", "name"], [])
+
+    id_cmd = next(cmd for col, _t, cmd in tree.headings if col == "id" and cmd is not None)
+    id_cmd()
+
+    assert sort_calls == ["id"], f"Erwartet genau 1 Aufruf, bekam: {sort_calls}"
+    assert fake.sort_column == "id"
+    assert fake.sort_reverse is False, "Erster Klick muss ASC (sort_reverse=False) ergeben"
+
+    assert not hasattr(SQLiteViewer.SqlViewer, "_on_header_click"), (
+        "_on_header_click muss entfernt sein (war Ursache des Doppel-Sort)"
+    )
+
+
+def test_search_data_shows_sort_indicator_in_heading():
+    """Regression: _search_data muss den Sortierindikator (↑/↓) im Heading anzeigen.
+
+    Vor dem Fix fehlte der Indikator bei Suchergebnissen, obwohl _populate_tree
+    ihn korrekt zeigte. Der User konnte die aktive Sortierrichtung nicht erkennen.
+    """
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    conn.execute("CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT)")
+    conn.executemany(
+        "INSERT INTO items (id, name) VALUES (?, ?)",
+        [(1, "alpha"), (2, "algae")],
+    )
+    conn.commit()
+
+    row_count = _MutableVar("")
+    tree = _FakeTree()
+    fake = SimpleNamespace(
+        conn=conn,
+        search_var=_MutableVar("al"),
+        table_var=_MutableVar("items"),
+        limit_var=_MutableVar(100),
+        current_columns=["id", "name"],
+        current_data=[],
+        sort_column="id",
+        sort_reverse=True,      # DESC → Indikator muss "↓" sein
+        tree=tree,
+        row_count_var=row_count,
+        _SQLITE_KEYWORDS=SQLiteViewer.SqlViewer._SQLITE_KEYWORDS,
+        _ident=lambda name: SQLiteViewer.SqlViewer._ident(fake, name),
+        _escape_like_pattern=lambda value: SQLiteViewer.SqlViewer._escape_like_pattern(fake, value),
+        _format_value=lambda value: value,
+        _clear_tree=lambda: tree.inserted.clear(),
+        _set_current_view_data=lambda columns, rows: (
+            setattr(fake, "current_columns", list(columns)),
+            setattr(fake, "current_data", [tuple(row) for row in rows]),
+        ),
+        _set_export_context=lambda **kwargs: setattr(fake, "export_context", kwargs),
+        _set_status=lambda text: None,
+        load_selected_table=lambda: (_ for _ in ()).throw(
+            AssertionError("load_selected_table should not run during active search")
+        ),
+    )
+
+    try:
+        SQLiteViewer.SqlViewer._search_data(fake)
+    finally:
+        conn.close()
+
+    heading_texts = {col: text for col, text, _ in tree.headings}
+    assert heading_texts.get("id") == "id ↓", (
+        f"Sortierindikator fehlt im Heading für 'id': {heading_texts.get('id')!r}"
+    )
+    assert heading_texts.get("name") == "name", (
+        f"Indikator darf nur bei sort_column erscheinen: {heading_texts.get('name')!r}"
+    )
