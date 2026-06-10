@@ -28,8 +28,8 @@ Begründung:
 | Android-Version oder Android-Clone | Native Vollversion nicht sinnvoll, weil SQLite-Dateizugriff und große Tabellen auf Mobilgeräten sperrig sind. | Nur PWA-Testziel für kleine Dateien/Exports. |
 | Webapp | Sinnvoll als Companion: kleine `.sqlite`-Dateien im Browser öffnen, CSV/JSON ansehen, Demo-DBs prüfen. | P2: Web/PWA-Prototyp mit lokalem Browser-Speicher. |
 | iOS-Version | Native App aktuell zu hoher Aufwand wegen Sandbox und App-Store-Review. | Nur PWA-Testziel nach Web-Prototyp. |
-| Mac App | Sinnvoll als Source-/Build-Ziel, da Python/Tkinter portabel ist. | P3: macOS-Smoke-Test dokumentieren. |
-| Linux-Version | Sinnvoll als Source-/Build-Ziel; optional später AppImage/Flathub prüfen. | P3: Linux-Smoke-Test dokumentieren. |
+| Mac App | Sinnvoll als Source-/Build-Ziel, da Python/Tkinter portabel ist. | P3: macOS-Smoke-Test dokumentiert und CI aktiv (`.github/workflows/source-platform-smoke.yml`). |
+| Linux-Version | Sinnvoll als Source-/Build-Ziel; optional später AppImage/Flathub prüfen. | P3: Linux-Smoke-Test dokumentiert und CI aktiv (`.github/workflows/source-platform-smoke.yml`). |
 
 ## Zielarchitektur
 
@@ -73,10 +73,10 @@ Begründung:
 - Browser-seitiges Öffnen kleiner SQLite-Dateien evaluieren.
 - Android/iOS über PWA-Installierbarkeit und Touch-Tabellenansicht testen.
 
-### P3 - Desktop-Smoke-Tests
+### P3 - Desktop-Smoke-Tests ✓
 
-- Linux-Start aus Source mit Tkinter prüfen.
-- macOS-Start aus Source mit Tkinter prüfen.
+- Linux-Start aus Source mit Tkinter dokumentiert und CI-geprüft (`tests/source_platform_smoke.py`, `.github/workflows/source-platform-smoke.yml`).
+- macOS-Start aus Source mit Tkinter dokumentiert und CI-geprüft (gleiche Dateien, macos-latest-Matrix).
 - Packaging für Linux/macOS nur nach belastbarer Nachfrage planen.
 
 ## Nicht-Ziele

@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- `tests/source_platform_smoke.py`: headless smoke tests for Linux and macOS source installs — covers module import, export serialization, `_build_export_payload`, SQL execution, and identifier escaping via fake infrastructure (no display required).
+- `.github/workflows/source-platform-smoke.yml`: CI matrix for `ubuntu-latest` and `macos-latest` running the smoke tests on every push/PR to `main`.
 - `llms.txt` with canonical repository, use cases, key files, discovery phrases, and boundaries for LLM/search crawlers.
 - Local release bundle workflow documented for the ignored `releases/` workspace; public source files stay lightweight.
 - Application icon support in the Tk window.
@@ -24,6 +26,8 @@
 - Community workflows now use `actions/stale@v10` and `actions/first-interaction@v3` with current input names.
 
 ### Fixed
+- Sorting an active table search now keeps the filtered result set and export context intact instead of jumping back to the full unfiltered table.
+- Toolbar now uses a visible `Suche:` label instead of an icon-only search hint, and the refresh action is labeled consistently as `Aktualisieren` in the German UI.
 - SQL Editor now detects result-returning statements via `cursor.description`, so
   queries with leading comments are rendered correctly instead of being treated as DML.
 - SQL Editor now refreshes the currently selected table after data-changing
