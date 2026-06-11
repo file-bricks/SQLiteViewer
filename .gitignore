@@ -63,3 +63,8 @@ releases/
 Thumbs.db
 desktop.ini
 ehthumbs.db
+*.bak
+DECISIONS.md
+PORTIERUNGSPLAN.md
+TODO.md
+DONE.md

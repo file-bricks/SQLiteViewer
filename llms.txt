@@ -24,13 +24,24 @@ SQLiteViewer is a local-first Python/Tkinter desktop application for opening, br
 - `build_exe.bat`: Windows build helper.
 - `tests/`: regression tests for SQL execution and screenshot tooling.
 
-## Discovery Phrases
+## Audience
 
-- file-bricks SQLiteViewer
-- local-first SQLite viewer Python Tkinter
-- portable SQLite database browser with CSV JSON export
-- offline SQLite browser for Windows Python
-- SQLite table browser SQL editor Tkinter
+- Developers and data engineers who need a lightweight, offline SQLite browser without installing a full database IDE
+- Python desktop app authors who want a local Tkinter viewer to inspect their application's database files
+- Windows users preparing Microsoft Store submissions who need to inspect, export, and screenshot SQLite content locally
+- Researchers and analysts who work with portable SQLite datasets and need CSV/JSON exports without cloud uploads
+
+## Search Phrases
+
+```
+file-bricks SQLiteViewer
+local-first SQLite viewer Python Tkinter
+portable SQLite database browser CSV JSON export
+offline SQLite browser Windows Python desktop
+SQLite table browser SQL editor Tkinter
+lightweight SQLite desktop viewer no install
+local SQLite file browser export tool
+```
 
 ## Boundaries
 
@@ -41,3 +52,5 @@ SQLiteViewer is a local-first Python/Tkinter desktop application for opening, br
 ## License
 
 MIT.
+
+## Last-checked: 2026-06-11

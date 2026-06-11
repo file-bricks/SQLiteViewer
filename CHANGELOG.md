@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Three regression tests in `tests/test_execute_sql.py` covering sort-indicator propagation in search mode, redundant-binding double-sort prevention, and empty-table CSV export.
 - `tests/source_platform_smoke.py`: headless smoke tests for Linux and macOS source installs — covers module import, export serialization, `_build_export_payload`, SQL execution, and identifier escaping via fake infrastructure (no display required).
 - `.github/workflows/source-platform-smoke.yml`: CI matrix for `ubuntu-latest` and `macos-latest` running the smoke tests on every push/PR to `main`.
 - `llms.txt` with canonical repository, use cases, key files, discovery phrases, and boundaries for LLM/search crawlers.
@@ -36,6 +37,9 @@
   fail on wildcard-containing terms.
 - Opening a database now only closes the current session after the new read-only
   connection succeeds, so failed open attempts keep the existing database in place.
+- Sort indicator (↑/↓) was absent from column headings when viewing a search result — `_search_data` now adds the indicator to column headings when a sort column is active.
+- Double sort triggered by a redundant `<Button-1>` binding combined with the Treeview `heading command` — removed the explicit binding; `heading command` alone handles sorting.
+- `export_csv` blocked empty-table exports with a "no data" warning — now exports a header-only file consistently with `export_json`.
 
 ## [2.0.0] - 2026-02-01
 
