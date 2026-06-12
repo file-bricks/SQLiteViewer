@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- German `README_de.md` with local-first usage, privacy context, comparison table, and SQLiteViewer search phrases.
 - Three regression tests in `tests/test_execute_sql.py` covering sort-indicator propagation in search mode, redundant-binding double-sort prevention, and empty-table CSV export.
 - `tests/source_platform_smoke.py`: headless smoke tests for Linux and macOS source installs — covers module import, export serialization, `_build_export_payload`, SQL execution, and identifier escaping via fake infrastructure (no display required).
 - `.github/workflows/source-platform-smoke.yml`: CI matrix for `ubuntu-latest` and `macos-latest` running the smoke tests on every push/PR to `main`.
@@ -18,6 +19,8 @@
 - Local WACK notes remain in the ignored `releases/windowsstore/` workspace; public root docs now describe only the source-controlled workflow.
 
 ### Changed
+- README now links the German guide and expands discovery phrases for `file-bricks/SQLiteViewer`, Python/Tkinter SQLite browser searches, and SQLite Viewer Pro.
+- `llms.txt` now records the 2026-06-12 marketing/discovery check and broader search/disambiguation notes.
 - README is now English-first with a Start Here table, clearer local-first positioning, search/disambiguation context, and repaired German umlauts.
 - README now embeds the existing GUI screenshot from `README/screenshots/main.png`.
 - Repository URLs and community health files now point to `file-bricks/SQLiteViewer`.

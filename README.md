@@ -1,5 +1,7 @@
 # SQLiteViewer
 
+[Deutsch](README_de.md)
+
 Local-first SQLite database browser for Windows, Linux, and macOS. Open a `.db`, `.sqlite`, or `.sqlite3` file, inspect tables, search rows, run SQL, and export CSV or JSON without sending database content anywhere.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
@@ -15,6 +17,7 @@ Local-first SQLite database browser for Windows, Linux, and macOS. Open a `.db`,
 | Run a custom query | SQL Editor tab, then `F9` |
 | Export visible data | `File > Export as CSV` or `File > Export as JSON` |
 | Build a Windows package | `SQLiteViewer.spec`, `build_exe.bat`, and `STORE_LISTING.md` |
+| Read the German guide | [`README_de.md`](README_de.md) |
 | Machine-readable project summary | [`llms.txt`](llms.txt) |
 
 ## Screenshot
@@ -96,13 +99,16 @@ See [`EXPORTFORMAT.md`](EXPORTFORMAT.md) for the `sqliteviewer-export-v1.json` c
 
 ## Search Context
 
-This repository is `file-bricks/SQLiteViewer`: a Python/Tkinter desktop SQLite viewer. It is different from DB Browser for SQLite, DBeaver, Android SQLite viewer apps, iOS debug libraries, and web-based database admin panels. Useful search phrases include:
+This repository is `file-bricks/SQLiteViewer`: a Python/Tkinter desktop SQLite viewer for local database inspection, CSV export, JSON companion export, and quick support handoffs. It is different from DB Browser for SQLite, DBeaver, Android SQLite viewer apps, iOS debug libraries, hosted SQL dashboards, and web-based database admin panels. Useful search phrases include:
 
 - `file-bricks SQLiteViewer`
+- `file-bricks/SQLiteViewer`
 - `local-first SQLite viewer Python Tkinter`
 - `portable SQLite database browser with CSV JSON export`
 - `offline SQLite browser for Windows Python`
 - `SQLite table browser SQL editor Tkinter`
+- `Python Tkinter SQLite GUI browser`
+- `SQLite Viewer Pro Microsoft Store`
 
 ## Comparison
 
@@ -126,19 +132,9 @@ This repository is `file-bricks/SQLiteViewer`: a Python/Tkinter desktop SQLite v
 - **Packaging**: `SQLiteViewer.spec`, `build_exe.bat`, `store_package.json`
 - **License**: MIT
 
-## Deutsch
+## German Guide
 
-SQLiteViewer ist ein lokaler SQLite-Datenbank-Browser für Windows, Linux und macOS. Datenbankdateien bleiben auf deinem Rechner; es gibt keinen Cloud-Dienst, keine Telemetrie und kein Konto.
-
-Kurzer Einstieg:
-
-- Datenbank öffnen: `python SQLiteViewer.py pfad/zur/datenbank.sqlite`
-- Tabellen durchsuchen: Data-Tab und Suchfeld
-- Schema ansehen: Schema-Tab
-- SQL ausführen: SQL-Editor, dann `F9`
-- Exportieren: CSV oder `sqliteviewer-export-v1.json`
-
-Die wichtigsten deutschen Endnutzertexte verwenden echte Umlaute. Falls du neue deutschsprachige Texte ergänzt, bitte keine Ersatzschreibweisen wie `ae`, `oe` oder `ue` verwenden, sofern echte Umlaute gemeint sind.
+For German installation, usage, privacy boundaries, and search context, see [`README_de.md`](README_de.md).
 
 ## License
 
