@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Offline-Companion für sqliteviewer-export-v1.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SQLiteViewer">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="apple-touch-icon" href="./icons/sqliteviewer-companion-180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/Icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <title>SQLiteViewer Companion</title>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">SQLiteViewer Companion</p>
+        <h1>Lokale Exporte prüfen, ohne die Datenbank hochzuladen.</h1>
+        <p class="lead">
+          Dieser Companion öffnet `sqliteviewer-export-v1.json` direkt im Browser,
+          zeigt Metadaten, Spalten und Ergebniszeilen an und bleibt bewusst offline-first.
+        </p>
+        <div class="hero__actions">
+          <button type="button" data-import-button>JSON laden</button>
+          <button type="button" class="button-secondary" data-demo-button>Demo öffnen</button>
+          <button type="button" class="button-ghost" data-clear-button>Zurücksetzen</button>
+          <input type="file" accept=".json,application/json" hidden data-file-input>
+        </div>
+        <p class="status" data-status data-tone="neutral">Bereit.</p>
+      </section>
+
+      <section class="dropzone" data-drop-zone data-drag="idle">
+        <strong>Datei hier ablegen</strong>
+        <span>Unterstützt wird aktuell der Desktop-Export `sqliteviewer-export-v1.json`.</span>
+      </section>
+
+      <section class="panel panel--summary">
+        <div class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Quelle</p>
+            <h2>Export-Metadaten</h2>
+          </div>
+          <span class="panel__hint" data-shell-state>Noch kein Export geladen.</span>
+        </div>
+        <div class="meta-grid" data-meta-cards></div>
+        <article class="query-box" data-query-box hidden>
+          <p class="query-box__label">SQL-Query</p>
+          <pre data-query-text></pre>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Ansicht</p>
+            <h2>Ergebniszeilen</h2>
+          </div>
+          <span class="panel__hint" data-results-count>0 sichtbare Zeilen</span>
+        </div>
+        <label class="filter">
+          <span>Suche in sichtbaren Zeilen</span>
+          <input type="search" placeholder="Titel, ID, Query, BLOB-Hinweise …" data-filter-input>
+        </label>
+        <div class="table-wrap">
+          <table>
+            <thead data-table-head></thead>
+            <tbody data-table-body></tbody>
+          </table>
+          <div class="empty-state" data-empty-state>
+            Noch keine Daten sichtbar. Lade einen Export oder öffne die Demo.
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel--notes">
+        <div class="panel__header">
+          <div>
+            <p class="panel__eyebrow">Bewusst klein gehalten</p>
+            <h2>Companion-Grenzen</h2>
+          </div>
+        </div>
+        <ul class="notes">
+          <li>Keine Server-Uploads und kein Cloud-Sync.</li>
+          <li>Keine Schreibfunktionen zurück in Desktop oder Datenbank.</li>
+          <li>Rohe `.sqlite`-Dateien bleiben bewusst ein späterer Evaluationspfad.</li>
+        </ul>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

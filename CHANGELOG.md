@@ -4,6 +4,7 @@
 
 ### Added
 - German `README_de.md` with local-first usage, privacy context, comparison table, and SQLiteViewer search phrases.
+- `web_companion/`: static offline-first viewer for `sqliteviewer-export-v1.json` with local file import, demo mode, row filtering, metadata cards, LocalStorage restore, manifest, service worker, and Node smoke tests.
 - Three regression tests in `tests/test_execute_sql.py` covering sort-indicator propagation in search mode, redundant-binding double-sort prevention, and empty-table CSV export.
 - `tests/source_platform_smoke.py`: headless smoke tests for Linux and macOS source installs — covers module import, export serialization, `_build_export_payload`, SQL execution, and identifier escaping via fake infrastructure (no display required).
 - `.github/workflows/source-platform-smoke.yml`: CI matrix for `ubuntu-latest` and `macos-latest` running the smoke tests on every push/PR to `main`.
@@ -21,15 +22,17 @@
 ### Changed
 - README now links the German guide and expands discovery phrases for `file-bricks/SQLiteViewer`, Python/Tkinter SQLite browser searches, and SQLite Viewer Pro.
 - `llms.txt` now records the 2026-06-12 marketing/discovery check and broader search/disambiguation notes.
+- Public docs now describe the export-first PWA path as the implemented mobile/browser companion strategy; raw `.sqlite` parsing stays a later optional evaluation step.
 - README is now English-first with a Start Here table, clearer local-first positioning, search/disambiguation context, and repaired German umlauts.
 - README now embeds the existing GUI screenshot from `README/screenshots/main.png`.
 - Repository URLs and community health files now point to `file-bricks/SQLiteViewer`.
 - `START.bat` now forwards command-line arguments and reports missing Python cleanly.
 - Store listings and Store metadata now reflect the current CSV/JSON export feature set and the active `file-bricks/SQLiteViewer` privacy/support links.
-- `PORTIERUNGSPLAN.md` marks the Store listing and screenshot workflow refresh as completed without requiring ignored release artifacts in the public repo.
+- Store listing and screenshot workflow notes now avoid requiring ignored release artifacts in the public repo.
 - Community workflows now use `actions/stale@v10` and `actions/first-interaction@v3` with current input names.
 
 ### Fixed
+- Web companion metadata cards now render imported export metadata as inert text instead of interpolating it into `innerHTML`.
 - Sorting an active table search now keeps the filtered result set and export context intact instead of jumping back to the full unfiltered table.
 - Toolbar now uses a visible `Suche:` label instead of an icon-only search hint, and the refresh action is labeled consistently as `Aktualisieren` in the German UI.
 - SQL Editor now detects result-returning statements via `cursor.description`, so

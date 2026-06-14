@@ -16,6 +16,7 @@ Local-first SQLite database browser for Windows, Linux, and macOS. Open a `.db`,
 | Inspect tables and schema | Data and Schema tabs |
 | Run a custom query | SQL Editor tab, then `F9` |
 | Export visible data | `File > Export as CSV` or `File > Export as JSON` |
+| Review a companion export in the browser | `web_companion/` via local HTTP server |
 | Build a Windows package | `SQLiteViewer.spec`, `build_exe.bat`, and `STORE_LISTING.md` |
 | Read the German guide | [`README_de.md`](README_de.md) |
 | Machine-readable project summary | [`llms.txt`](llms.txt) |
@@ -44,6 +45,7 @@ SQLiteViewer is meant for quick local inspection of small and medium SQLite file
 - **Search**: filter visible table rows across columns.
 - **CSV export**: export selected table or query output.
 - **JSON export**: write `sqliteviewer-export-v1.json` with source metadata and rows.
+- **Web/PWA companion**: inspect `sqliteviewer-export-v1.json` locally in a browser without server uploads.
 - **Direct file launch**: pass a database path when starting the app.
 - **Keyboard shortcuts**: `Ctrl+O`, `Ctrl+F`, `Ctrl+E`, `F5`, and `F9`.
 
@@ -97,6 +99,11 @@ CSV remains the fastest default export path. The JSON export is additive and int
 
 See [`EXPORTFORMAT.md`](EXPORTFORMAT.md) for the `sqliteviewer-export-v1.json` contract.
 
+The repository now also contains [`web_companion/`](web_companion/README.md), a
+small offline-first viewer for the JSON export. It is intentionally export-first:
+the browser reads redacted desktop exports today, while raw `.sqlite` handling
+remains a later optional evaluation path.
+
 ## Search Context
 
 This repository is `file-bricks/SQLiteViewer`: a Python/Tkinter desktop SQLite viewer for local database inspection, CSV export, JSON companion export, and quick support handoffs. It is different from DB Browser for SQLite, DBeaver, Android SQLite viewer apps, iOS debug libraries, hosted SQL dashboards, and web-based database admin panels. Useful search phrases include:
@@ -134,7 +141,7 @@ This repository is `file-bricks/SQLiteViewer`: a Python/Tkinter desktop SQLite v
 
 ## German Guide
 
-For German installation, usage, privacy boundaries, and search context, see [`README_de.md`](README_de.md).
+For German installation, usage, privacy boundaries, companion export notes, and search context, see [`README_de.md`](README_de.md).
 
 ## License
 

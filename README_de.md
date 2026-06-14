@@ -16,6 +16,7 @@ SQLiteViewer ist ein lokaler SQLite-Datenbank-Browser für Windows, Linux und ma
 | Tabellen und Schema prüfen | Data-Tab und Schema-Tab |
 | Eigene SQL-Abfrage ausführen | SQL-Editor öffnen, Abfrage schreiben, `F9` drücken |
 | Sichtbare Daten exportieren | `File > Export as CSV` oder `File > Export as JSON` |
+| Companion-Export im Browser prüfen | `python -m http.server 4173`, dann `web_companion/` öffnen |
 | Windows-Paket vorbereiten | `SQLiteViewer.spec`, `build_exe.bat`, `STORE_LISTING.md` |
 | Maschinenlesbare Projektübersicht | [`llms.txt`](llms.txt) |
 
@@ -43,6 +44,7 @@ SQLiteViewer ist für schnelle lokale Prüfungen kleiner und mittlerer SQLite-Da
 - Suche über sichtbare Tabellenspalten
 - CSV-Export für Tabellen oder Abfrageergebnisse
 - JSON-Export als `sqliteviewer-export-v1.json`
+- Web/PWA-Companion für lokale JSON-Exportprüfung ohne Server-Upload
 - Start mit direktem Dateipfad
 - Tastenkürzel: `Ctrl+O`, `Ctrl+F`, `Ctrl+E`, `F5`, `F9`
 
@@ -77,6 +79,7 @@ Unter Windows kannst du auch `START.bat` doppelklicken.
 4. Schema-Tab öffnen, um Tabellendefinitionen zu prüfen.
 5. SQL-Editor öffnen, Abfrage schreiben und mit `F9` ausführen.
 6. Sichtbare Daten als CSV oder JSON exportieren.
+7. Optional `web_companion/` über einen lokalen HTTP-Server öffnen und `sqliteviewer-export-v1.json` im Browser prüfen.
 
 ## Suchkontext
 
@@ -104,6 +107,10 @@ Nützliche Suchphrasen:
 | Kern auf Python-Standardbibliothek | Ja | Nein | Nein |
 | Schlanker Quellcode-Checkout | Ja | Teilweise | Nein |
 | Kein Konto oder Backend | Ja | Ja | Ja |
+
+## Web/PWA-Companion
+
+Der Ordner [`web_companion/`](web_companion/README.md) enthält einen statischen Offline-Viewer für `sqliteviewer-export-v1.json`. Er liest bewusst redigierte Desktop-Exporte, speichert den letzten Stand lokal im Browser und lädt keine Daten auf einen Server hoch. Rohes `.sqlite`-Parsing im Browser bleibt ein späterer optionaler Prüfpfad.
 
 ## Datenschutz
 
