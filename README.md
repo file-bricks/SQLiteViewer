@@ -1,3 +1,5 @@
+<img src="assets/banner.svg" width="100%" alt="SQLiteViewer — Unveil the unseen in your database">
+
 # SQLiteViewer
 
 [Deutsch](README_de.md)

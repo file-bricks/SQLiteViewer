@@ -1,0 +1,436 @@
+<svg width="100%" height="auto" viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Fonts and Styles -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&amp;display=swap');
+      
+      .wordmark {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 900;
+        font-size: 64px;
+        letter-spacing: 5px;
+        fill: url(#text-gradient);
+        text-anchor: middle;
+        filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.25));
+      }
+      
+      .tagline {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 400;
+        font-size: 13px;
+        letter-spacing: 7px;
+        fill: #8093b5;
+        text-anchor: middle;
+        opacity: 0.8;
+      }
+      
+      .tagline-bold {
+        font-weight: 700;
+        fill: #00f2fe;
+      }
+    </style>
+
+    <!-- Gradients -->
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#e2f1ff" />
+      <stop offset="100%" stop-color="#00f2fe" />
+    </linearGradient>
+
+    <radialGradient id="bg-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0d1829" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#030408" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Technical Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0f172a" stroke-width="1.2" />
+    </pattern>
+
+    <!-- Glow Filters -->
+    <filter id="glow-soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Eye Clip Paths -->
+    <!-- Pair 1 (x: 180, y: 110) -->
+    <clipPath id="clip-1">
+      <ellipse cx="-28" cy="0" rx="24" ry="0">
+        <animate id="open_1" attributeName="ry" from="0" to="14" dur="1.2s" begin="0.2s" fill="freeze" />
+        <animate attributeName="ry" dur="5.0s" begin="open_1.end" repeatCount="indefinite"
+          values="14; 14; 0.5; 14; 14"
+          keyTimes="0; 0.7; 0.73; 0.76; 1" />
+      </ellipse>
+      <ellipse cx="28" cy="0" rx="24" ry="0">
+        <animate attributeName="ry" from="0" to="14" dur="1.2s" begin="0.2s" fill="freeze" />
+        <animate attributeName="ry" dur="5.0s" begin="open_1.end" repeatCount="indefinite"
+          values="14; 14; 0.5; 14; 14"
+          keyTimes="0; 0.7; 0.73; 0.76; 1" />
+      </ellipse>
+    </clipPath>
+
+    <!-- Pair 2 (x: 250, y: 230) -->
+    <clipPath id="clip-2">
+      <ellipse cx="-24" cy="0" rx="20" ry="0">
+        <animate id="open_2" attributeName="ry" from="0" to="11" dur="1.4s" begin="0.8s" fill="freeze" />
+        <animate attributeName="ry" dur="6.2s" begin="open_2.end" repeatCount="indefinite"
+          values="11; 11; 0.4; 11; 11; 0.4; 11"
+          keyTimes="0; 0.4; 0.43; 0.46; 0.8; 0.83; 1" />
+      </ellipse>
+      <ellipse cx="24" cy="0" rx="20" ry="0">
+        <animate attributeName="ry" from="0" to="11" dur="1.4s" begin="0.8s" fill="freeze" />
+        <animate attributeName="ry" dur="6.2s" begin="open_2.end" repeatCount="indefinite"
+          values="11; 11; 0.4; 11; 11; 0.4; 11"
+          keyTimes="0; 0.4; 0.43; 0.46; 0.8; 0.83; 1" />
+      </ellipse>
+    </clipPath>
+
+    <!-- Pair 3 (x: 380, y: 140) -->
+    <clipPath id="clip-3">
+      <ellipse cx="-26" cy="0" rx="22" ry="0">
+        <animate id="open_3" attributeName="ry" from="0" to="13" dur="1.3s" begin="0.5s" fill="freeze" />
+        <animate attributeName="ry" dur="5.5s" begin="open_3.end" repeatCount="indefinite"
+          values="13; 13; 0.5; 13; 13"
+          keyTimes="0; 0.6; 0.63; 0.66; 1" />
+      </ellipse>
+      <ellipse cx="26" cy="0" rx="22" ry="0">
+        <animate attributeName="ry" from="0" to="13" dur="1.3s" begin="0.5s" fill="freeze" />
+        <animate attributeName="ry" dur="5.5s" begin="open_3.end" repeatCount="indefinite"
+          values="13; 13; 0.5; 13; 13"
+          keyTimes="0; 0.6; 0.63; 0.66; 1" />
+      </ellipse>
+    </clipPath>
+
+    <!-- Pair 4 (x: 820, y: 220) -->
+    <clipPath id="clip-4">
+      <ellipse cx="-26" cy="0" rx="22" ry="0">
+        <animate id="open_4" attributeName="ry" from="0" to="13" dur="1.5s" begin="0.7s" fill="freeze" />
+        <animate attributeName="ry" dur="5.8s" begin="open_4.end" repeatCount="indefinite"
+          values="13; 13; 0.5; 13; 13; 0.5; 13"
+          keyTimes="0; 0.5; 0.53; 0.56; 0.85; 0.88; 1" />
+      </ellipse>
+      <ellipse cx="26" cy="0" rx="22" ry="0">
+        <animate attributeName="ry" from="0" to="13" dur="1.5s" begin="0.7s" fill="freeze" />
+        <animate attributeName="ry" dur="5.8s" begin="open_4.end" repeatCount="indefinite"
+          values="13; 13; 0.5; 13; 13; 0.5; 13"
+          keyTimes="0; 0.5; 0.53; 0.56; 0.85; 0.88; 1" />
+      </ellipse>
+    </clipPath>
+
+    <!-- Pair 5 (x: 950, y: 120) -->
+    <clipPath id="clip-5">
+      <ellipse cx="-28" cy="0" rx="24" ry="0">
+        <animate id="open_5" attributeName="ry" from="0" to="14" dur="1.1s" begin="0.3s" fill="freeze" />
+        <animate attributeName="ry" dur="4.7s" begin="open_5.end" repeatCount="indefinite"
+          values="14; 14; 0.5; 14; 14"
+          keyTimes="0; 0.65; 0.68; 0.71; 1" />
+      </ellipse>
+      <ellipse cx="28" cy="0" rx="24" ry="0">
+        <animate attributeName="ry" from="0" to="14" dur="1.1s" begin="0.3s" fill="freeze" />
+        <animate attributeName="ry" dur="4.7s" begin="open_5.end" repeatCount="indefinite"
+          values="14; 14; 0.5; 14; 14"
+          keyTimes="0; 0.65; 0.68; 0.71; 1" />
+      </ellipse>
+    </clipPath>
+
+    <!-- Pair 6 (x: 1020, y: 240) -->
+    <clipPath id="clip-6">
+      <ellipse cx="-25" cy="0" rx="21" ry="0">
+        <animate id="open_6" attributeName="ry" from="0" to="12" dur="1.6s" begin="1.0s" fill="freeze" />
+        <animate attributeName="ry" dur="6.5s" begin="open_6.end" repeatCount="indefinite"
+          values="12; 12; 0.4; 12; 12"
+          keyTimes="0; 0.45; 0.48; 0.51; 1" />
+      </ellipse>
+      <ellipse cx="25" cy="0" rx="21" ry="0">
+        <animate attributeName="ry" from="0" to="12" dur="1.6s" begin="1.0s" fill="freeze" />
+        <animate attributeName="ry" dur="6.5s" begin="open_6.end" repeatCount="indefinite"
+          values="12; 12; 0.4; 12; 12"
+          keyTimes="0; 0.45; 0.48; 0.51; 1" />
+      </ellipse>
+    </clipPath>
+  </defs>
+
+  <!-- Backgrounds -->
+  <rect width="1200" height="340" fill="#030408" />
+  <rect width="1200" height="340" fill="url(#grid)" />
+  <rect width="1200" height="340" fill="url(#bg-glow)" />
+
+  <!-- Faint Database Schema Nodes in Background (Safe zone) -->
+  <g stroke="#00f2fe" stroke-width="1.2" opacity="0.04" fill="none" stroke-dasharray="4,4">
+    <!-- Left node cluster -->
+    <circle cx="160" cy="180" r="5" fill="#00f2fe" />
+    <circle cx="280" cy="100" r="5" fill="#00f2fe" />
+    <circle cx="340" cy="220" r="5" fill="#00f2fe" />
+    <line x1="160" y1="180" x2="280" y2="100" />
+    <line x1="280" y1="100" x2="340" y2="220" />
+    <!-- Right node cluster -->
+    <circle cx="860" cy="110" r="5" fill="#b5179e" />
+    <circle cx="940" cy="250" r="5" fill="#b5179e" />
+    <circle cx="1060" cy="150" r="5" fill="#b5179e" />
+    <line x1="860" y1="110" x2="940" y2="250" />
+    <line x1="940" y1="250" x2="1060" y2="150" />
+  </g>
+
+  <!-- Central Typography (Safe zone) -->
+  <g>
+    <text x="600" y="165" class="wordmark">SQLite<tspan fill="#00f2fe">Viewer</tspan></text>
+    <text x="600" y="215" class="tagline">UNVEIL THE UNSEEN IN YOUR <tspan class="tagline-bold">DATABASE</tspan></text>
+  </g>
+
+  <!-- Animated Eyes (Safe zone) -->
+  <!-- Pair 1: Cyan (x: 180, y: 110) -->
+  <g transform="translate(180, 110)">
+    <g clip-path="url(#clip-1)">
+      <!-- Sclera -->
+      <ellipse cx="-28" cy="0" rx="24" ry="14" fill="#040914" />
+      <ellipse cx="28" cy="0" rx="24" ry="14" fill="#040914" />
+      <!-- Left Iris -->
+      <g transform="translate(-28, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="9.0s" repeatCount="indefinite"
+            values="0,0; 0,0; -3,0; -3,0; 3,1; 3,1; 0,0"
+            keyTimes="0; 0.35; 0.4; 0.6; 0.65; 0.85; 0.9" />
+          <circle cx="0" cy="0" r="7.5" fill="none" stroke="#00f2fe" stroke-width="1.5" filter="url(#glow-soft)" />
+          <polygon points="0,-2.5 2.2,-1.2 2.2,1.2 0,2.5 -2.2,1.2 -2.2,-1.2" fill="#00f2fe" />
+        </g>
+      </g>
+      <!-- Right Iris -->
+      <g transform="translate(28, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="9.0s" repeatCount="indefinite"
+            values="0,0; 0,0; -3,0; -3,0; 3,1; 3,1; 0,0"
+            keyTimes="0; 0.35; 0.4; 0.6; 0.65; 0.85; 0.9" />
+          <circle cx="0" cy="0" r="7.5" fill="none" stroke="#00f2fe" stroke-width="1.5" filter="url(#glow-soft)" />
+          <polygon points="0,-2.5 2.2,-1.2 2.2,1.2 0,2.5 -2.2,1.2 -2.2,-1.2" fill="#00f2fe" />
+        </g>
+      </g>
+    </g>
+    <!-- Eyelid Strokes -->
+    <ellipse cx="-28" cy="0" rx="24" ry="0" fill="none" stroke="#00f2fe" stroke-width="1.5" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="14" dur="1.2s" begin="0.2s" fill="freeze" />
+      <animate attributeName="ry" dur="5.0s" begin="open_1.end" repeatCount="indefinite"
+        values="14; 14; 0.5; 14; 14"
+        keyTimes="0; 0.7; 0.73; 0.76; 1" />
+    </ellipse>
+    <ellipse cx="28" cy="0" rx="24" ry="0" fill="none" stroke="#00f2fe" stroke-width="1.5" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="14" dur="1.2s" begin="0.2s" fill="freeze" />
+      <animate attributeName="ry" dur="5.0s" begin="open_1.end" repeatCount="indefinite"
+        values="14; 14; 0.5; 14; 14"
+        keyTimes="0; 0.7; 0.73; 0.76; 1" />
+    </ellipse>
+  </g>
+
+  <!-- Pair 2: Gold (x: 250, y: 230) -->
+  <g transform="translate(250, 230)">
+    <g clip-path="url(#clip-2)">
+      <!-- Sclera -->
+      <ellipse cx="-24" cy="0" rx="20" ry="11" fill="#0f0d04" />
+      <ellipse cx="24" cy="0" rx="20" ry="11" fill="#0f0d04" />
+      <!-- Left Iris -->
+      <g transform="translate(-24, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="11.0s" repeatCount="indefinite"
+            values="0,0; 0,0; 2,-1; 2,-1; -2,0; -2,0; 0,0"
+            keyTimes="0; 0.4; 0.45; 0.7; 0.75; 0.9; 1" />
+          <circle cx="0" cy="0" r="6" fill="none" stroke="#ffd000" stroke-width="1.2" filter="url(#glow-soft)" />
+          <polygon points="0,-2 1.7,-1 1.7,1 0,2 -1.7,1 -1.7,-1" fill="#ffd000" />
+        </g>
+      </g>
+      <!-- Right Iris -->
+      <g transform="translate(24, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="11.0s" repeatCount="indefinite"
+            values="0,0; 0,0; 2,-1; 2,-1; -2,0; -2,0; 0,0"
+            keyTimes="0; 0.4; 0.45; 0.7; 0.75; 0.9; 1" />
+          <circle cx="0" cy="0" r="6" fill="none" stroke="#ffd000" stroke-width="1.2" filter="url(#glow-soft)" />
+          <polygon points="0,-2 1.7,-1 1.7,1 0,2 -1.7,1 -1.7,-1" fill="#ffd000" />
+        </g>
+      </g>
+    </g>
+    <!-- Eyelid Strokes -->
+    <ellipse cx="-24" cy="0" rx="20" ry="0" fill="none" stroke="#ffd000" stroke-width="1.2" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="11" dur="1.4s" begin="0.8s" fill="freeze" />
+      <animate attributeName="ry" dur="6.2s" begin="open_2.end" repeatCount="indefinite"
+        values="11; 11; 0.4; 11; 11; 0.4; 11"
+        keyTimes="0; 0.4; 0.43; 0.46; 0.8; 0.83; 1" />
+    </ellipse>
+    <ellipse cx="24" cy="0" rx="20" ry="0" fill="none" stroke="#ffd000" stroke-width="1.2" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="11" dur="1.4s" begin="0.8s" fill="freeze" />
+      <animate attributeName="ry" dur="6.2s" begin="open_2.end" repeatCount="indefinite"
+        values="11; 11; 0.4; 11; 11; 0.4; 11"
+        keyTimes="0; 0.4; 0.43; 0.46; 0.8; 0.83; 1" />
+    </ellipse>
+  </g>
+
+  <!-- Pair 3: Blue (x: 380, y: 140) -->
+  <g transform="translate(380, 140)">
+    <g clip-path="url(#clip-3)">
+      <!-- Sclera -->
+      <ellipse cx="-26" cy="0" rx="22" ry="13" fill="#040714" />
+      <ellipse cx="26" cy="0" rx="22" ry="13" fill="#040714" />
+      <!-- Left Iris -->
+      <g transform="translate(-26, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="10.0s" repeatCount="indefinite"
+            values="0,0; 0,0; -2,1; -2,1; 2,-1; 2,-1; 0,0"
+            keyTimes="0; 0.3; 0.35; 0.65; 0.7; 0.88; 1" />
+          <circle cx="0" cy="0" r="7" fill="none" stroke="#0078ff" stroke-width="1.4" filter="url(#glow-soft)" />
+          <polygon points="0,-2.2 1.9,-1.1 1.9,1.1 0,2.2 -1.9,1.1 -1.9,-1.1" fill="#0078ff" />
+        </g>
+      </g>
+      <!-- Right Iris -->
+      <g transform="translate(26, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="10.0s" repeatCount="indefinite"
+            values="0,0; 0,0; -2,1; -2,1; 2,-1; 2,-1; 0,0"
+            keyTimes="0; 0.3; 0.35; 0.65; 0.7; 0.88; 1" />
+          <circle cx="0" cy="0" r="7" fill="none" stroke="#0078ff" stroke-width="1.4" filter="url(#glow-soft)" />
+          <polygon points="0,-2.2 1.9,-1.1 1.9,1.1 0,2.2 -1.9,1.1 -1.9,-1.1" fill="#0078ff" />
+        </g>
+      </g>
+    </g>
+    <!-- Eyelid Strokes -->
+    <ellipse cx="-26" cy="0" rx="22" ry="0" fill="none" stroke="#0078ff" stroke-width="1.4" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="13" dur="1.3s" begin="0.5s" fill="freeze" />
+      <animate attributeName="ry" dur="5.5s" begin="open_3.end" repeatCount="indefinite"
+        values="13; 13; 0.5; 13; 13"
+        keyTimes="0; 0.6; 0.63; 0.66; 1" />
+    </ellipse>
+    <ellipse cx="26" cy="0" rx="22" ry="0" fill="none" stroke="#0078ff" stroke-width="1.4" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="13" dur="1.3s" begin="0.5s" fill="freeze" />
+      <animate attributeName="ry" dur="5.5s" begin="open_3.end" repeatCount="indefinite"
+        values="13; 13; 0.5; 13; 13"
+        keyTimes="0; 0.6; 0.63; 0.66; 1" />
+    </ellipse>
+  </g>
+
+  <!-- Pair 4: Purple (x: 820, y: 220) -->
+  <g transform="translate(820, 220)">
+    <g clip-path="url(#clip-4)">
+      <!-- Sclera -->
+      <ellipse cx="-26" cy="0" rx="22" ry="13" fill="#0e0414" />
+      <ellipse cx="26" cy="0" rx="22" ry="13" fill="#0e0414" />
+      <!-- Left Iris -->
+      <g transform="translate(-26, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="8.5s" repeatCount="indefinite"
+            values="0,0; 0,0; 3,0; 3,0; -3,0; -3,0; 0,0"
+            keyTimes="0; 0.4; 0.45; 0.65; 0.7; 0.9; 1" />
+          <circle cx="0" cy="0" r="7" fill="none" stroke="#b5179e" stroke-width="1.4" filter="url(#glow-soft)" />
+          <polygon points="0,-2.2 1.9,-1.1 1.9,1.1 0,2.2 -1.9,1.1 -1.9,-1.1" fill="#b5179e" />
+        </g>
+      </g>
+      <!-- Right Iris -->
+      <g transform="translate(26, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="8.5s" repeatCount="indefinite"
+            values="0,0; 0,0; 3,0; 3,0; -3,0; -3,0; 0,0"
+            keyTimes="0; 0.4; 0.45; 0.65; 0.7; 0.9; 1" />
+          <circle cx="0" cy="0" r="7" fill="none" stroke="#b5179e" stroke-width="1.4" filter="url(#glow-soft)" />
+          <polygon points="0,-2.2 1.9,-1.1 1.9,1.1 0,2.2 -1.9,1.1 -1.9,-1.1" fill="#b5179e" />
+        </g>
+      </g>
+    </g>
+    <!-- Eyelid Strokes -->
+    <ellipse cx="-26" cy="0" rx="22" ry="0" fill="none" stroke="#b5179e" stroke-width="1.4" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="13" dur="1.5s" begin="0.7s" fill="freeze" />
+      <animate attributeName="ry" dur="5.8s" begin="open_4.end" repeatCount="indefinite"
+        values="13; 13; 0.5; 13; 13; 0.5; 13"
+        keyTimes="0; 0.5; 0.53; 0.56; 0.85; 0.88; 1" />
+    </ellipse>
+    <ellipse cx="26" cy="0" rx="22" ry="0" fill="none" stroke="#b5179e" stroke-width="1.4" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="13" dur="1.5s" begin="0.7s" fill="freeze" />
+      <animate attributeName="ry" dur="5.8s" begin="open_4.end" repeatCount="indefinite"
+        values="13; 13; 0.5; 13; 13; 0.5; 13"
+        keyTimes="0; 0.5; 0.53; 0.56; 0.85; 0.88; 1" />
+    </ellipse>
+  </g>
+
+  <!-- Pair 5: Emerald Green (x: 950, y: 120) -->
+  <g transform="translate(950, 120)">
+    <g clip-path="url(#clip-5)">
+      <!-- Sclera -->
+      <ellipse cx="-28" cy="0" rx="24" ry="14" fill="#04140a" />
+      <ellipse cx="28" cy="0" rx="24" ry="14" fill="#04140a" />
+      <!-- Left Iris -->
+      <g transform="translate(-28, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="9.5s" repeatCount="indefinite"
+            values="0,0; 0,0; -4,0; -4,0; 4,0; 4,0; 0,0"
+            keyTimes="0; 0.35; 0.4; 0.6; 0.65; 0.85; 0.9" />
+          <circle cx="0" cy="0" r="7.5" fill="none" stroke="#10b981" stroke-width="1.5" filter="url(#glow-soft)" />
+          <polygon points="0,-2.5 2.2,-1.2 2.2,1.2 0,2.5 -2.2,1.2 -2.2,-1.2" fill="#10b981" />
+        </g>
+      </g>
+      <!-- Right Iris -->
+      <g transform="translate(28, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="9.5s" repeatCount="indefinite"
+            values="0,0; 0,0; -4,0; -4,0; 4,0; 4,0; 0,0"
+            keyTimes="0; 0.35; 0.4; 0.6; 0.65; 0.85; 0.9" />
+          <circle cx="0" cy="0" r="7.5" fill="none" stroke="#10b981" stroke-width="1.5" filter="url(#glow-soft)" />
+          <polygon points="0,-2.5 2.2,-1.2 2.2,1.2 0,2.5 -2.2,1.2 -2.2,-1.2" fill="#10b981" />
+        </g>
+      </g>
+    </g>
+    <!-- Eyelid Strokes -->
+    <ellipse cx="-28" cy="0" rx="24" ry="0" fill="none" stroke="#10b981" stroke-width="1.5" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="14" dur="1.1s" begin="0.3s" fill="freeze" />
+      <animate attributeName="ry" dur="4.7s" begin="open_5.end" repeatCount="indefinite"
+        values="14; 14; 0.5; 14; 14"
+        keyTimes="0; 0.65; 0.68; 0.71; 1" />
+    </ellipse>
+    <ellipse cx="28" cy="0" rx="24" ry="0" fill="none" stroke="#10b981" stroke-width="1.5" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="14" dur="1.1s" begin="0.3s" fill="freeze" />
+      <animate attributeName="ry" dur="4.7s" begin="open_5.end" repeatCount="indefinite"
+        values="14; 14; 0.5; 14; 14"
+        keyTimes="0; 0.65; 0.68; 0.71; 1" />
+    </ellipse>
+  </g>
+
+  <!-- Pair 6: Ruby Red (x: 1020, y: 240) -->
+  <g transform="translate(1020, 240)">
+    <g clip-path="url(#clip-6)">
+      <!-- Sclera -->
+      <ellipse cx="-25" cy="0" rx="21" ry="12" fill="#140407" />
+      <ellipse cx="25" cy="0" rx="21" ry="12" fill="#140407" />
+      <!-- Left Iris -->
+      <g transform="translate(-25, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="12.0s" repeatCount="indefinite"
+            values="0,0; 0,0; 2,1; 2,1; -2,-1; -2,-1; 0,0"
+            keyTimes="0; 0.38; 0.43; 0.68; 0.73; 0.93; 1" />
+          <circle cx="0" cy="0" r="6.5" fill="none" stroke="#ff0055" stroke-width="1.3" filter="url(#glow-soft)" />
+          <polygon points="0,-2.2 1.9,-1.1 1.9,1.1 0,2.2 -1.9,1.1 -1.9,-1.1" fill="#ff0055" />
+        </g>
+      </g>
+      <!-- Right Iris -->
+      <g transform="translate(25, 0)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="12.0s" repeatCount="indefinite"
+            values="0,0; 0,0; 2,1; 2,1; -2,-1; -2,-1; 0,0"
+            keyTimes="0; 0.38; 0.43; 0.68; 0.73; 0.93; 1" />
+          <circle cx="0" cy="0" r="6.5" fill="none" stroke="#ff0055" stroke-width="1.3" filter="url(#glow-soft)" />
+          <polygon points="0,-2.2 1.9,-1.1 1.9,1.1 0,2.2 -1.9,1.1 -1.9,-1.1" fill="#ff0055" />
+        </g>
+      </g>
+    </g>
+    <!-- Eyelid Strokes -->
+    <ellipse cx="-25" cy="0" rx="21" ry="0" fill="none" stroke="#ff0055" stroke-width="1.3" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="12" dur="1.6s" begin="1.0s" fill="freeze" />
+      <animate attributeName="ry" dur="6.5s" begin="open_6.end" repeatCount="indefinite"
+        values="12; 12; 0.4; 12; 12"
+        keyTimes="0; 0.45; 0.48; 0.51; 1" />
+    </ellipse>
+    <ellipse cx="25" cy="0" rx="21" ry="0" fill="none" stroke="#ff0055" stroke-width="1.3" filter="url(#glow-soft)">
+      <animate attributeName="ry" from="0" to="12" dur="1.6s" begin="1.0s" fill="freeze" />
+      <animate attributeName="ry" dur="6.5s" begin="open_6.end" repeatCount="indefinite"
+        values="12; 12; 0.4; 12; 12"
+        keyTimes="0; 0.45; 0.48; 0.51; 1" />
+    </ellipse>
+  </g>
+</svg>
