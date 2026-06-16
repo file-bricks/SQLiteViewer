@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFile, access } from "node:fs/promises";
 import path from "node:path";
@@ -35,7 +35,7 @@ test("index wires mobile shell metadata", async () => {
   const html = await read("index.html");
 
   assert.match(html, /viewport-fit=cover/);
-  assert.match(html, /apple-mobile-web-app-capable/);
+  assert.doesNotMatch(html, /apple-mobile-web-app-capable/, "apple-mobile-web-app-capable ist deprecated seit iOS 11.3 — darf nicht gesetzt sein");
   assert.match(html, /apple-touch-icon/);
   assert.match(html, /manifest\.webmanifest/);
 });
@@ -62,4 +62,62 @@ test("service worker caches the offline shell including icons", async () => {
     /caches\.match\([^)]*ignoreSearch\s*:\s*true/.test(sw),
     "caches.match muss { ignoreSearch: true } für ?demo=1 nutzen"
   );
+
+  assert.ok(
+    /self\.skipWaiting\(\)/.test(sw),
+    "install-Handler muss self.skipWaiting() aufrufen, damit der neue SW sofort aktiviert wird"
+  );
+
+  assert.ok(
+    /self\.clients\.claim\(\)/.test(sw),
+    "activate-Handler muss clients.claim() aufrufen, damit bestehende Seiten sofort übernommen werden"
+  );
+});
+
+// --- iOS PWA-Härtung (P4b, 2026-06-16) ---
+describe("iOS PWA-Härtung", () => {
+  test("iOS: viewport enthält viewport-fit=cover (Notch/Dynamic Island)", async () => {
+    const html = await read("index.html");
+    assert.match(html, /viewport-fit=cover/, "viewport-fit=cover fehlt im viewport-Meta-Tag");
+  });
+
+  test("iOS: apple-touch-icon zeigt auf sqliteviewer-companion-180.png (opak)", async () => {
+    const html = await read("index.html");
+    assert.match(html, /sqliteviewer-companion-180\.png/, "sqliteviewer-companion-180.png fehlt als Linkziel");
+  });
+
+  test("iOS: apple-mobile-web-app-title ist vorhanden", async () => {
+    const html = await read("index.html");
+    assert.match(html, /apple-mobile-web-app-title/, "apple-mobile-web-app-title Meta-Tag fehlt");
+  });
+
+  test("iOS: apple-mobile-web-app-status-bar-style ist vorhanden", async () => {
+    const html = await read("index.html");
+    assert.match(html, /apple-mobile-web-app-status-bar-style/, "apple-mobile-web-app-status-bar-style Meta-Tag fehlt");
+  });
+
+  test("iOS: KEIN apple-mobile-web-app-capable (deprecated seit iOS 11.3)", async () => {
+    const html = await read("index.html");
+    assert.doesNotMatch(html, /apple-mobile-web-app-capable/, "apple-mobile-web-app-capable ist deprecated und darf nicht gesetzt sein");
+  });
+
+  test("iOS: sqliteviewer-companion-180.png existiert physisch in icons/", async () => {
+    await access(path.join(ROOT, "icons", "sqliteviewer-companion-180.png"));
+  });
+
+  test("iOS: style.css enthält safe-area-inset", async () => {
+    const css = await read("style.css");
+    assert.match(css, /safe-area-inset/, "safe-area-inset CSS fehlt in style.css");
+  });
+
+  test("iOS: style.css hat .shell mit env(safe-area-inset-top)", async () => {
+    const css = await read("style.css");
+    assert.match(css, /\.shell/, ".shell Klasse fehlt in style.css");
+    assert.match(css, /env\(safe-area-inset-top\)/, "env(safe-area-inset-top) fehlt in .shell");
+  });
+
+  test("iOS: style.css hat safe-area-inset-bottom", async () => {
+    const css = await read("style.css");
+    assert.match(css, /safe-area-inset-bottom/, "safe-area-inset-bottom fehlt in style.css");
+  });
 });

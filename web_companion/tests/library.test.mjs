@@ -82,3 +82,21 @@ test("buildDemoExport stays compatible with the schema", () => {
   assert.ok(demo.rows.length >= 3);
   assert.equal(demo.source.view, "table_search");
 });
+
+test("formatCellValue falls back to ? when size_bytes is missing or non-finite", () => {
+  // size_bytes undefined
+  assert.equal(
+    formatCellValue({ type: "blob", encoding: "base64", size_bytes: undefined, data: "AA==" }),
+    "BLOB (? Bytes, Base64)"
+  );
+  // size_bytes NaN
+  assert.equal(
+    formatCellValue({ type: "blob", encoding: "base64", size_bytes: NaN, data: "AA==" }),
+    "BLOB (? Bytes, Base64)"
+  );
+  // size_bytes valid number
+  assert.equal(
+    formatCellValue({ type: "blob", encoding: "base64", size_bytes: 42, data: "AA==" }),
+    "BLOB (42 Bytes, Base64)"
+  );
+});

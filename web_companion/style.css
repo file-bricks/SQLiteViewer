@@ -29,7 +29,10 @@ body {
 .shell {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: max(1.25rem, env(safe-area-inset-top)) 0 max(1.5rem, env(safe-area-inset-bottom));
+  padding: max(1.25rem, env(safe-area-inset-top))
+           max(0rem, env(safe-area-inset-right))
+           max(1.5rem, env(safe-area-inset-bottom))
+           max(0rem, env(safe-area-inset-left));
 }
 
 .hero,

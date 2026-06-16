@@ -17,8 +17,7 @@ export function formatCellValue(value) {
   }
 
   if (isBlobValue(value)) {
-    const size = Number.isFinite(value.size_bytes) ? value.size_bytes : value.size_bytes;
-    const printableSize = Number.isFinite(size) ? size : "?";
+    const printableSize = Number.isFinite(value.size_bytes) ? value.size_bytes : "?";
     return `BLOB (${printableSize} Bytes, Base64)`;
   }
 
