@@ -17,6 +17,7 @@ import os
 import sys
 import re
 import json
+import math
 import base64
 import csv
 import sqlite3
@@ -381,7 +382,7 @@ class SqlViewer(tk.Tk):
 
         try:
             limit = max(1, int(self.limit_var.get()))
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, tk.TclError):  # Bugsweep 23: leere/ungueltige Spinbox -> TclError
             limit = DEFAULT_LIMIT
 
         try:
@@ -655,7 +656,14 @@ class SqlViewer(tk.Tk):
             with open(path, "w", newline="", encoding="utf-8-sig") as f:
                 writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
                 writer.writerow(self.current_columns)
-                writer.writerows(self.current_data)
+                # Bugsweep 23: BLOB/bytes base64-kodieren, sonst landet ein b'...'-Rohliteral in der
+                # CSV (konsistent mit dem JSON-Export, der BLOBs ebenfalls base64-kodiert).
+                writer.writerows(
+                    [
+                        [base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else v for v in row]
+                        for row in self.current_data
+                    ]
+                )
 
             self._set_status(f"Exportiert: {os.path.basename(path)}")
             messagebox.showinfo("Export", f"Erfolgreich exportiert:\n{path}\n\n{len(self.current_data)} Zeilen")
@@ -665,6 +673,11 @@ class SqlViewer(tk.Tk):
 
     def _serialize_export_value(self, value: Any):
         """Konvertiert SQLite-Werte in ein stabiles JSON-kompatibles Format."""
+        # Bugsweep 23: nicht-finite Floats (NaN/Inf) -> String. json.dump schreibt sie sonst als
+        # NaN/Infinity-Literale, die kein gueltiges JSON sind (RFC 8259) und von vielen Parsern
+        # (z.B. JS JSON.parse) abgelehnt werden.
+        if isinstance(value, float) and not math.isfinite(value):
+            return str(value)
         if value is None or isinstance(value, (str, int, float, bool)):
             return value
         if isinstance(value, bytes):
@@ -764,7 +777,7 @@ class SqlViewer(tk.Tk):
         try:
             try:
                 limit = int(self.limit_var.get())
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, tk.TclError):  # Bugsweep 23: leere/ungueltige Spinbox -> TclError
                 limit = DEFAULT_LIMIT
             if limit < 1:
                 limit = DEFAULT_LIMIT

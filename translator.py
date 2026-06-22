@@ -69,9 +69,14 @@ class TranslationSystem:
             self.translations = {}
 
     def _save_translations(self):
-        self.translations_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.translations_file, 'w', encoding='utf-8') as f:
-            json.dump(self.translations, f, indent=2, ensure_ascii=False)
+        # Bugsweep 23: bei nicht-beschreibbarem Dateisystem (z.B. installiert unter Program Files)
+        # nicht abstuerzen — _save_translations wird aus UI-Callbacks (t()/add_translation) gerufen.
+        try:
+            self.translations_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.translations_file, 'w', encoding='utf-8') as f:
+                json.dump(self.translations, f, indent=2, ensure_ascii=False)
+        except OSError:
+            pass
 
     def t(self, key: str) -> str:
         """
