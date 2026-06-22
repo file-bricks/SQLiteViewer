@@ -317,6 +317,18 @@ class _ToolbarWidget:
         self.bind_calls.append((event, callback))
 
 
+class _FakeSearchEntry:
+    def __init__(self):
+        self.focus_calls = 0
+        self.select_ranges = []
+
+    def focus_set(self):
+        self.focus_calls += 1
+
+    def select_range(self, start, end):
+        self.select_ranges.append((start, end))
+
+
 def test_toolbar_uses_visible_search_label_and_german_refresh(monkeypatch):
     created_widgets = []
 
@@ -341,15 +353,44 @@ def test_toolbar_uses_visible_search_label_and_german_refresh(monkeypatch):
         export_csv=lambda: None,
         _search_data=lambda: None,
     )
+    fake._clear_search = lambda event=None: SQLiteViewer.SqlViewer._clear_search(fake, event)
 
     SQLiteViewer.SqlViewer._build_toolbar(fake)
 
     label_texts = [widget.kwargs.get("text") for widget in created_widgets if widget.widget_kind == "label"]
     button_texts = [widget.kwargs.get("text") for widget in created_widgets if widget.widget_kind == "button"]
+    entry_widgets = [widget for widget in created_widgets if widget.widget_kind == "entry"]
 
     assert "Suche:" in label_texts
     assert "⟳ Aktualisieren" in button_texts
     assert "⟳ Refresh" not in button_texts
+    assert entry_widgets, "Die Toolbar muss ein Suchfeld anlegen"
+    bound_events = [event for event, _callback in entry_widgets[0].bind_calls]
+    assert "<Escape>" in bound_events
+
+
+def test_clear_search_keeps_focus_and_reloads_visible_table():
+    calls = {"load_selected_table": 0}
+    search_var = _MutableVar("alpha")
+    row_count_var = _MutableVar("Gefunden: 1")
+    search_entry = _FakeSearchEntry()
+
+    fake = SimpleNamespace(
+        search_var=search_var,
+        table_var=_MutableVar("items"),
+        row_count_var=row_count_var,
+        search_entry=search_entry,
+        load_selected_table=lambda: calls.__setitem__("load_selected_table", calls["load_selected_table"] + 1),
+    )
+
+    result = SQLiteViewer.SqlViewer._clear_search(fake)
+
+    assert result == "break"
+    assert search_var.get() == ""
+    assert calls["load_selected_table"] == 1
+    assert search_entry.focus_calls == 1
+    assert search_entry.select_ranges == [(0, SQLiteViewer.tk.END)]
+    assert row_count_var.get() == "Gefunden: 1"
 
 
 def test_open_db_path_handles_hash_in_filename(tmp_path):

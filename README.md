@@ -92,6 +92,7 @@ On Windows you can also double-click `START.bat`.
 | `Ctrl+E` | Export CSV |
 | `Ctrl+F` | Focus search |
 | `Ctrl+A` | Select all rows |
+| `Esc` | Clear the active search and keep focus in the field |
 | `F5` | Refresh table |
 | `F9` | Execute SQL query |
 

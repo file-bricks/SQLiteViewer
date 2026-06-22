@@ -1,4 +1,4 @@
-const CACHE_NAME = "sqliteviewer-companion-v2";
+const CACHE_NAME = "sqliteviewer-companion-v3";
 const OFFLINE_ASSETS = [
   "./",
   "./index.html",
@@ -42,7 +42,9 @@ self.addEventListener("fetch", (event) => {
       if (cached) {
         return cached;
       }
-      return fetch(event.request);
+      return fetch(event.request).catch(
+        () => new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } })
+      );
     })
   );
 });

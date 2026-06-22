@@ -48,7 +48,7 @@ SQLiteViewer ist für schnelle lokale Prüfungen kleiner und mittlerer SQLite-Da
 - JSON-Export als `sqliteviewer-export-v1.json`
 - Web/PWA-Companion für lokale JSON-Exportprüfung ohne Server-Upload
 - Start mit direktem Dateipfad
-- Tastenkürzel: `Ctrl+O`, `Ctrl+F`, `Ctrl+E`, `F5`, `F9`
+- Tastenkürzel: `Ctrl+O`, `Ctrl+F`, `Ctrl+E`, `Esc`, `F5`, `F9`
 
 ## Installation und Start
 
@@ -77,7 +77,7 @@ Unter Windows kannst du auch `START.bat` doppelklicken.
 
 1. Datenbank über `File > Open Database`, `Ctrl+O` oder einen Startpfad öffnen.
 2. Tabelle im Dropdown auswählen.
-3. Suchfeld nutzen, um sichtbare Zeilen zu filtern.
+3. Suchfeld nutzen, um sichtbare Zeilen zu filtern; `Esc` leert den aktiven Filter und hält den Fokus im Feld.
 4. Schema-Tab öffnen, um Tabellendefinitionen zu prüfen.
 5. SQL-Editor öffnen, Abfrage schreiben und mit `F9` ausführen.
 6. Sichtbare Daten als CSV oder JSON exportieren.

@@ -72,6 +72,21 @@ test("service worker caches the offline shell including icons", async () => {
     /self\.clients\.claim\(\)/.test(sw),
     "activate-Handler muss clients.claim() aufrufen, damit bestehende Seiten sofort übernommen werden"
   );
+
+  // BUG-W1 Regressionstest
+  assert.ok(
+    /fetch\(event\.request\)[\s\S]{0,100}\.catch\(/.test(sw),
+    "BUG-W1: sw.js fetch muss .catch() für Offline-Fallback haben — sonst unhandled rejection wenn Ressource nicht gecacht und Netz offline"
+  );
+
+  assert.ok(
+    sw.includes("503"),
+    "BUG-W1: Offline-Fallback muss HTTP 503 zurückgeben"
+  );
+
+  // CACHE-Version v3+ sicherstellen (nach W1-Fix gebumpt)
+  const cacheMatch = sw.match(/CACHE_NAME\s*=\s*["']sqliteviewer-companion-v(\d+)["']/);
+  assert.ok(cacheMatch && parseInt(cacheMatch[1]) >= 3, "CACHE_NAME muss auf v3+ gebumpt sein (nach BUG-W1-Fix)");
 });
 
 // --- iOS PWA-Härtung (P4b, 2026-06-16) ---

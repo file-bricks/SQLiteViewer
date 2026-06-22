@@ -146,6 +146,7 @@ class SqlViewer(tk.Tk):
         self.search_entry.pack(side=tk.LEFT, padx=4)
         self.search_entry.bind("<Return>", lambda e: self._search_data())
         self.search_entry.bind("<KeyRelease>", lambda e: self._search_data())
+        self.search_entry.bind("<Escape>", self._clear_search)
 
         # Buttons
         ttk.Button(bar, text="⟳ Aktualisieren", command=self.load_selected_table, width=13).pack(side=tk.LEFT, padx=4)
@@ -812,6 +813,25 @@ class SqlViewer(tk.Tk):
     def _focus_search(self):
         self.search_entry.focus_set()
         self.search_entry.select_range(0, tk.END)
+
+    def _clear_search(self, _event=None):
+        """Leert den aktiven Suchfilter, behält den Fokus und lädt die Tabelle neu."""
+        if not hasattr(self, "search_var") or self.search_var is None:
+            return "break"
+
+        had_search = bool((self.search_var.get() or "").strip())
+        self.search_var.set("")
+
+        if hasattr(self, "search_entry") and self.search_entry is not None:
+            self.search_entry.focus_set()
+            self.search_entry.select_range(0, tk.END)
+
+        if had_search and hasattr(self, "table_var") and (self.table_var.get() or "").strip():
+            self.load_selected_table()
+        elif hasattr(self, "row_count_var") and self.row_count_var is not None:
+            self.row_count_var.set("")
+
+        return "break"
 
     # ==================== SORTING ====================
     def _sort_by_column(self, column: str):
