@@ -18,6 +18,7 @@ venv/
 
 # BACH Interne Steuerungsdateien (NIEMALS in Git!)
 AUFGABEN.txt
+LOCK*.txt
 TEST.txt
 TESTS.txt
 TESTERGEBNISSE.txt

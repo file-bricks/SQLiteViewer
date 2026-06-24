@@ -20,6 +20,7 @@
 - Local WACK notes remain in the ignored `releases/windowsstore/` workspace; public root docs now describe only the source-controlled workflow.
 
 ### Changed
+- Internal platform plan now separates desktop database inspection from read-only Web/PWA review and keeps Android/iOS as export-first companion targets instead of native SQLiteViewer clones.
 - README now links the German guide and expands discovery phrases for `file-bricks/SQLiteViewer`, Python/Tkinter SQLite browser searches, and SQLite Viewer Pro.
 - `llms.txt` now records the 2026-06-12 marketing/discovery check and broader search/disambiguation notes.
 - Public docs now describe the export-first PWA path as the implemented mobile/browser companion strategy; raw `.sqlite` parsing stays a later optional evaluation step.
