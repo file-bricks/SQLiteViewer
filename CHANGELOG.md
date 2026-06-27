@@ -33,6 +33,7 @@
 - Community workflows now use `actions/stale@v10` and `actions/first-interaction@v3` with current input names.
 
 ### Fixed
+- `_search_data` now fetches column names via `PRAGMA table_info()` instead of relying on `self.current_columns`. After running a SQL query in the SQL Editor, `current_columns` reflected the query result columns rather than the actual table columns, causing a silent `Suchfehler: no such column: ...` whenever the search box was used afterwards. Three regression tests added (`tests/test_bugsweep_20260627.py`).
 - Web companion metadata cards now render imported export metadata as inert text instead of interpolating it into `innerHTML`.
 - Sorting an active table search now keeps the filtered result set and export context intact instead of jumping back to the full unfiltered table.
 - Toolbar now uses a visible `Suche:` label instead of an icon-only search hint, and the refresh action is labeled consistently as `Aktualisieren` in the German UI.

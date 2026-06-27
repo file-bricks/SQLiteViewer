@@ -766,7 +766,7 @@ class SqlViewer(tk.Tk):
             self.load_selected_table()
             return
 
-        if not self.current_columns or not self.conn:
+        if not self.conn:
             return
 
         table = self.table_var.get()
@@ -782,20 +782,28 @@ class SqlViewer(tk.Tk):
             if limit < 1:
                 limit = DEFAULT_LIMIT
 
-            conditions = " OR ".join([f"{self._ident(col)} LIKE ? ESCAPE '\\'" for col in self.current_columns])
+            # Spalten immer per PRAGMA aus der Tabelle holen. self.current_columns kann
+            # nach execute_sql() auf Query-Ergebnisspalten zeigen, die nicht in der
+            # Tabelle existieren → "no such column"-Fehler (Bugsweep 2026-06-27).
+            cur_info = self.conn.execute(f"PRAGMA table_info({self._ident(table)})")
+            cols = [row[1] for row in cur_info.fetchall()]
+            if not cols:
+                return
+
+            conditions = " OR ".join([f"{self._ident(col)} LIKE ? ESCAPE '\\'" for col in cols])
             order_clause = ""
-            if self.sort_column and self.sort_column in self.current_columns:
+            if self.sort_column and self.sort_column in cols:
                 direction = "DESC" if self.sort_reverse else "ASC"
                 order_clause = f" ORDER BY {self._ident(self.sort_column)} {direction}"
             query = f"SELECT * FROM {self._ident(table)} WHERE {conditions}{order_clause} LIMIT ?"
             escaped_term = self._escape_like_pattern(search_term)
-            params = [f"%{escaped_term}%" for _ in self.current_columns]
+            params = [f"%{escaped_term}%" for _ in cols]
             params.append(limit)
 
             cur = self.conn.execute(query, params)
             rows = cur.fetchall()
 
-            self._set_current_view_data(self.current_columns, rows)
+            self._set_current_view_data(cols, rows)
             self._set_export_context(
                 view="table_search",
                 table=table,
@@ -806,8 +814,8 @@ class SqlViewer(tk.Tk):
                 sort_descending=self.sort_reverse,
             )
             self._clear_tree()
-            self.tree["columns"] = self.current_columns
-            for c in self.current_columns:
+            self.tree["columns"] = cols
+            for c in cols:
                 indicator = ""
                 if c == self.sort_column:
                     indicator = " ↓" if self.sort_reverse else " ↑"
@@ -815,7 +823,7 @@ class SqlViewer(tk.Tk):
                 self.tree.column(c, width=120, anchor="w")
 
             for row in rows:
-                values = [self._format_value(row[c]) for c in self.current_columns]
+                values = [self._format_value(row[c]) for c in cols]
                 self.tree.insert("", tk.END, values=values)
 
             self.row_count_var.set(f"Gefunden: {len(rows)}")
