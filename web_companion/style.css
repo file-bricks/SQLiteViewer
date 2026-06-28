@@ -242,6 +242,25 @@ th {
   font-size: 0.82rem;
 }
 
+th[data-col] {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+th[data-col]:hover {
+  background: var(--accent-soft);
+}
+
+th[data-col]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.sort-indicator {
+  color: var(--accent);
+}
+
 td[data-kind="structured"] {
   color: #1d4ed8;
 }

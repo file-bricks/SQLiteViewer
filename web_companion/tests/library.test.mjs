@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport, SCHEMA } from "../library.js";
+import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport, SCHEMA, sortRows } from "../library.js";
 
 const SAMPLE = {
   schema_version: SCHEMA,
@@ -153,4 +153,67 @@ test("exportToCsv mit leerem Zeilenarray gibt nur den Header zurück", () => {
   const parsed = parseExport(SAMPLE);
   const csv = exportToCsv(parsed.columns, []);
   assert.equal(csv, "id,payload,title");
+});
+
+// --- sortRows ---
+
+test("sortRows ohne sortKey gibt Kopie in Originalreihenfolge zurück", () => {
+  const parsed = parseExport(SAMPLE);
+  const sorted = sortRows(parsed.rows, parsed.columns, {});
+  assert.deepEqual(sorted.map((r) => r.raw.id), [1, 2]);
+  assert.notEqual(sorted, parsed.rows);
+});
+
+test("sortRows sortiert numerisch aufsteigend", () => {
+  const parsed = parseExport(SAMPLE);
+  const sorted = sortRows(parsed.rows, parsed.columns, { sortKey: "id", sortDescending: false });
+  assert.deepEqual(sorted.map((r) => r.raw.id), [1, 2]);
+});
+
+test("sortRows sortiert numerisch absteigend", () => {
+  const parsed = parseExport(SAMPLE);
+  const sorted = sortRows(parsed.rows, parsed.columns, { sortKey: "id", sortDescending: true });
+  assert.deepEqual(sorted.map((r) => r.raw.id), [2, 1]);
+});
+
+test("sortRows sortiert Zeichenketten aufsteigend", () => {
+  const parsed = parseExport(SAMPLE);
+  const sorted = sortRows(parsed.rows, parsed.columns, { sortKey: "title", sortDescending: false });
+  assert.deepEqual(sorted.map((r) => r.raw.title), ["Alpha", "Beta"]);
+});
+
+test("sortRows sortiert Zeichenketten absteigend", () => {
+  const parsed = parseExport(SAMPLE);
+  const sorted = sortRows(parsed.rows, parsed.columns, { sortKey: "title", sortDescending: true });
+  assert.deepEqual(sorted.map((r) => r.raw.title), ["Beta", "Alpha"]);
+});
+
+test("sortRows platziert null-Werte unabhängig von der Richtung zuletzt", () => {
+  const base = {
+    ...SAMPLE,
+    columns: ["id", "label"],
+    row_count: 3,
+    result_rows: [
+      { id: 2, label: "Birne" },
+      { id: null, label: "Apfel" },
+      { id: 1, label: null }
+    ]
+  };
+  const parsed = parseExport(base);
+
+  const ascById = sortRows(parsed.rows, parsed.columns, { sortKey: "id", sortDescending: false });
+  assert.equal(ascById[ascById.length - 1].raw.id, null);
+
+  const descById = sortRows(parsed.rows, parsed.columns, { sortKey: "id", sortDescending: true });
+  assert.equal(descById[descById.length - 1].raw.id, null);
+
+  const ascByLabel = sortRows(parsed.rows, parsed.columns, { sortKey: "label", sortDescending: false });
+  assert.equal(ascByLabel[ascByLabel.length - 1].raw.label, null);
+});
+
+test("sortRows mit unbekanntem Spaltennamen gibt Kopie zurück", () => {
+  const parsed = parseExport(SAMPLE);
+  const sorted = sortRows(parsed.rows, parsed.columns, { sortKey: "nichtVorhanden" });
+  assert.deepEqual(sorted.map((r) => r.raw.id), [1, 2]);
+  assert.notEqual(sorted, parsed.rows);
 });

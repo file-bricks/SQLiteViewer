@@ -1,10 +1,12 @@
-import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport } from "./library.js";
+import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport, sortRows } from "./library.js";
 
 const STORAGE_KEY = "sqliteviewer-web-companion:last-export";
 
 const state = {
   exportData: null,
   visibleRows: [],
+  sortKey: null,
+  sortDescending: false,
 };
 
 const elements = {
@@ -55,6 +57,8 @@ function restoreExport() {
 function clearExport() {
   state.exportData = null;
   state.visibleRows = [];
+  state.sortKey = null;
+  state.sortDescending = false;
   elements.filterInput.value = "";
   elements.metaCards.innerHTML = "";
   elements.queryText.textContent = "";
@@ -120,7 +124,25 @@ function renderTable(exportData, rows) {
   const headerRow = document.createElement("tr");
   for (const column of exportData.columns) {
     const th = document.createElement("th");
-    th.textContent = column;
+    th.dataset.col = column;
+    th.tabIndex = 0;
+    th.title = `Nach „${column}" sortieren`;
+
+    const label = document.createElement("span");
+    label.textContent = column;
+    th.appendChild(label);
+
+    if (state.sortKey === column) {
+      const indicator = document.createElement("span");
+      indicator.className = "sort-indicator";
+      indicator.setAttribute("aria-hidden", "true");
+      indicator.textContent = state.sortDescending ? " ↓" : " ↑";
+      th.appendChild(indicator);
+      th.setAttribute("aria-sort", state.sortDescending ? "descending" : "ascending");
+    } else {
+      th.setAttribute("aria-sort", "none");
+    }
+
     headerRow.appendChild(th);
   }
   elements.tableHead.appendChild(headerRow);
@@ -159,7 +181,11 @@ function applyFilter() {
   if (!state.exportData) {
     return;
   }
-  state.visibleRows = filterRows(state.exportData, { query: elements.filterInput.value });
+  const filtered = filterRows(state.exportData, { query: elements.filterInput.value });
+  state.visibleRows = sortRows(filtered, state.exportData.columns, {
+    sortKey: state.sortKey,
+    sortDescending: state.sortDescending,
+  });
   renderTable(state.exportData, state.visibleRows);
 }
 
@@ -228,6 +254,34 @@ elements.demoButton.addEventListener("click", loadDemo);
 elements.clearButton.addEventListener("click", clearExport);
 elements.csvExportButton.addEventListener("click", handleCsvExport);
 elements.filterInput.addEventListener("input", applyFilter);
+
+// Spaltensortierung per Klick auf Tabellenkopf (Event-Delegation)
+elements.tableHead.addEventListener("click", (event) => {
+  const th = event.target.closest("th[data-col]");
+  if (!th || !state.exportData) {
+    return;
+  }
+  const col = th.dataset.col;
+  if (state.sortKey === col) {
+    state.sortDescending = !state.sortDescending;
+  } else {
+    state.sortKey = col;
+    state.sortDescending = false;
+  }
+  applyFilter();
+});
+
+elements.tableHead.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+  const th = event.target.closest("th[data-col]");
+  if (!th || !state.exportData) {
+    return;
+  }
+  event.preventDefault();
+  th.click();
+});
 
 ["dragenter", "dragover"].forEach((eventName) => {
   elements.dropZone.addEventListener(eventName, (event) => {

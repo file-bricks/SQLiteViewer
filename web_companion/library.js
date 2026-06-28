@@ -114,6 +114,45 @@ export function exportToCsv(columns, rows) {
   return [header, ...dataLines].join("\r\n");
 }
 
+// Sortiert die übergebenen Zeilen nach einer Spalte.
+// rows: ParsedRow[] — Zeilen aus parseExport().rows (ggf. bereits gefiltert)
+// columns: string[] — Spaltenköpfe aus exportData.columns (für Index-Lookup)
+// options.sortKey: string | null — Spaltenname; null = unsortiert (Kopie der Eingabe)
+// options.sortDescending: boolean — true = Z→A / groß→klein
+export function sortRows(rows, columns, options = {}) {
+  const { sortKey = null, sortDescending = false } = options;
+  if (!sortKey) {
+    return [...rows];
+  }
+  const colIndex = columns.indexOf(sortKey);
+  if (colIndex === -1) {
+    return [...rows];
+  }
+  return [...rows].sort((a, b) => {
+    const aVal = a.cells[colIndex];
+    const bVal = b.cells[colIndex];
+    // null-Werte kommen unabhängig von der Sortierrichtung zuletzt
+    if (aVal === null && bVal === null) return 0;
+    if (aVal === null) return 1;
+    if (bVal === null) return -1;
+    // Beide Zahlen: numerischer Vergleich
+    if (typeof aVal === "number" && typeof bVal === "number") {
+      return sortDescending ? bVal - aVal : aVal - bVal;
+    }
+    // Blob-Werte: nach Byte-Größe vergleichen
+    if (isBlobValue(aVal) && isBlobValue(bVal)) {
+      const aSize = Number.isFinite(aVal.size_bytes) ? aVal.size_bytes : -1;
+      const bSize = Number.isFinite(bVal.size_bytes) ? bVal.size_bytes : -1;
+      return sortDescending ? bSize - aSize : aSize - bSize;
+    }
+    // Zeichenketten-Vergleich (Groß-/Kleinschreibung ignoriert)
+    const aStr = formatCellValue(aVal).toLowerCase();
+    const bStr = formatCellValue(bVal).toLowerCase();
+    const cmp = aStr.localeCompare(bStr);
+    return sortDescending ? -cmp : cmp;
+  });
+}
+
 export function buildDemoExport() {
   return parseExport({
     schema_version: SCHEMA,

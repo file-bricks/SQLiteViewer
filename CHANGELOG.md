@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- `web_companion/library.js`: `sortRows(rows, columns, options)` — clientseitige Spalten-Sortierung als pure-logic-Funktion (DOM-frei). Sortiert numerisch oder per `localeCompare`, null-Werte stets zuletzt, unbekannte Spalte gibt unveränderte Kopie zurück. Sieben neue Tests in `web_companion/tests/library.test.mjs`.
+- `web_companion/app.js`: Spaltensortierung per Klick auf Tabellenkopf — Event-Delegation auf `<thead>`, Sortierrichtung per Wiederholklick umkehren, Sort-Indikator (↑/↓) im aktiven Spaltenkopf, `aria-sort`-Attribut gesetzt, Tastatur-Bedienbarkeit (Enter/Leertaste) über `tabIndex` + `keydown`-Handler.
+- `web_companion/style.css`: Stile für klickbare Spaltenköpfe (`cursor: pointer`, Hover-Hintergrund, Focus-Ring, `.sort-indicator` in Akzentfarbe).
 - `web_companion/library.js`: `exportToCsv(columns, rows)` — erzeugt RFC-4180-konformes CSV für die aktuell sichtbaren Zeilen (CRLF-Trennung, Blob-Werte als lesbarer Text, Quoting bei Komma/Anführungszeichen/Zeilenumbrüchen, null → leeres Feld). Sechs neue Tests in `web_companion/tests/library.test.mjs`.
 - `web_companion/`: neuer Button „CSV exportieren" im Ergebniszeilen-Panel — lädt die gefilterten sichtbaren Zeilen als `<datenbankname>.csv` herunter; Button bleibt deaktiviert bis ein Export geladen ist.
 - German `README_de.md` with local-first usage, privacy context, comparison table, and SQLiteViewer search phrases.
