@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- `web_companion/library.js`: `exportToCsv(columns, rows)` — erzeugt RFC-4180-konformes CSV für die aktuell sichtbaren Zeilen (CRLF-Trennung, Blob-Werte als lesbarer Text, Quoting bei Komma/Anführungszeichen/Zeilenumbrüchen, null → leeres Feld). Sechs neue Tests in `web_companion/tests/library.test.mjs`.
+- `web_companion/`: neuer Button „CSV exportieren" im Ergebniszeilen-Panel — lädt die gefilterten sichtbaren Zeilen als `<datenbankname>.csv` herunter; Button bleibt deaktiviert bis ein Export geladen ist.
 - German `README_de.md` with local-first usage, privacy context, comparison table, and SQLiteViewer search phrases.
 - `web_companion/`: static offline-first viewer for `sqliteviewer-export-v1.json` with local file import, demo mode, row filtering, metadata cards, LocalStorage restore, manifest, service worker, and Node smoke tests.
 - Three regression tests in `tests/test_execute_sql.py` covering sort-indicator propagation in search mode, redundant-binding double-sort prevention, and empty-table CSV export.

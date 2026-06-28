@@ -1,4 +1,4 @@
-import { buildDemoExport, filterRows, formatCellValue, parseExport } from "./library.js";
+import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport } from "./library.js";
 
 const STORAGE_KEY = "sqliteviewer-web-companion:last-export";
 
@@ -20,6 +20,7 @@ const elements = {
   queryBox: document.querySelector("[data-query-box]"),
   queryText: document.querySelector("[data-query-text]"),
   resultsCount: document.querySelector("[data-results-count]"),
+  csvExportButton: document.querySelector("[data-csv-export-button]"),
   tableHead: document.querySelector("[data-table-head]"),
   tableBody: document.querySelector("[data-table-body]"),
   emptyState: document.querySelector("[data-empty-state]"),
@@ -63,6 +64,7 @@ function clearExport() {
   elements.resultsCount.textContent = "0 sichtbare Zeilen";
   elements.emptyState.hidden = false;
   elements.shellState.textContent = "Noch kein Export geladen.";
+  elements.csvExportButton.disabled = true;
   localStorage.removeItem(STORAGE_KEY);
   setStatus("Lokaler Companion zurückgesetzt.", "neutral");
 }
@@ -170,6 +172,7 @@ function loadPayload(rawPayload, options = {}) {
   if (options.persist !== false) {
     persistExport(rawPayload);
   }
+  elements.csvExportButton.disabled = false;
   setStatus(options.sourceLabel ?? "Export lokal geladen.", "success");
 }
 
@@ -199,6 +202,22 @@ async function handleFile(file) {
   }
 }
 
+function handleCsvExport() {
+  if (!state.exportData) {
+    return;
+  }
+  const csv = exportToCsv(state.exportData.columns, state.visibleRows);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const dbName = state.exportData.source.databaseName ?? "export";
+  link.href = url;
+  link.download = `${dbName}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+  setStatus(`CSV exportiert: ${state.visibleRows.length} sichtbare Zeilen.`, "success");
+}
+
 elements.importButton.addEventListener("click", () => elements.fileInput.click());
 elements.fileInput.addEventListener("change", async (event) => {
   const file = event.target.files?.[0];
@@ -207,6 +226,7 @@ elements.fileInput.addEventListener("change", async (event) => {
 });
 elements.demoButton.addEventListener("click", loadDemo);
 elements.clearButton.addEventListener("click", clearExport);
+elements.csvExportButton.addEventListener("click", handleCsvExport);
 elements.filterInput.addEventListener("input", applyFilter);
 
 ["dragenter", "dragover"].forEach((eventName) => {

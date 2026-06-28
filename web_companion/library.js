@@ -95,6 +95,25 @@ export function filterRows(exportData, options = {}) {
   return exportData.rows.filter((row) => row.searchText.includes(query));
 }
 
+// Gibt einen RFC-4180-konformen CSV-String für die übergebenen Zeilen zurück.
+// columns: string[] — Spaltenköpfe aus exportData.columns
+// rows: ParsedRow[] — Zeilen aus parseExport().rows (ggf. bereits gefiltert)
+export function exportToCsv(columns, rows) {
+  function escapeCsvField(value) {
+    const text = value === null || value === undefined ? "" : String(value);
+    if (text.includes(",") || text.includes('"') || text.includes("\n") || text.includes("\r")) {
+      return '"' + text.replace(/"/g, '""') + '"';
+    }
+    return text;
+  }
+
+  const header = columns.map(escapeCsvField).join(",");
+  const dataLines = rows.map((row) =>
+    row.cells.map((cell) => escapeCsvField(formatCellValue(cell))).join(",")
+  );
+  return [header, ...dataLines].join("\r\n");
+}
+
 export function buildDemoExport() {
   return parseExport({
     schema_version: SCHEMA,
