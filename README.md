@@ -17,7 +17,7 @@ Local-first SQLite database browser for Windows, Linux, and macOS. Open a `.db`,
 | Browse a local SQLite database | `python SQLiteViewer.py path/to/database.sqlite` |
 | Inspect tables and schema | Data and Schema tabs |
 | Run a custom query | SQL Editor tab, then `F9` |
-| Export visible data | `File > Export as CSV` or `File > Export as JSON` |
+| Export visible data | Use the context-aware table or SQL result CSV/JSON export |
 | Review a companion export in the browser | `web_companion/` via local HTTP server |
 | Build a Windows package | `SQLiteViewer.spec`, `build_exe.bat`, and `STORE_LISTING.md` |
 | Read the German guide | [`README_de.md`](README_de.md) |
@@ -36,7 +36,7 @@ SQLiteViewer is meant for quick local inspection of small and medium SQLite file
 - **Local-first**: database files remain on your machine.
 - **No service account**: no hosted backend, telemetry, or cloud sync.
 - **No heavyweight install**: Python standard library plus Tkinter.
-- **Readable export**: CSV for spreadsheets, JSON for companion workflows.
+- **Readable export**: context-aware CSV/JSON exports for table views and SQL result sets.
 - **Simple handoff**: a single source file plus documented Store packaging assets.
 
 ## Features
@@ -45,8 +45,8 @@ SQLiteViewer is meant for quick local inspection of small and medium SQLite file
 - **Schema view**: inspect `CREATE TABLE` statements with syntax highlighting.
 - **SQL editor**: run custom queries and view result sets.
 - **Search**: filter visible table rows across columns.
-- **CSV export**: export selected table or query output.
-- **JSON export**: write `sqliteviewer-export-v1.json` with source metadata and rows.
+- **CSV export**: export the active table view or SQL result set.
+- **JSON export**: write `sqliteviewer-export-v1.json` with table/query source metadata and rows.
 - **Web/PWA companion**: inspect `sqliteviewer-export-v1.json` locally in a browser without server uploads.
 - **Direct file launch**: pass a database path when starting the app.
 - **Keyboard shortcuts**: `Ctrl+O`, `Ctrl+F`, `Ctrl+E`, `F5`, and `F9`.
@@ -81,7 +81,7 @@ On Windows you can also double-click `START.bat`.
 3. Type into the search field to filter visible rows.
 4. Switch to the Schema tab to inspect table definitions.
 5. Switch to the SQL Editor tab, write a query, and press `F9`.
-6. Export via `File > Export as CSV` or `File > Export as JSON`.
+6. Export from the active Data or SQL tab; the menu and toolbar labels show whether a table or SQL result will be written.
 
 ## Keyboard Shortcuts
 

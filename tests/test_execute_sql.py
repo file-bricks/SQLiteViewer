@@ -88,15 +88,16 @@ def _build_fake_viewer(sql: str):
         sql_text=SimpleNamespace(get=lambda *_args: sql),
         sql_status=SimpleNamespace(config=lambda **kwargs: status.update(kwargs)),
         table_var=SimpleNamespace(get=lambda: "items"),
+        current_columns=[],
+        current_data=[],
+        export_context={},
+        sql_result_columns=[],
+        sql_result_data=[],
+        sql_result_export_context={},
         _populate_sql_result=lambda columns, rows: calls.__setitem__("populate", (columns, rows)),
         _clear_sql_result=lambda: calls.__setitem__("clear", calls["clear"] + 1),
         _load_tables=lambda selected_table=None: None,
     )
-    fake._set_current_view_data = lambda columns, rows: (
-        setattr(fake, "current_columns", list(columns)),
-        setattr(fake, "current_data", [tuple(row) for row in rows]),
-    )
-    fake._set_export_context = lambda **kwargs: setattr(fake, "export_context", kwargs)
 
     return fake, conn, status, calls
 
@@ -131,6 +132,12 @@ def _build_fake_viewer_with_two_tables(sql: str, selected_table: str = "items_b"
         schema_combo=_FakeCombo(schema_var),
         limit_var=_MutableVar(100),
         row_count_var=SimpleNamespace(set=lambda value: calls.__setitem__("row_count", value)),
+        current_columns=[],
+        current_data=[],
+        export_context={},
+        sql_result_columns=[],
+        sql_result_data=[],
+        sql_result_export_context={},
         sort_column=None,
         sort_reverse=False,
         _SQLITE_KEYWORDS=SQLiteViewer.SqlViewer._SQLITE_KEYWORDS,
@@ -174,6 +181,15 @@ def test_execute_sql_updates_export_state_for_query_results(tmp_path, monkeypatc
     fake, conn, _status, calls = _build_fake_viewer("SELECT name FROM items ORDER BY id")
     fake.current_columns = ["id", "name"]
     fake.current_data = [(1, "legacy")]
+    fake.export_context = {
+        "view": "table",
+        "table": "items",
+        "query": None,
+        "row_limit": 100,
+        "search_term": None,
+        "sort_column": None,
+        "sort_descending": False,
+    }
     fake.table_var = SimpleNamespace(get=lambda: "items")
     fake._set_status = lambda *_args, **_kwargs: None
 
@@ -192,9 +208,20 @@ def test_execute_sql_updates_export_state_for_query_results(tmp_path, monkeypatc
         conn.close()
 
     assert calls["populate"] is not None
-    assert fake.current_columns == ["name"]
-    assert fake.current_data == [("alpha",)]
+    assert fake.current_columns == ["id", "name"]
+    assert fake.current_data == [(1, "legacy")]
     assert fake.export_context == {
+        "view": "table",
+        "table": "items",
+        "query": None,
+        "row_limit": 100,
+        "search_term": None,
+        "sort_column": None,
+        "sort_descending": False,
+    }
+    assert fake.sql_result_columns == ["name"]
+    assert fake.sql_result_data == [("alpha",)]
+    assert fake.sql_result_export_context == {
         "view": "query",
         "table": "items",
         "query": "SELECT name FROM items ORDER BY id",
@@ -204,6 +231,40 @@ def test_execute_sql_updates_export_state_for_query_results(tmp_path, monkeypatc
         "sort_descending": None,
     }
     assert export_path.read_text(encoding="utf-8-sig").splitlines() == ["name", "alpha"]
+
+
+def test_export_action_state_prefers_sql_result_context():
+    fake = SimpleNamespace(
+        current_columns=["id", "name"],
+        current_data=[(1, "legacy")],
+        export_context={"view": "table", "table": "items"},
+        sql_result_columns=["name"],
+        sql_result_data=[("alpha",)],
+        sql_result_export_context={"view": "query", "table": "items", "query": "SELECT name FROM items"},
+    )
+
+    action_state = SQLiteViewer.SqlViewer._get_export_action_state(fake)
+
+    assert action_state["enabled"] is True
+    assert action_state["button_label"] == "📋 SQL exportieren"
+    assert action_state["csv_label"] == "SQL-Ergebnis als CSV exportieren…"
+
+
+def test_export_action_state_disables_empty_export():
+    fake = SimpleNamespace(
+        current_columns=[],
+        current_data=[],
+        export_context={},
+        sql_result_columns=[],
+        sql_result_data=[],
+        sql_result_export_context={},
+    )
+
+    action_state = SQLiteViewer.SqlViewer._get_export_action_state(fake)
+
+    assert action_state["enabled"] is False
+    assert action_state["button_label"] == "📋 Export"
+    assert action_state["empty_message"] == "Keine Tabellen- oder SQL-Daten zum Exportieren."
 
 
 def test_export_json_writes_companion_payload(tmp_path, monkeypatch):

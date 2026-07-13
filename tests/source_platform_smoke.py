@@ -106,15 +106,16 @@ def test_execute_sql_headless():
         sql_text=SimpleNamespace(get=lambda *_: "SELECT name FROM items ORDER BY id"),
         sql_status=SimpleNamespace(config=lambda **_: None),
         table_var=SimpleNamespace(get=lambda: "items"),
+        current_columns=[],
+        current_data=[],
+        export_context={},
+        sql_result_columns=[],
+        sql_result_data=[],
+        sql_result_export_context={},
         _populate_sql_result=lambda columns, rows: calls.__setitem__("populate", (columns, list(rows))),
         _clear_sql_result=lambda: None,
         _load_tables=lambda selected_table=None: None,
     )
-    fake._set_current_view_data = lambda columns, rows: (
-        setattr(fake, "current_columns", list(columns)),
-        setattr(fake, "current_data", [tuple(row) for row in rows]),
-    )
-    fake._set_export_context = lambda **kwargs: setattr(fake, "export_context", kwargs)
 
     try:
         SQLiteViewer.SqlViewer.execute_sql(fake)
@@ -125,6 +126,10 @@ def test_execute_sql_headless():
     columns, rows = calls["populate"]
     assert columns == ["name"]
     assert [row["name"] for row in rows] == ["smoke"]
+    assert fake.current_columns == []
+    assert fake.current_data == []
+    assert fake.sql_result_columns == ["name"]
+    assert fake.sql_result_data == [("smoke",)]
 
 
 def test_ident_escaping():

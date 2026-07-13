@@ -17,7 +17,7 @@ SQLiteViewer ist ein lokaler SQLite-Datenbank-Browser für Windows, Linux und ma
 | Lokale SQLite-Datenbank öffnen | `python SQLiteViewer.py pfad/zur/datenbank.sqlite` |
 | Tabellen und Schema prüfen | Data-Tab und Schema-Tab |
 | Eigene SQL-Abfrage ausführen | SQL-Editor öffnen, Abfrage schreiben, `F9` drücken |
-| Sichtbare Daten exportieren | `File > Export as CSV` oder `File > Export as JSON` |
+| Sichtbare Daten exportieren | Kontextabhängiger CSV-/JSON-Export für Tabelle oder SQL-Ergebnis |
 | Companion-Export im Browser prüfen | `python -m http.server 4173`, dann `web_companion/` öffnen |
 | Windows-Paket vorbereiten | `SQLiteViewer.spec`, `build_exe.bat`, `STORE_LISTING.md` |
 | Maschinenlesbare Projektübersicht | [`llms.txt`](llms.txt) |
@@ -35,7 +35,7 @@ SQLiteViewer ist für schnelle lokale Prüfungen kleiner und mittlerer SQLite-Da
 - **Lokal zuerst**: Datenbankdateien bleiben auf deinem Rechner.
 - **Kein Konto**: kein gehostetes Backend, keine Telemetrie, kein Cloud-Sync.
 - **Leichtgewichtig**: Python-Standardbibliothek plus Tkinter.
-- **Exportierbar**: CSV für Tabellenkalkulationen, JSON für Companion-Workflows.
+- **Exportierbar**: kontextabhängige CSV-/JSON-Exporte für Tabellenansicht und SQL-Ergebnisse.
 - **Einfach prüfbar**: eine zentrale Python-Datei plus dokumentierte Paketierungsdateien.
 
 ## Funktionen
@@ -44,8 +44,8 @@ SQLiteViewer ist für schnelle lokale Prüfungen kleiner und mittlerer SQLite-Da
 - Schema-Ansicht für `CREATE TABLE`-Definitionen
 - SQL-Editor mit Ergebnisansicht
 - Suche über sichtbare Tabellenspalten
-- CSV-Export für Tabellen oder Abfrageergebnisse
-- JSON-Export als `sqliteviewer-export-v1.json`
+- CSV-Export für die aktive Tabellenansicht oder das aktive SQL-Ergebnis
+- JSON-Export als `sqliteviewer-export-v1.json` mit Tabellen-/Query-Metadaten
 - Web/PWA-Companion für lokale JSON-Exportprüfung ohne Server-Upload
 - Start mit direktem Dateipfad
 - Tastenkürzel: `Ctrl+O`, `Ctrl+F`, `Ctrl+E`, `Esc`, `F5`, `F9`
@@ -80,7 +80,7 @@ Unter Windows kannst du auch `START.bat` doppelklicken.
 3. Suchfeld nutzen, um sichtbare Zeilen zu filtern; `Esc` leert den aktiven Filter und hält den Fokus im Feld.
 4. Schema-Tab öffnen, um Tabellendefinitionen zu prüfen.
 5. SQL-Editor öffnen, Abfrage schreiben und mit `F9` ausführen.
-6. Sichtbare Daten als CSV oder JSON exportieren.
+6. Aus dem aktiven Daten- oder SQL-Tab exportieren; Menü und Toolbar zeigen, ob gerade Tabelle oder SQL-Ergebnis geschrieben wird.
 7. Optional `web_companion/` über einen lokalen HTTP-Server öffnen und `sqliteviewer-export-v1.json` im Browser prüfen.
 
 ## Suchkontext

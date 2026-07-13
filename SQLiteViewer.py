@@ -51,6 +51,9 @@ class SqlViewer(tk.Tk):
         self.current_columns: List[str] = []
         self.current_data: List[Tuple] = []
         self.export_context: dict[str, Any] = {}
+        self.sql_result_columns: List[str] = []
+        self.sql_result_data: List[Tuple] = []
+        self.sql_result_export_context: dict[str, Any] = {}
         self.sort_column: str | None = None
         self.sort_reverse: bool = False
 
@@ -62,6 +65,7 @@ class SqlViewer(tk.Tk):
 
         # Styling
         self._setup_styles()
+        self._update_export_actions()
 
         # BUG 4: Sauberes Schließen via WM_DELETE_WINDOW
         self.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -77,15 +81,17 @@ class SqlViewer(tk.Tk):
         menubar = tk.Menu(self)
 
         # Datei-Menü
-        file_menu = tk.Menu(menubar, tearoff=False)
-        file_menu.add_command(label="Datenbank öffnen…", command=self.open_db, accelerator="Ctrl+O")
-        file_menu.add_command(label="Datenbank schließen", command=self.close_db)
-        file_menu.add_separator()
-        file_menu.add_command(label="Als CSV exportieren…", command=self.export_csv, accelerator="Ctrl+E")
-        file_menu.add_command(label="Als JSON exportieren…", command=self.export_json)
-        file_menu.add_separator()
-        file_menu.add_command(label="Beenden", command=self._on_close, accelerator="Ctrl+Q")
-        menubar.add_cascade(label="Datei", menu=file_menu)
+        self.file_menu = tk.Menu(menubar, tearoff=False)
+        self.file_menu.add_command(label="Datenbank öffnen…", command=self.open_db, accelerator="Ctrl+O")
+        self.file_menu.add_command(label="Datenbank schließen", command=self.close_db)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Als CSV exportieren…", command=self.export_csv, accelerator="Ctrl+E")
+        self.export_csv_menu_index = self.file_menu.index("end")
+        self.file_menu.add_command(label="Als JSON exportieren…", command=self.export_json)
+        self.export_json_menu_index = self.file_menu.index("end")
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Beenden", command=self._on_close, accelerator="Ctrl+Q")
+        menubar.add_cascade(label="Datei", menu=self.file_menu)
 
         # Bearbeiten-Menü
         edit_menu = tk.Menu(menubar, tearoff=False)
@@ -151,12 +157,14 @@ class SqlViewer(tk.Tk):
 
         # Buttons
         ttk.Button(bar, text="⟳ Aktualisieren", command=self.load_selected_table, width=13).pack(side=tk.LEFT, padx=4)
-        ttk.Button(bar, text="📋 Export", command=self.export_csv, width=10).pack(side=tk.LEFT, padx=4)
+        self.export_button = ttk.Button(bar, text="📋 Export", command=self.export_csv)
+        self.export_button.pack(side=tk.LEFT, padx=4)
 
     # ==================== NOTEBOOK (Tabs) ====================
     def _build_notebook(self):
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        self.notebook.bind("<<NotebookTabChanged>>", lambda _event: self._update_export_actions())
 
         # Tab 1: Daten
         self.data_frame = ttk.Frame(self.notebook)
@@ -331,6 +339,9 @@ class SqlViewer(tk.Tk):
             self.current_columns = []
             self.current_data = []
             self.export_context = {}
+            self.sql_result_columns = []
+            self.sql_result_data = []
+            self.sql_result_export_context = {}
             self.sort_column = None
             self.sort_reverse = False
             if hasattr(self, "search_var"):
@@ -348,6 +359,7 @@ class SqlViewer(tk.Tk):
             self._clear_schema_text()
             self.table_combo["values"] = []
             self.schema_combo["values"] = []
+            SqlViewer._update_export_actions(self)
             self._set_status("Datenbank geschlossen")
 
     def _load_tables(self, selected_table: str | None = None):
@@ -371,6 +383,7 @@ class SqlViewer(tk.Tk):
                 self.table_combo.set("")
                 self._clear_tree()
                 self._clear_schema_text()
+                self._update_export_actions()
                 self._set_status("Keine Tabellen gefunden")
         except Exception as e:
             messagebox.showerror("Fehler", f"Tabellen konnten nicht geladen werden:\n{e}")
@@ -416,6 +429,7 @@ class SqlViewer(tk.Tk):
             )
 
             self._populate_tree(cols, rows)
+            self._update_export_actions()
 
             # Zähle Gesamtzeilen
             count_cur = self.conn.execute(f"SELECT COUNT(*) FROM {self._ident(table)}")
@@ -556,8 +570,10 @@ class SqlViewer(tk.Tk):
             if cur.description is not None:
                 rows = cur.fetchall()
                 cols = [desc[0] for desc in cur.description]
-                self._set_current_view_data(cols, rows)
-                self._set_export_context(
+                SqlViewer._set_sql_result_state(
+                    self,
+                    cols,
+                    rows,
                     view="query",
                     table=self.table_var.get() or None,
                     query=sql,
@@ -567,6 +583,7 @@ class SqlViewer(tk.Tk):
                     sort_descending=None,
                 )
                 self._populate_sql_result(cols, rows)
+                SqlViewer._update_export_actions(self)
                 elapsed = (datetime.now() - start_time).total_seconds()
                 if rows:
                     self.sql_status.config(text=f"✓ {len(rows)} Zeilen in {elapsed:.3f}s")
@@ -576,7 +593,9 @@ class SqlViewer(tk.Tk):
                 current_table = self.table_var.get()
                 self.conn.commit()
                 affected = cur.rowcount
+                SqlViewer._clear_sql_result_state(self)
                 self._clear_sql_result()
+                SqlViewer._update_export_actions(self)
                 self.sql_status.config(text=f"✓ {affected} Zeilen betroffen")
                 self._load_tables(current_table)  # Tabellenliste + aktuelle Auswahl neu laden
 
@@ -605,6 +624,101 @@ class SqlViewer(tk.Tk):
     def _set_export_context(self, **kwargs):
         """Merkt sich Metadaten der aktuellen Ansicht für Export-Companions."""
         self.export_context = dict(kwargs)
+
+    def _set_sql_result_state(self, columns: List[str], rows: List[Any], **kwargs):
+        """Merkt sich SQL-Ergebnisse getrennt vom Daten-Tab-Zustand."""
+        self.sql_result_columns = list(columns)
+        self.sql_result_data = [tuple(row) for row in rows]
+        self.sql_result_export_context = dict(kwargs)
+
+    def _clear_sql_result_state(self):
+        self.sql_result_columns = []
+        self.sql_result_data = []
+        self.sql_result_export_context = {}
+
+    def _sql_tab_selected(self) -> bool:
+        notebook = getattr(self, "notebook", None)
+        if notebook is not None:
+            try:
+                return notebook.index(notebook.select()) == 2
+            except Exception:
+                pass
+
+        return bool(getattr(self, "sql_result_columns", [])) and bool(
+            getattr(self, "sql_result_export_context", {})
+        )
+
+    def _get_export_state(self) -> tuple[list[str], list[tuple], dict[str, Any]]:
+        if SqlViewer._sql_tab_selected(self):
+            sql_columns = list(getattr(self, "sql_result_columns", []))
+            if sql_columns:
+                return (
+                    sql_columns,
+                    list(getattr(self, "sql_result_data", [])),
+                    dict(getattr(self, "sql_result_export_context", {}) or {}),
+                )
+
+        return (
+            list(getattr(self, "current_columns", [])),
+            list(getattr(self, "current_data", [])),
+            dict(getattr(self, "export_context", {}) or {}),
+        )
+
+    def _get_export_action_state(self) -> dict[str, Any]:
+        columns, _rows, context = SqlViewer._get_export_state(self)
+        has_data = bool(columns)
+        source_view = context.get("view") if has_data else None
+
+        if source_view == "query":
+            return {
+                "enabled": True,
+                "button_label": "📋 SQL exportieren",
+                "csv_label": "SQL-Ergebnis als CSV exportieren…",
+                "json_label": "SQL-Ergebnis als JSON exportieren…",
+                "empty_message": "Keine Tabellen- oder SQL-Daten zum Exportieren.",
+            }
+
+        if source_view == "table" or has_data:
+            return {
+                "enabled": True,
+                "button_label": "📋 Tabelle exportieren",
+                "csv_label": "Tabelle als CSV exportieren…",
+                "json_label": "Tabelle als JSON exportieren…",
+                "empty_message": "Keine Tabellen- oder SQL-Daten zum Exportieren.",
+            }
+
+        return {
+            "enabled": False,
+            "button_label": "📋 Export",
+            "csv_label": "Als CSV exportieren…",
+            "json_label": "Als JSON exportieren…",
+            "empty_message": "Keine Tabellen- oder SQL-Daten zum Exportieren.",
+        }
+
+    def _update_export_actions(self):
+        action_state = SqlViewer._get_export_action_state(self)
+        button = getattr(self, "export_button", None)
+        if button is not None:
+            button.configure(
+                text=action_state["button_label"],
+                state=tk.NORMAL if action_state["enabled"] else tk.DISABLED,
+            )
+
+        file_menu = getattr(self, "file_menu", None)
+        csv_index = getattr(self, "export_csv_menu_index", None)
+        json_index = getattr(self, "export_json_menu_index", None)
+        if file_menu is not None and csv_index is not None:
+            file_menu.entryconfigure(
+                csv_index,
+                label=action_state["csv_label"],
+                state=tk.NORMAL if action_state["enabled"] else tk.DISABLED,
+            )
+        if file_menu is not None and json_index is not None:
+            file_menu.entryconfigure(
+                json_index,
+                label=action_state["json_label"],
+                state=tk.NORMAL if action_state["enabled"] else tk.DISABLED,
+            )
 
     def _clear_sql_result(self):
         self.sql_result_tree.delete(*self.sql_result_tree.get_children())
@@ -635,11 +749,13 @@ class SqlViewer(tk.Tk):
 
     # ==================== EXPORT ====================
     def export_csv(self):
-        if not self.current_columns:
-            messagebox.showwarning("Export", "Keine Daten zum Exportieren.")
+        action_state = SqlViewer._get_export_action_state(self)
+        columns, rows, export_context = SqlViewer._get_export_state(self)
+        if not action_state["enabled"]:
+            messagebox.showwarning("Export", action_state["empty_message"])
             return
 
-        table = self.table_var.get() or "export"
+        table = export_context.get("table") or self.table_var.get() or export_context.get("view") or "export"
         default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
         path = filedialog.asksaveasfilename(
@@ -655,18 +771,18 @@ class SqlViewer(tk.Tk):
         try:
             with open(path, "w", newline="", encoding="utf-8-sig") as f:
                 writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(self.current_columns)
+                writer.writerow(columns)
                 # Bugsweep 23: BLOB/bytes base64-kodieren, sonst landet ein b'...'-Rohliteral in der
                 # CSV (konsistent mit dem JSON-Export, der BLOBs ebenfalls base64-kodiert).
                 writer.writerows(
                     [
                         [base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else v for v in row]
-                        for row in self.current_data
+                        for row in rows
                     ]
                 )
 
             self._set_status(f"Exportiert: {os.path.basename(path)}")
-            messagebox.showinfo("Export", f"Erfolgreich exportiert:\n{path}\n\n{len(self.current_data)} Zeilen")
+            messagebox.showinfo("Export", f"Erfolgreich exportiert:\n{path}\n\n{len(rows)} Zeilen")
 
         except Exception as e:
             messagebox.showerror("Export-Fehler", str(e))
@@ -691,16 +807,16 @@ class SqlViewer(tk.Tk):
 
     def _build_export_payload(self) -> dict[str, Any]:
         """Erzeugt den Companion-Export für Web/PWA- oder Review-Workflows."""
-        context = getattr(self, "export_context", {}) or {}
+        columns, rows, context = SqlViewer._get_export_state(self)
         database_path = self.db_path
         database_name = os.path.basename(database_path) if database_path else None
         result_rows = []
 
-        for row in self.current_data:
+        for row in rows:
             result_rows.append(
                 {
-                    column: self._serialize_export_value(row[index] if index < len(row) else None)
-                    for index, column in enumerate(self.current_columns)
+                    column: SqlViewer._serialize_export_value(self, row[index] if index < len(row) else None)
+                    for index, column in enumerate(columns)
                 }
             )
 
@@ -720,17 +836,19 @@ class SqlViewer(tk.Tk):
                 "sort_column": context.get("sort_column"),
                 "sort_descending": context.get("sort_descending"),
             },
-            "columns": list(self.current_columns),
+            "columns": list(columns),
             "row_count": len(result_rows),
             "result_rows": result_rows,
         }
 
     def export_json(self):
-        if not self.current_columns:
-            messagebox.showwarning("Export", "Keine Daten zum Exportieren.")
+        action_state = SqlViewer._get_export_action_state(self)
+        columns, _rows, export_context = SqlViewer._get_export_state(self)
+        if not action_state["enabled"]:
+            messagebox.showwarning("Export", action_state["empty_message"])
             return
 
-        table = self.table_var.get() or self.export_context.get("view") or "export"
+        table = export_context.get("table") or self.table_var.get() or export_context.get("view") or "export"
         default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         path = filedialog.asksaveasfilename(
             title="Als JSON exportieren",

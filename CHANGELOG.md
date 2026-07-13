@@ -38,6 +38,8 @@
 - Community workflows now use `actions/stale@v10` and `actions/first-interaction@v3` with current input names.
 
 ### Fixed
+- Exportaktionen zeigen jetzt klarer ihren aktiven Kontext an: Tabellenansicht und SQL-Ergebnis bekommen eigene CSV-/JSON-Beschriftungen, und leere Exportzustände sind direkt deaktiviert statt erst in einen Warn-Dialog zu laufen. Regressionen ergänzt in `tests/test_execute_sql.py`.
+- SQL-Editor und Daten-Tab halten ihren Export-/View-State jetzt getrennt: `execute_sql()` schreibt Query-Ergebnisse nicht mehr in den Data-Tab-State, sondern in eigene `sql_result_*`-Felder; Exporte wählen abhängig vom aktiven Kontext den passenden Snapshot. Regressionen ergänzt in `tests/test_execute_sql.py` und `tests/source_platform_smoke.py`.
 - `_search_data` now fetches column names via `PRAGMA table_info()` instead of relying on `self.current_columns`. After running a SQL query in the SQL Editor, `current_columns` reflected the query result columns rather than the actual table columns, causing a silent `Suchfehler: no such column: ...` whenever the search box was used afterwards. Three regression tests added (`tests/test_bugsweep_20260627.py`).
 - Web companion metadata cards now render imported export metadata as inert text instead of interpolating it into `innerHTML`.
 - Sorting an active table search now keeps the filtered result set and export context intact instead of jumping back to the full unfiltered table.
