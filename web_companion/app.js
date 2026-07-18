@@ -1,4 +1,12 @@
-import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport, sortRows } from "./library.js";
+import {
+  buildDemoExport,
+  exportToCsv,
+  filterRows,
+  formatCellValue,
+  formatSourceSummary,
+  parseExport,
+  sortRows,
+} from "./library.js";
 
 const STORAGE_KEY = "sqliteviewer-web-companion:last-export";
 
@@ -112,9 +120,7 @@ function renderMeta(exportData) {
     elements.queryBox.hidden = true;
   }
 
-  const exportedAt = exportData.exportedAt ?? "unbekannt";
-  const dbPath = exportData.source.databasePath ?? "nicht mitgegeben";
-  elements.shellState.textContent = `${exportData.appName} ${exportData.appVersion} · Export: ${exportedAt} · Quelle: ${dbPath}`;
+  elements.shellState.textContent = formatSourceSummary(exportData);
 }
 
 function renderTable(exportData, rows) {

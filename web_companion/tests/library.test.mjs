@@ -1,7 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { buildDemoExport, exportToCsv, filterRows, formatCellValue, parseExport, SCHEMA, sortRows } from "../library.js";
+import {
+  buildDemoExport,
+  exportToCsv,
+  filterRows,
+  formatCellValue,
+  formatSourceSummary,
+  parseExport,
+  SCHEMA,
+  sortRows,
+} from "../library.js";
 
 const SAMPLE = {
   schema_version: SCHEMA,
@@ -74,6 +83,30 @@ test("parseExport keeps metadata as inert text for the UI renderer", () => {
   });
 
   assert.equal(parsed.source.databaseName, "<img src=x onerror=alert(1)>");
+});
+
+test("formatSourceSummary hides the full local database path", () => {
+  const parsed = parseExport(SAMPLE);
+  const summary = formatSourceSummary(parsed);
+
+  assert.match(summary, /demo\.sqlite/);
+  assert.match(summary, /voller lokaler Pfad im Export ausgeblendet/);
+  assert.doesNotMatch(summary, /C:\/tmp/);
+});
+
+test("formatSourceSummary explains when no local database path was exported", () => {
+  const parsed = parseExport({
+    ...SAMPLE,
+    source: {
+      ...SAMPLE.source,
+      database_path: null,
+      database_name: null
+    }
+  });
+  const summary = formatSourceSummary(parsed);
+
+  assert.match(summary, /unbekannte Datenbank/);
+  assert.match(summary, /kein lokaler Pfad im Export/);
 });
 
 test("buildDemoExport stays compatible with the schema", () => {

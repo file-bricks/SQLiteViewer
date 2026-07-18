@@ -95,6 +95,15 @@ export function filterRows(exportData, options = {}) {
   return exportData.rows.filter((row) => row.searchText.includes(query));
 }
 
+export function formatSourceSummary(exportData) {
+  const exportedAt = exportData.exportedAt ?? "unbekannt";
+  const databaseName = exportData.source.databaseName ?? "unbekannte Datenbank";
+  const pathNote = exportData.source.databasePath
+    ? "voller lokaler Pfad im Export ausgeblendet"
+    : "kein lokaler Pfad im Export";
+  return `${exportData.appName} ${exportData.appVersion} · Export: ${exportedAt} · Quelle: ${databaseName} · ${pathNote}`;
+}
+
 // Gibt einen RFC-4180-konformen CSV-String für die übergebenen Zeilen zurück.
 // columns: string[] — Spaltenköpfe aus exportData.columns
 // rows: ParsedRow[] — Zeilen aus parseExport().rows (ggf. bereits gefiltert)
