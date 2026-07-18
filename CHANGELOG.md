@@ -38,6 +38,7 @@
 - Community workflows now use `actions/stale@v10` and `actions/first-interaction@v3` with current input names.
 
 ### Fixed
+- `tests/source_platform_smoke.py` bootstraps the project root into `sys.path` before the first import, so the documented direct smoke command `python tests/source_platform_smoke.py` now works outside `pytest` instead of failing with `ModuleNotFoundError: SQLiteViewer`.
 - Web Companion zeigt den vollständigen lokalen `database_path` nicht mehr in der sichtbaren Shell-Zusammenfassung; dort stehen jetzt Datenbankname und ein Hinweis, dass der volle Pfad im Export ausgeblendet wird.
 - Exportaktionen zeigen jetzt klarer ihren aktiven Kontext an: Tabellenansicht und SQL-Ergebnis bekommen eigene CSV-/JSON-Beschriftungen, und leere Exportzustände sind direkt deaktiviert statt erst in einen Warn-Dialog zu laufen. Regressionen ergänzt in `tests/test_execute_sql.py`.
 - SQL-Editor und Daten-Tab halten ihren Export-/View-State jetzt getrennt: `execute_sql()` schreibt Query-Ergebnisse nicht mehr in den Data-Tab-State, sondern in eigene `sql_result_*`-Felder; Exporte wählen abhängig vom aktiven Kontext den passenden Snapshot. Regressionen ergänzt in `tests/test_execute_sql.py` und `tests/source_platform_smoke.py`.
