@@ -64,4 +64,4 @@ SQLite Viewer Pro Microsoft Store
 
 MIT.
 
-## Last-checked: 2026-07-13
+## Last-checked: 2026-07-22

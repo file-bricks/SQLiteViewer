@@ -25,6 +25,7 @@
 - Local WACK notes remain in the ignored `releases/windowsstore/` workspace; public root docs now describe only the source-controlled workflow.
 
 ### Changed
+- Updated `llms.txt` Last-checked timestamp to 2026-07-22 and verified marketing, SEO, and discoverability context.
 - Internal platform plan now separates desktop database inspection from read-only Web/PWA review and keeps Android/iOS as export-first companion targets instead of native SQLiteViewer clones.
 - README now links the German guide and expands discovery phrases for `file-bricks/SQLiteViewer`, Python/Tkinter SQLite browser searches, and SQLite Viewer Pro.
 - `llms.txt` now records the 2026-06-12 marketing/discovery check and broader search/disambiguation notes.
