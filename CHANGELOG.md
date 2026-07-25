@@ -24,6 +24,9 @@
 - Reproducible Windows Store screenshot generation under `_WARTUNG/generate_store_screenshots.py`; generated screenshots stay in the ignored local `releases/windowsstore/screenshots/` workspace while `README/screenshots/main.png` is refreshed for GitHub.
 - Local WACK notes remain in the ignored `releases/windowsstore/` workspace; public root docs now describe only the source-controlled workflow.
 
+### Fixed
+- `translator.py`: `TranslationSystem.t()` lieferte bei leeren Übersetzungs-Strings in `translations.json` (`""`) den leeren String statt des deutschen Fallback-Texts.
+
 ### Changed
 - Updated `llms.txt` Last-checked timestamp to 2026-07-22 and verified marketing, SEO, and discoverability context.
 - Internal platform plan now separates desktop database inspection from read-only Web/PWA review and keeps Android/iOS as export-first companion targets instead of native SQLiteViewer clones.
