@@ -89,7 +89,10 @@ class TranslationSystem:
             Uebersetzter Text oder Key als Fallback
         """
         if key in self.translations:
-            return self.translations[key].get(self.current_lang, key)
+            val = self.translations[key].get(self.current_lang)
+            if val:
+                return val
+            return self.translations[key].get("de") or key
 
         if self._is_german(key):
             self.translations[key] = {"de": key, "en": ""}
