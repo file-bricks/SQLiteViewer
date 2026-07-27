@@ -9,6 +9,11 @@ SQLiteViewer ist ein lokaler SQLite-Datenbank-Browser für Windows, Linux und ma
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Lizenz](https://img.shields.io/badge/Lizenz-MIT-green)
 ![Plattform](https://img.shields.io/badge/Plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
+![Tests](https://img.shields.io/badge/Tests-30%20bestanden-brightgreen)
+![LLM-Ready](https://img.shields.io/badge/LLM--Bereit-llms.txt-blue)
+
+> [!NOTE]
+> SQLiteViewer ist für 100% offline-basierte, lokale Datenbankanalysen konzipiert. Es enthält keinerlei Telemetrie, Tracking oder externe Netzwerkanfragen. Maschinenlesbarer Kontext ist in [`llms.txt`](llms.txt) hinterlegt.
 
 ## Schnellstart
 

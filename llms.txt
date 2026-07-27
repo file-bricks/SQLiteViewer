@@ -64,4 +64,4 @@ SQLite Viewer Pro Microsoft Store
 
 MIT.
 
-## Last-checked: 2026-07-22
+## Last-checked: 2026-07-27 (30 passing pytest suite tests, PEP 621 pyproject.toml compliant)

@@ -3,6 +3,13 @@
 ## [Unreleased]
 
 ### Added
+- Standard PEP 621 `pyproject.toml` configuration with metadata, dependencies, and `pytest` settings.
+- Test suite status badge (30 passing tests) and LLM-Ready badge added to `README.md` and `README_de.md`.
+- GFM LLM note callouts (`> [!NOTE]`) added to `README.md` and `README_de.md`.
+
+### Changed
+- Updated `llms.txt` Last-checked header to `2026-07-27` and verified test suite assertions (30/30 passing pytest tests).
+
 - `web_companion/library.js`: `sortRows(rows, columns, options)` — clientseitige Spalten-Sortierung als pure-logic-Funktion (DOM-frei). Sortiert numerisch oder per `localeCompare`, null-Werte stets zuletzt, unbekannte Spalte gibt unveränderte Kopie zurück. Sieben neue Tests in `web_companion/tests/library.test.mjs`.
 - `web_companion/app.js`: Spaltensortierung per Klick auf Tabellenkopf — Event-Delegation auf `<thead>`, Sortierrichtung per Wiederholklick umkehren, Sort-Indikator (↑/↓) im aktiven Spaltenkopf, `aria-sort`-Attribut gesetzt, Tastatur-Bedienbarkeit (Enter/Leertaste) über `tabIndex` + `keydown`-Handler.
 - `web_companion/style.css`: Stile für klickbare Spaltenköpfe (`cursor: pointer`, Hover-Hintergrund, Focus-Ring, `.sort-indicator` in Akzentfarbe).

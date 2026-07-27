@@ -9,6 +9,11 @@ Local-first SQLite database browser for Windows, Linux, and macOS. Open a `.db`,
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
+![Tests](https://img.shields.io/badge/Tests-30%20passing-brightgreen)
+![LLM-Ready](https://img.shields.io/badge/LLM--Ready-llms.txt-blue)
+
+> [!NOTE]
+> SQLiteViewer is designed for 100% offline, local-first database exploration. It contains no analytics, telemetry, or external network requests. Machine-readable context is available in [`llms.txt`](llms.txt).
 
 ## Start Here
 
