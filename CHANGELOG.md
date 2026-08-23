@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.0.1] - 2026-08-23
+
+### Fixed
+- **Store-Paket registrierte keinen Datenbank-Handler.** Das `AppxManifest.xml` deklarierte
+  keine `uap:FileTypeAssociation`; eine aus dem Store installierte App erschien deshalb nicht
+  unter „Öffnen mit" und ein Doppelklick auf eine `.db` startete sie nicht. Ergänzt: `.db`,
+  `.sqlite`, `.sqlite3` sowie der Ausführungsalias `sqliteviewer.exe`.
+  Die Auswertung von `sys.argv[1]` war bereits vorhanden und wird jetzt durch Tests festgehalten.
+- **Falsche Paket-Identität im Repository.** `store_package.json` führte
+  `Geiger.SQLiteViewer`, im Partner Center ist die App aber als `Geiger.SQLiteViewerPro`
+  registriert (Produkt `9P6H501XB8JT`). Ein aus diesem Stand gebautes Paket hätte nicht zur
+  veröffentlichten App gepasst. Korrigiert, `store_id` ergänzt.
+- Versionsdrift behoben: `APP_VERSION` stand auf `2.0.0`, `pyproject.toml` auf `2.0.1`.
+
+### Added
+- `tests/test_cli_db_argument.py` — hält die Argument-Auswertung fest und prüft zusätzlich,
+  dass die im Manifest deklarierten Endungen mit denen des Dateidialogs übereinstimmen.
+  Bewusst ohne GUI-Instanziierung: `SqlViewer()` blockiert ohne Anzeige, statt zu scheitern.
+- Sprachen `de-DE` und `en-US` im Paket hinterlegt.
+
+### Changed
+- Paketversion `2.0.0.0` → `2.0.1.0`; `MaxVersionTested` `10.0.19041.0` → `10.0.22621.0`.
+- Manifest und Store-Icons werden aus `store_package.json` erzeugt (store-packager 2.2.0).
+
+### Store
+- Eingereicht am 2026-08-23, Submission `1152921505701721645`, Status `Certification`.
+
 ## [Unreleased]
 
 ### Added

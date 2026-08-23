@@ -28,7 +28,7 @@ from datetime import datetime
 from typing import Optional, List, Tuple, Any
 
 APP_TITLE = "SQLite Viewer Pro"
-APP_VERSION = "2.0.0"
+APP_VERSION = "2.0.1"
 DEFAULT_LIMIT = 1000
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 

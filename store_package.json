@@ -2,13 +2,29 @@
   "app_name": "SQLite Viewer Pro",
   "publisher": "CN=52596601-BAB4-4F3F-B182-E8F3F273B202",
   "publisher_display": "Geiger",
-  "identity_name": "Geiger.SQLiteViewer",
-  "version": "1.0.0.0",
+  "identity_name": "Geiger.SQLiteViewerPro",
+  "version": "2.0.1.0",
   "description": "Leichtgewichtiger SQLite-Datenbank-Browser mit GUI, Read-only-Zugriff sowie CSV- und JSON-Export.",
   "executable": "SQLiteViewer.exe",
   "capabilities": "internetClient,runFullTrust",
   "category": "Developer Tools",
   "age_rating": "3+",
   "privacy_url": "https://github.com/file-bricks/SQLiteViewer/blob/master/PRIVACY_POLICY.md",
-  "support_url": "https://github.com/file-bricks/SQLiteViewer/issues"
+  "support_url": "https://github.com/file-bricks/SQLiteViewer/issues",
+  "languages": [
+    "de-DE",
+    "en-US"
+  ],
+  "file_types": {
+    "name": "sqlite",
+    "display_name": "SQLite-Datenbank",
+    "info_tip": "Mit SQLite Viewer Pro öffnen",
+    "extensions": [
+      ".db",
+      ".sqlite",
+      ".sqlite3"
+    ]
+  },
+  "execution_alias": "sqliteviewer.exe",
+  "store_id": "9P6H501XB8JT"
 }
