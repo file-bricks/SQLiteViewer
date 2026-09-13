@@ -1,18 +1,450 @@
 {
   "Alle Schemas anzeigen": {
     "de": "Alle Schemas anzeigen",
-    "en": "Show All Schemas"
+    "en": "Show All Schemas",
+    "es": "Mostrar todos los esquemas",
+    "zh": "显示所有架构",
+    "ja": "すべてのスキーマを表示",
+    "ru": "Показать все схемы"
   },
   "▶ Ausführen (F9)": {
     "de": "▶ Ausführen (F9)",
-    "en": "▶ Run (F9)"
+    "en": "▶ Run (F9)",
+    "es": "▶ Ejecutar (F9)",
+    "zh": "▶ 运行 (F9)",
+    "ja": "▶ 実行 (F9)",
+    "ru": "▶ Выполнить (F9)"
   },
   "📋 Export": {
     "de": "📋 Export",
-    "en": "📋 Export"
+    "en": "📋 Export",
+    "es": "📋 Exportar",
+    "zh": "📋 导出",
+    "ja": "📋 エクスポート",
+    "ru": "📋 Экспорт"
   },
   "⟳ Aktualisieren": {
     "de": "⟳ Aktualisieren",
-    "en": ""
+    "en": "⟳ Refresh",
+    "es": "⟳ Actualizar",
+    "zh": "⟳ 刷新",
+    "ja": "⟳ 更新",
+    "ru": "⟳ Обновить"
+  },
+  "Ergebnis": {
+    "de": "Ergebnis",
+    "en": "Result",
+    "es": "Resultado",
+    "zh": "结果",
+    "ja": "結果",
+    "ru": "Результат"
+  },
+  "SQL-Query": {
+    "de": "SQL-Query",
+    "en": "SQL Query",
+    "es": "Consulta SQL",
+    "zh": "SQL 查询",
+    "ja": "SQL クエリ",
+    "ru": "SQL-запрос"
+  },
+  "Suche:": {
+    "de": "Suche:",
+    "en": "Search:",
+    "es": "Buscar:",
+    "zh": "搜索:",
+    "ja": "検索:",
+    "ru": "Поиск:"
+  },
+  "Tabelle:": {
+    "de": "Tabelle:",
+    "en": "Table:",
+    "es": "Tabla:",
+    "zh": "表:",
+    "ja": "テーブル:",
+    "ru": "Таблица:"
+  },
+  "💻 SQL-Editor": {
+    "de": "💻 SQL-Editor",
+    "en": "💻 SQL Editor",
+    "es": "💻 Editor SQL",
+    "zh": "💻 SQL 编辑器",
+    "ja": "💻 SQL エディタ",
+    "ru": "💻 SQL-редактор"
+  },
+  "📊 Daten": {
+    "de": "📊 Daten",
+    "en": "📊 Data",
+    "es": "📊 Datos",
+    "zh": "📊 数据",
+    "ja": "📊 データ",
+    "ru": "📊 Данные"
+  },
+  "🔧 Schema": {
+    "de": "🔧 Schema",
+    "en": "🔧 Schema",
+    "es": "🔧 Esquema",
+    "zh": "🔧 架构",
+    "ja": "🔧 スキーマ",
+    "ru": "🔧 Схема"
+  },
+  "🗑 Leeren": {
+    "de": "🗑 Leeren",
+    "en": "🗑 Clear",
+    "es": "🗑 Limpiar",
+    "zh": "🗑 清空",
+    "ja": "🗑 クリア",
+    "ru": "🗑 Очистить"
+  },
+  "Datenbank öffnen…": {
+    "de": "Datenbank öffnen…",
+    "en": "Open Database…",
+    "es": "Abrir base de datos…",
+    "zh": "打开数据库…",
+    "ja": "データベースを開く…",
+    "ru": "Открыть базу данных…"
+  },
+  "Datenbank schließen": {
+    "de": "Datenbank schließen",
+    "en": "Close Database",
+    "es": "Cerrar base de datos",
+    "zh": "关闭数据库",
+    "ja": "データベースを閉じる",
+    "ru": "Закрыть базу данных"
+  },
+  "Als CSV exportieren…": {
+    "de": "Als CSV exportieren…",
+    "en": "Export as CSV…",
+    "es": "Exportar como CSV…",
+    "zh": "导出为 CSV…",
+    "ja": "CSVとしてエクスポート…",
+    "ru": "Экспорт в CSV…"
+  },
+  "Als JSON exportieren…": {
+    "de": "Als JSON exportieren…",
+    "en": "Export as JSON…",
+    "es": "Exportar como JSON…",
+    "zh": "导出为 JSON…",
+    "ja": "JSONとしてエクスポート…",
+    "ru": "Экспорт в JSON…"
+  },
+  "Beenden": {
+    "de": "Beenden",
+    "en": "Exit",
+    "es": "Salir",
+    "zh": "退出",
+    "ja": "終了",
+    "ru": "Выход"
+  },
+  "Suchen…": {
+    "de": "Suchen…",
+    "en": "Find…",
+    "es": "Buscar…",
+    "zh": "查找…",
+    "ja": "検索…",
+    "ru": "Найти…"
+  },
+  "Alle auswählen": {
+    "de": "Alle auswählen",
+    "en": "Select All",
+    "es": "Seleccionar todo",
+    "zh": "全选",
+    "ja": "すべて選択",
+    "ru": "Выбрать все"
+  },
+  "Aktualisieren": {
+    "de": "Aktualisieren",
+    "en": "Refresh",
+    "es": "Actualizar",
+    "zh": "刷新",
+    "ja": "更新",
+    "ru": "Обновить"
+  },
+  "Daten-Tab": {
+    "de": "Daten-Tab",
+    "en": "Data Tab",
+    "es": "Pestaña Datos",
+    "zh": "数据标签页",
+    "ja": "データタブ",
+    "ru": "Вкладка данных"
+  },
+  "Schema-Tab": {
+    "de": "Schema-Tab",
+    "en": "Schema Tab",
+    "es": "Pestaña Esquema",
+    "zh": "架构标签页",
+    "ja": "スキーマタブ",
+    "ru": "Вкладка схемы"
+  },
+  "Über…": {
+    "de": "Über…",
+    "en": "About…",
+    "es": "Acerca de…",
+    "zh": "关于…",
+    "ja": "バージョン情報…",
+    "ru": "О программе…"
+  },
+  "Datei": {
+    "de": "Datei",
+    "en": "File",
+    "es": "Archivo",
+    "zh": "文件",
+    "ja": "ファイル",
+    "ru": "Файл"
+  },
+  "Bearbeiten": {
+    "de": "Bearbeiten",
+    "en": "Edit",
+    "es": "Editar",
+    "zh": "编辑",
+    "ja": "編集",
+    "ru": "Правка"
+  },
+  "Ansicht": {
+    "de": "Ansicht",
+    "en": "View",
+    "es": "Ver",
+    "zh": "视图",
+    "ja": "表示",
+    "ru": "Вид"
+  },
+  "Hilfe": {
+    "de": "Hilfe",
+    "en": "Help",
+    "es": "Ayuda",
+    "zh": "帮助",
+    "ja": "ヘルプ",
+    "ru": "Справка"
+  },
+  "Bereit": {
+    "de": "Bereit",
+    "en": "Ready",
+    "es": "Listo",
+    "zh": "就绪",
+    "ja": "準備完了",
+    "ru": "Готово"
+  },
+  "Zeilen:": {
+    "de": "Zeilen:",
+    "en": "Rows:",
+    "es": "Filas:",
+    "zh": "行数:",
+    "ja": "行:",
+    "ru": "Строки:"
+  },
+  "Limit:": {
+    "de": "Limit:",
+    "en": "Limit:",
+    "es": "Límite:",
+    "zh": "限制:",
+    "ja": "上限:",
+    "ru": "Лимит:"
+  },
+  "DB: –": {
+    "de": "DB: –",
+    "en": "DB: –",
+    "es": "BD: –",
+    "zh": "数据库: –",
+    "ja": "DB: –",
+    "ru": "БД: –"
+  },
+  "📋 SQL exportieren": {
+    "de": "📋 SQL exportieren",
+    "en": "📋 Export SQL",
+    "es": "📋 Exportar SQL",
+    "zh": "📋 导出 SQL",
+    "ja": "📋 SQLをエクスポート",
+    "ru": "📋 Экспорт SQL"
+  },
+  "📋 Tabelle exportieren": {
+    "de": "📋 Tabelle exportieren",
+    "en": "📋 Export Table",
+    "es": "📋 Exportar tabla",
+    "zh": "📋 导出数据表",
+    "ja": "📋 テーブルをエクスポート",
+    "ru": "📋 Экспорт таблицы"
+  },
+  "SQL-Ergebnis als CSV exportieren…": {
+    "de": "SQL-Ergebnis als CSV exportieren…",
+    "en": "Export SQL result as CSV…",
+    "es": "Exportar resultado SQL como CSV…",
+    "zh": "将 SQL 结果导出为 CSV…",
+    "ja": "SQL結果をCSVとしてエクスポート…",
+    "ru": "Экспорт результатов SQL в CSV…"
+  },
+  "SQL-Ergebnis als JSON exportieren…": {
+    "de": "SQL-Ergebnis als JSON exportieren…",
+    "en": "Export SQL result as JSON…",
+    "es": "Exportar resultado SQL como JSON…",
+    "zh": "将 SQL 结果导出为 JSON…",
+    "ja": "SQL結果をJSONとしてエクスポート…",
+    "ru": "Экспорт результатов SQL в JSON…"
+  },
+  "Tabelle als CSV exportieren…": {
+    "de": "Tabelle als CSV exportieren…",
+    "en": "Export table as CSV…",
+    "es": "Exportar tabla como CSV…",
+    "zh": "将数据表导出为 CSV…",
+    "ja": "テーブルをCSVとしてエクスポート…",
+    "ru": "Экспорт таблицы в CSV…"
+  },
+  "Tabelle als JSON exportieren…": {
+    "de": "Tabelle als JSON exportieren…",
+    "en": "Export table as JSON…",
+    "es": "Exportar tabla como JSON…",
+    "zh": "将数据表导出为 JSON…",
+    "ja": "テーブルをJSONとしてエクスポート…",
+    "ru": "Экспорт таблицы в JSON…"
+  },
+  "Keine Tabellen- oder SQL-Daten zum Exportieren.": {
+    "de": "Keine Tabellen- oder SQL-Daten zum Exportieren.",
+    "en": "No table or SQL data to export.",
+    "es": "No hay datos de tabla o SQL para exportar.",
+    "zh": "没有可导出的表或 SQL 数据。",
+    "ja": "エクスポートするテーブルまたはSQLデータがありません。",
+    "ru": "Нет данных таблицы или SQL для экспорта."
+  },
+  "SQLite-Datenbank öffnen": {
+    "de": "SQLite-Datenbank öffnen",
+    "en": "Open SQLite Database",
+    "es": "Abrir base de datos SQLite",
+    "zh": "打开 SQLite 数据库",
+    "ja": "SQLite データベースを開く",
+    "ru": "Открыть базу данных SQLite"
+  },
+  "Fehler beim Öffnen": {
+    "de": "Fehler beim Öffnen",
+    "en": "Error opening file",
+    "es": "Error al abrir",
+    "zh": "打开错误",
+    "ja": "開封エラー",
+    "ru": "Ошибка открытия"
+  },
+  "Fehler": {
+    "de": "Fehler",
+    "en": "Error",
+    "es": "Error",
+    "zh": "错误",
+    "ja": "エラー",
+    "ru": "Ошибка"
+  },
+  "Warnung": {
+    "de": "Warnung",
+    "en": "Warning",
+    "es": "Advertencia",
+    "zh": "警告",
+    "ja": "警告",
+    "ru": "Предупреждение"
+  },
+  "Keine Datenbank geöffnet.": {
+    "de": "Keine Datenbank geöffnet.",
+    "en": "No database opened.",
+    "es": "Ninguna base de datos abierta.",
+    "zh": "未打开数据库。",
+    "ja": "データベースが開かれていません。",
+    "ru": "База данных не открыта."
+  },
+  "Datenbank geschlossen": {
+    "de": "Datenbank geschlossen",
+    "en": "Database closed",
+    "es": "Base de datos cerrada",
+    "zh": "数据库已关闭",
+    "ja": "データベースを閉じました",
+    "ru": "База данных закрыта"
+  },
+  "Keine Tabellen gefunden": {
+    "de": "Keine Tabellen gefunden",
+    "en": "No tables found",
+    "es": "No se encontraron tablas",
+    "zh": "未找到数据表",
+    "ja": "テーブルが見つかりません",
+    "ru": "Таблицы не найдены"
+  },
+  "Export erfolgreich": {
+    "de": "Export erfolgreich",
+    "en": "Export successful",
+    "es": "Exportación exitosa",
+    "zh": "导出成功",
+    "ja": "エクスポートに成功しました",
+    "ru": "Экспорт успешно выполнен"
+  },
+  "Fehler beim Export": {
+    "de": "Fehler beim Export",
+    "en": "Export error",
+    "es": "Error al exportar",
+    "zh": "导出错误",
+    "ja": "エクスポートエラー",
+    "ru": "Ошибка экспорта"
+  },
+  "Sprache": {
+    "de": "Sprache",
+    "en": "Language",
+    "es": "Idioma",
+    "zh": "语言",
+    "ja": "言語",
+    "ru": "Язык"
+  },
+  "Deutsch": {
+    "de": "Deutsch",
+    "en": "German",
+    "es": "Alemán",
+    "zh": "德语",
+    "ja": "ドイツ語",
+    "ru": "Немецкий"
+  },
+  "Englisch": {
+    "de": "Englisch",
+    "en": "English",
+    "es": "Inglés",
+    "zh": "英语",
+    "ja": "英語",
+    "ru": "Английский"
+  },
+  "Spanisch": {
+    "de": "Spanisch",
+    "en": "Spanish",
+    "es": "Español",
+    "zh": "西班牙语",
+    "ja": "スペイン語",
+    "ru": "Испанский"
+  },
+  "Chinesisch": {
+    "de": "Chinesisch",
+    "en": "Chinese",
+    "es": "Chino",
+    "zh": "中文",
+    "ja": "中国語",
+    "ru": "Китайский"
+  },
+  "Japanisch": {
+    "de": "Japanisch",
+    "en": "Japanese",
+    "es": "Japonés",
+    "zh": "日语",
+    "ja": "日本語",
+    "ru": "Японский"
+  },
+  "Russisch": {
+    "de": "Russisch",
+    "en": "Russian",
+    "es": "Ruso",
+    "zh": "俄语",
+    "ja": "ロシア語",
+    "ru": "Русский"
+  },
+  "Sprache geändert": {
+    "de": "Sprache geändert",
+    "en": "Language changed",
+    "es": "Idioma cambiado",
+    "zh": "语言已更改",
+    "ja": "言語が変更されました",
+    "ru": "Язык изменен"
+  },
+  "Gefunden:": {
+    "de": "Gefunden:",
+    "en": "Found:",
+    "es": "Encontrado:",
+    "zh": "找到:",
+    "ja": "見つかりました:",
+    "ru": "Найдено:"
   }
 }

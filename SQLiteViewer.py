@@ -26,9 +26,10 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
 from typing import Optional, List, Tuple, Any
+from translator import TranslationSystem
 
 APP_TITLE = "SQLite Viewer Pro"
-APP_VERSION = "2.0.1"
+APP_VERSION = "2.1.0"
 DEFAULT_LIMIT = 1000
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 
@@ -44,6 +45,14 @@ class SqlViewer(tk.Tk):
                 self.iconbitmap(default=APP_ICON_PATH)
             except tk.TclError:
                 pass
+
+        # Settings & I18N
+        self.settings = self._load_settings()
+        saved_lang = self.settings.get("language")
+        if not saved_lang or saved_lang not in TranslationSystem.SUPPORTED_LANGUAGES:
+            saved_lang = self._detect_system_language()
+        self.current_language = saved_lang
+        self.translator = TranslationSystem(default_lang=self.current_language, app_dir=Path(__file__).parent)
 
         # State
         self.conn: sqlite3.Connection | None = None
@@ -70,6 +79,214 @@ class SqlViewer(tk.Tk):
         # BUG 4: Sauberes Schließen via WM_DELETE_WINDOW
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
+    @staticmethod
+    def _get_settings_path() -> Path:
+        """Ermittelt den Pfad zur sqliteviewer_settings.json im Benutzerprofil (AppData / XDG)."""
+        if sys.platform == "win32":
+            base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+            cfg_dir = Path(base) / "SQLiteViewer"
+        else:
+            base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+            cfg_dir = Path(base) / "sqliteviewer"
+        try:
+            cfg_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            pass
+        return cfg_dir / "sqliteviewer_settings.json"
+
+    def _load_settings(self) -> dict:
+        try:
+            p = self._get_settings_path()
+            if p.exists():
+                with open(p, "r", encoding="utf-8") as f:
+                    return json.load(f)
+        except Exception:
+            pass
+        return {}
+
+    def _save_settings(self):
+        try:
+            p = self._get_settings_path()
+            settings = {"language": getattr(self, "current_language", "de")}
+            with open(p, "w", encoding="utf-8") as f:
+                json.dump(settings, f, indent=2)
+        except Exception:
+            pass
+
+    @staticmethod
+    def _detect_system_language() -> str:
+        """Erkennt die Systemsprache und mappt sie auf unterstützte Codes (de, en, es, zh, ja, ru)."""
+        import locale
+        try:
+            loc = locale.getlocale()[0] or os.environ.get("LANG", "") or ""
+            loc = loc.lower()
+            if loc.startswith("de"):
+                return "de"
+            elif loc.startswith("es"):
+                return "es"
+            elif loc.startswith("zh"):
+                return "zh"
+            elif loc.startswith("ja"):
+                return "ja"
+            elif loc.startswith("ru"):
+                return "ru"
+            elif loc.startswith("en"):
+                return "en"
+        except Exception:
+            pass
+        return "de"
+
+    def tr(self, key: str) -> str:
+        """Uebersetzt einen Key via TranslationSystem mit sicherem Fallback."""
+        tr_sys = getattr(self, "translator", None)
+        if tr_sys is not None and hasattr(tr_sys, "t"):
+            return tr_sys.t(key)
+        return key
+
+    def change_language(self, lang_code: str):
+        """Wechselt die aktive Sprache, persistiert sie und aktualisiert die UI."""
+        if hasattr(self, "translator") and self.translator and lang_code in TranslationSystem.SUPPORTED_LANGUAGES:
+            self.current_language = lang_code
+            self.translator.set_language(lang_code)
+            if hasattr(self, "lang_var") and self.lang_var:
+                self.lang_var.set(lang_code)
+            self._save_settings()
+            self.retranslate_ui()
+            self._set_status(f"{self.tr('Sprache geändert')}: {lang_code.upper()}")
+
+    def retranslate_ui(self):
+        """Aktualisiert alle UI-Texte dynamisch zur Laufzeit ohne Neustart."""
+        # 1. Fenstertitel
+        try:
+            self.title(f"{APP_TITLE} v{APP_VERSION}")
+        except Exception:
+            pass
+
+        # 2. Menüleiste
+        if hasattr(self, "menubar") and self.menubar:
+            try:
+                self.menubar.entryconfigure(1, label=self.tr("Datei"))
+                self.menubar.entryconfigure(2, label=self.tr("Bearbeiten"))
+                self.menubar.entryconfigure(3, label=self.tr("Ansicht"))
+                self.menubar.entryconfigure(4, label=self.tr("Hilfe"))
+            except Exception:
+                pass
+
+        # Datei-Menü
+        if hasattr(self, "file_menu") and self.file_menu:
+            try:
+                self.file_menu.entryconfigure(0, label=self.tr("Datenbank öffnen…"))
+                self.file_menu.entryconfigure(1, label=self.tr("Datenbank schließen"))
+                self.file_menu.entryconfigure(6, label=self.tr("Beenden"))
+            except Exception:
+                pass
+
+        # Bearbeiten-Menü
+        if hasattr(self, "edit_menu") and self.edit_menu:
+            try:
+                self.edit_menu.entryconfigure(0, label=self.tr("Suchen…"))
+                self.edit_menu.entryconfigure(1, label=self.tr("Alle auswählen"))
+                self.edit_menu.entryconfigure(3, label=self.tr("Aktualisieren"))
+            except Exception:
+                pass
+
+        # Ansicht-Menü
+        if hasattr(self, "view_menu") and self.view_menu:
+            try:
+                self.view_menu.entryconfigure(0, label=self.tr("Daten-Tab"))
+                self.view_menu.entryconfigure(1, label=self.tr("Schema-Tab"))
+                self.view_menu.entryconfigure(2, label=self.tr("SQL-Editor"))
+                self.view_menu.entryconfigure(4, label=self.tr("Sprache"))
+            except Exception:
+                pass
+
+        # Hilfe-Menü
+        if hasattr(self, "help_menu") and self.help_menu:
+            try:
+                self.help_menu.entryconfigure(0, label=self.tr("Über…"))
+            except Exception:
+                pass
+
+        # 3. Toolbar
+        if hasattr(self, "table_label") and self.table_label:
+            try:
+                self.table_label.configure(text=self.tr("Tabelle:"))
+            except Exception:
+                pass
+        if hasattr(self, "limit_label") and self.limit_label:
+            try:
+                self.limit_label.configure(text=self.tr("Limit:"))
+            except Exception:
+                pass
+        if hasattr(self, "search_label") and self.search_label:
+            try:
+                self.search_label.configure(text=self.tr("Suche:"))
+            except Exception:
+                pass
+        if hasattr(self, "refresh_button") and self.refresh_button:
+            try:
+                self.refresh_button.configure(text=self.tr("⟳ Aktualisieren"))
+            except Exception:
+                pass
+
+        # Export Button & Menu
+        try:
+            self._update_export_actions()
+        except Exception:
+            pass
+
+        # 4. Tabs (Notebook)
+        if hasattr(self, "notebook") and self.notebook:
+            try:
+                self.notebook.tab(0, text=self.tr("📊 Daten"))
+                self.notebook.tab(1, text=self.tr("🔧 Schema"))
+                self.notebook.tab(2, text=self.tr("💻 SQL-Editor"))
+            except Exception:
+                pass
+
+        # 5. Schema Tab
+        if hasattr(self, "schema_table_label") and self.schema_table_label:
+            try:
+                self.schema_table_label.configure(text=self.tr("Tabelle:"))
+            except Exception:
+                pass
+        if hasattr(self, "schema_all_btn") and self.schema_all_btn:
+            try:
+                self.schema_all_btn.configure(text=self.tr("Alle Schemas anzeigen"))
+            except Exception:
+                pass
+
+        # 6. SQL Editor Tab
+        if hasattr(self, "sql_input_frame") and self.sql_input_frame:
+            try:
+                self.sql_input_frame.configure(text=self.tr("SQL-Query"))
+            except Exception:
+                pass
+        if hasattr(self, "sql_run_btn") and self.sql_run_btn:
+            try:
+                self.sql_run_btn.configure(text=self.tr("▶ Ausführen (F9)"))
+            except Exception:
+                pass
+        if hasattr(self, "sql_clear_btn") and self.sql_clear_btn:
+            try:
+                self.sql_clear_btn.configure(text=self.tr("🗑 Leeren"))
+            except Exception:
+                pass
+        if hasattr(self, "sql_result_frame") and self.sql_result_frame:
+            try:
+                self.sql_result_frame.configure(text=self.tr("Ergebnis"))
+            except Exception:
+                pass
+
+        # 7. Statusbar
+        if hasattr(self, "status_var") and self.status_var:
+            try:
+                curr = self.status_var.get()
+                if curr in ["Bereit", "Ready", "Listo", "就绪", "準備完了", "Готово"]:
+                    self.status_var.set(self.tr("Bereit"))
+            except Exception:
+                pass
+
     def _setup_styles(self):
         """Konfiguriere ttk Styles."""
         style = ttk.Style()
@@ -82,37 +299,59 @@ class SqlViewer(tk.Tk):
 
         # Datei-Menü
         self.file_menu = tk.Menu(menubar, tearoff=False)
-        self.file_menu.add_command(label="Datenbank öffnen…", command=self.open_db, accelerator="Ctrl+O")
-        self.file_menu.add_command(label="Datenbank schließen", command=self.close_db)
+        self.file_menu.add_command(label=self.tr("Datenbank öffnen…"), command=self.open_db, accelerator="Ctrl+O")
+        self.file_menu.add_command(label=self.tr("Datenbank schließen"), command=self.close_db)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label="Als CSV exportieren…", command=self.export_csv, accelerator="Ctrl+E")
+        self.file_menu.add_command(label=self.tr("Als CSV exportieren…"), command=self.export_csv, accelerator="Ctrl+E")
         self.export_csv_menu_index = self.file_menu.index("end")
-        self.file_menu.add_command(label="Als JSON exportieren…", command=self.export_json)
+        self.file_menu.add_command(label=self.tr("Als JSON exportieren…"), command=self.export_json)
         self.export_json_menu_index = self.file_menu.index("end")
         self.file_menu.add_separator()
-        self.file_menu.add_command(label="Beenden", command=self._on_close, accelerator="Ctrl+Q")
-        menubar.add_cascade(label="Datei", menu=self.file_menu)
+        self.file_menu.add_command(label=self.tr("Beenden"), command=self._on_close, accelerator="Ctrl+Q")
+        menubar.add_cascade(label=self.tr("Datei"), menu=self.file_menu)
 
         # Bearbeiten-Menü
-        edit_menu = tk.Menu(menubar, tearoff=False)
-        edit_menu.add_command(label="Suchen…", command=self._focus_search, accelerator="Ctrl+F")
-        edit_menu.add_command(label="Alle auswählen", command=self._select_all, accelerator="Ctrl+A")
-        edit_menu.add_separator()
-        edit_menu.add_command(label="Aktualisieren", command=self.load_selected_table, accelerator="F5")
-        menubar.add_cascade(label="Bearbeiten", menu=edit_menu)
+        self.edit_menu = tk.Menu(menubar, tearoff=False)
+        self.edit_menu.add_command(label=self.tr("Suchen…"), command=self._focus_search, accelerator="Ctrl+F")
+        self.edit_menu.add_command(label=self.tr("Alle auswählen"), command=self._select_all, accelerator="Ctrl+A")
+        self.edit_menu.add_separator()
+        self.edit_menu.add_command(label=self.tr("Aktualisieren"), command=self.load_selected_table, accelerator="F5")
+        menubar.add_cascade(label=self.tr("Bearbeiten"), menu=self.edit_menu)
 
         # Ansicht-Menü
-        view_menu = tk.Menu(menubar, tearoff=False)
-        view_menu.add_command(label="Daten-Tab", command=lambda: self.notebook.select(0))
-        view_menu.add_command(label="Schema-Tab", command=lambda: self.notebook.select(1))
-        view_menu.add_command(label="SQL-Editor", command=lambda: self.notebook.select(2))
-        menubar.add_cascade(label="Ansicht", menu=view_menu)
+        self.view_menu = tk.Menu(menubar, tearoff=False)
+        self.view_menu.add_command(label=self.tr("Daten-Tab"), command=lambda: self.notebook.select(0))
+        self.view_menu.add_command(label=self.tr("Schema-Tab"), command=lambda: self.notebook.select(1))
+        self.view_menu.add_command(label=self.tr("SQL-Editor"), command=lambda: self.notebook.select(2))
+        self.view_menu.add_separator()
+
+        # Sprach-Untermenü
+        self.lang_menu = tk.Menu(self.view_menu, tearoff=False)
+        self.lang_var = tk.StringVar(value=getattr(self, "current_language", "de"))
+        for code in TranslationSystem.SUPPORTED_LANGUAGES:
+            label_text = {
+                "de": "Deutsch (DE)",
+                "en": "English (EN)",
+                "es": "Español (ES)",
+                "zh": "中文 (ZH)",
+                "ja": "日本語 (JA)",
+                "ru": "Русский (RU)",
+            }.get(code, code)
+            self.lang_menu.add_radiobutton(
+                label=label_text,
+                variable=self.lang_var,
+                value=code,
+                command=lambda c=code: self.change_language(c),
+            )
+        self.view_menu.add_cascade(label=self.tr("Sprache"), menu=self.lang_menu)
+        menubar.add_cascade(label=self.tr("Ansicht"), menu=self.view_menu)
 
         # Hilfe-Menü
-        help_menu = tk.Menu(menubar, tearoff=False)
-        help_menu.add_command(label="Über…", command=self._show_about)
-        menubar.add_cascade(label="Hilfe", menu=help_menu)
+        self.help_menu = tk.Menu(menubar, tearoff=False)
+        self.help_menu.add_command(label=self.tr("Über…"), command=self._show_about)
+        menubar.add_cascade(label=self.tr("Hilfe"), menu=self.help_menu)
 
+        self.menubar = menubar
         self.config(menu=menubar)
 
         # Shortcuts
@@ -292,7 +531,7 @@ class SqlViewer(tk.Tk):
         self.statusbar = ttk.Frame(self, padding=(5, 2))
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
 
-        self.status_var = tk.StringVar(value="Bereit")
+        self.status_var = tk.StringVar(value=self.tr("Bereit"))
         ttk.Label(self.statusbar, textvariable=self.status_var, anchor="w").pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         self.row_count_var = tk.StringVar(value="")
@@ -700,7 +939,7 @@ class SqlViewer(tk.Tk):
         button = getattr(self, "export_button", None)
         if button is not None:
             button.configure(
-                text=action_state["button_label"],
+                text=self.tr(action_state["button_label"]),
                 state=tk.NORMAL if action_state["enabled"] else tk.DISABLED,
             )
 
@@ -710,13 +949,13 @@ class SqlViewer(tk.Tk):
         if file_menu is not None and csv_index is not None:
             file_menu.entryconfigure(
                 csv_index,
-                label=action_state["csv_label"],
+                label=self.tr(action_state["csv_label"]),
                 state=tk.NORMAL if action_state["enabled"] else tk.DISABLED,
             )
         if file_menu is not None and json_index is not None:
             file_menu.entryconfigure(
                 json_index,
-                label=action_state["json_label"],
+                label=self.tr(action_state["json_label"]),
                 state=tk.NORMAL if action_state["enabled"] else tk.DISABLED,
             )
 

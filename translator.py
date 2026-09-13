@@ -1,8 +1,8 @@
 """
 TranslationSystem - Multi-Language Support fuer Anwendungen
 ============================================================
-Version: 1.0.0 (isoliert aus _LANG)
-Quelle: ARC_EntwicklungsschleifeAdvanced/TranslationSystem.py v2.4
+Version: 1.1.0 (gehaertet & I18N-erweitert)
+Quelle: DATA/REL-PUB_SQLiteViewer/translator.py
 
 Verwendung:
 -----------
@@ -20,17 +20,19 @@ from typing import Dict, List, Set
 
 
 class TranslationSystem:
-    """Multi-Language Support System v1.0"""
+    """Multi-Language Support System v1.1.0"""
+
+    SUPPORTED_LANGUAGES = ['de', 'en', 'es', 'zh', 'ja', 'ru']
 
     def __init__(self, default_lang: str = 'de', app_dir: Path = None):
         """
         Initialisiert Translation-System.
 
         Args:
-            default_lang: Standard-Sprache ('de' oder 'en')
+            default_lang: Standard-Sprache ('de', 'en', 'es', 'zh', 'ja', 'ru')
             app_dir: Verzeichnis der Anwendung (default: aktuelles Verzeichnis)
         """
-        self.current_lang = default_lang
+        self.current_lang = default_lang if default_lang in self.SUPPORTED_LANGUAGES else 'de'
 
         if app_dir is None:
             app_dir = Path.cwd()
@@ -69,7 +71,7 @@ class TranslationSystem:
             self.translations = {}
 
     def _save_translations(self):
-        # Bugsweep 23: bei nicht-beschreibbarem Dateisystem (z.B. installiert unter Program Files)
+        # Bugsweep: bei nicht-beschreibbarem Dateisystem (z.B. installiert unter Program Files)
         # nicht abstuerzen — _save_translations wird aus UI-Callbacks (t()/add_translation) gerufen.
         try:
             self.translations_file.parent.mkdir(parents=True, exist_ok=True)
@@ -80,7 +82,7 @@ class TranslationSystem:
 
     def t(self, key: str) -> str:
         """
-        Uebersetzt einen Key in die aktuelle Sprache.
+        Uebersetzt einen Key in die aktuelle Sprache. Fallback auf EN, DE oder den Key.
 
         Args:
             key: Translation-Key (oft der deutsche Originaltext)
@@ -89,39 +91,55 @@ class TranslationSystem:
             Uebersetzter Text oder Key als Fallback
         """
         if key in self.translations:
-            val = self.translations[key].get(self.current_lang)
+            lang_dict = self.translations[key]
+            val = lang_dict.get(self.current_lang)
             if val:
                 return val
-            return self.translations[key].get("de") or key
+            val_en = lang_dict.get('en')
+            if val_en:
+                return val_en
+            return lang_dict.get('de') or key
 
         if self._is_german(key):
-            self.translations[key] = {"de": key, "en": ""}
+            self.translations[key] = {lang: (key if lang == 'de' else "") for lang in self.SUPPORTED_LANGUAGES}
             self._save_translations()
 
         return key
 
     def set_language(self, lang: str):
-        if lang in ['de', 'en']:
+        if lang in self.SUPPORTED_LANGUAGES:
             self.current_lang = lang
 
     def get_language(self) -> str:
         return self.current_lang
 
-    def add_translation(self, key: str, de: str, en: str):
-        self.translations[key] = {"de": de, "en": en}
+    def get_supported_languages(self) -> List[str]:
+        return list(self.SUPPORTED_LANGUAGES)
+
+    def add_translation(self, key: str, de: str = "", en: str = "", es: str = "", zh: str = "", ja: str = "", ru: str = ""):
+        self.translations[key] = {
+            "de": de or key,
+            "en": en or "",
+            "es": es or "",
+            "zh": zh or "",
+            "ja": ja or "",
+            "ru": ru or "",
+        }
         self._save_translations()
 
     def scan_and_update(self, project_dir: Path = None) -> Dict:
         """Scannt Projekt-Dateien nach deutschen Strings und aktualisiert translations.json."""
         if project_dir is None:
             project_dir = self.app_dir
+        else:
+            project_dir = Path(project_dir)
 
         found_strings = self._find_german_strings(project_dir)
 
         added = []
         for string in sorted(found_strings):
             if string not in self.translations:
-                self.translations[string] = {"de": string, "en": ""}
+                self.translations[string] = {lang: (string if lang == 'de' else "") for lang in self.SUPPORTED_LANGUAGES}
                 added.append(string)
 
         if added:
@@ -132,6 +150,7 @@ class TranslationSystem:
         return {'added': added, 'missing': missing, 'total': len(self.translations)}
 
     def _find_german_strings(self, directory: Path) -> Set[str]:
+        directory = Path(directory)
         german_strings = set()
         skip_dirs = {'build', 'dist', 'venv', '.venv', '__pycache__', 'releases'}
 
@@ -152,7 +171,7 @@ class TranslationSystem:
         return german_strings
 
     def _is_german(self, text: str) -> bool:
-        if any(ch in text for ch in "\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df"):
+        if any(ch in text for ch in "äöüÄÖÜß"):
             return True
         text_lower = text.lower()
         return any(hint in text_lower for hint in self.german_hints)
@@ -166,3 +185,4 @@ if __name__ == "__main__":
     print(f"Sprache: {tr.get_language()}")
     result = tr.scan_and_update()
     print(f"Scan: {result['total']} Strings, {len(result['added'])} neu, {len(result['missing'])} ohne EN")
+
