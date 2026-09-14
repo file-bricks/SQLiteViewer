@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.1.0] - 2026-09-14
+
+### Added
+- **16-Punkte wechselseitige zweisprachige Schnellnavigation:** Vollstaendige Paritaet zwischen `README.md` (EN) und `README_de.md` (DE) mit identischer Ankerstruktur.
+- **Visuelle Systemarchitektur & Export-Lebenszyklus:** Mermaid-Flussdiagramm (`flowchart TD`) und Sequenzdiagramm (`sequenceDiagram` mit `autonumber`) unter strikter Einhaltung von `HOOK-BANNER-ASSET-01` (vollstaendig quotierte Kantenbeschriftungen und Knotentexte).
+- **Zielgruppen-Personas & SEO-Entdeckbarkeit:** Konkrete Profile `[PERSONA-01]` bis `[PERSONA-04]` mit High-Intent-Suchphrasen fuer Entwickler, Analysten, Admins und Windows Store Anwender.
+- **10-Dimensionen-Vergleichsmatrix:** Gegenueberstellung zu DB Browser for SQLite, DBeaver, SQLiteStudio und Cloud-SaaS-Tools entlang der Systeminvarianten `INV-LOCAL-01` bis `INV-LOCAL-10`.
+- **Drittanbieter-Lizenzaudit:** `THIRD_PARTY_LICENSES.md` mit detailliertem SPDX-Audit fuer Python Standardbibliothek (`sqlite3`), Tkinter (`Tcl/Tk License`), Bestaetigung von null externen Runtime-Abhaengigkeiten und Zero-Copyleft-Garantie auf Nutzerdaten.
+- **Lokales Marketing-Register:** `MARKETING-LOG.txt` im Projekt-Root zur Dokumentation von Positionierung, Zielgruppen, Store-Readiness und Release-Pruefungen.
+- **PEP 621 Projekt-URLs:** `pyproject.toml` um `[project.urls]` fuer Dokumentation, LLM-Kontext, Lizenzaudit, Store und Issues sowie `addopts = "-ra -v"` erweitert.
+- **Automatisierte Vertragstests:** Neue Testsuite `tests/test_metadata.py` zur Validierung von Banner-Schutz, Mermaid-Syntax, Sprachparitaet und Manifest-Konsistenz.
+
+### Changed
+- Shields.io Badges in `README.md` und `README_de.md` modernisiert (Python 3.10+, MIT, Microsoft Store ID `9P6H501XB8JT`, Zero Egress, RunAsInvoker, 48h SLA, Oekosystem `file-bricks` / `open-bricks`).
+- `llms.txt` aktualisiert (Stand 2026-09-14, Testanzahl, Verknuepfung mit Personas, Invarianten und Lizenzaudit).
+- Paket- und Modulversionen auf 2.1.0 harmonisiert.
+
 ## [2.0.1] - 2026-08-23
 
 ### Fixed

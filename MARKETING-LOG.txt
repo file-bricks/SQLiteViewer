@@ -1,0 +1,102 @@
+# MARKETING-LOG — SQLiteViewer
+
+Stand: 2026-09-14
+Kanonisches Repo: https://github.com/file-bricks/SQLiteViewer
+Organisations-Kontext: file-bricks / open-bricks
+Microsoft Store: SQLite Viewer Pro (Store ID: 9P6H501XB8JT, Identity: Geiger.SQLiteViewerPro)
+
+===============================================================================
+1. POSITIONIERUNG & MARKTKONTEXT
+===============================================================================
+
+SQLiteViewer schließt die Lücke zwischen überladenen, schwergewichtigen Datenbank-
+IDEs (wie DBeaver mit Java-VM-Overhead oder DB Browser for SQLite mit C++/Qt-
+Installationszwang) und der bloßen SQLite-Kommandozeile.
+
+Ziel: Ein leichtgewichtiger, portabler, 100% offline arbeitender SQLite-Viewer mit
+Tkinter-Oberfläche, der direkt aus Python gestartet oder als unprivilegierte
+Windows-App aus dem Microsoft Store bezogen werden kann.
+
+Kern-Mehrwerte:
+1. Zero Network Egress (INV-LOCAL-01): Garantiert keine Cloud-Verbindungen, keine Telemetrie.
+2. Unprivilegierte Ausführung (INV-LOCAL-02): Strikter RunAsInvoker-Betrieb ohne Adminrechte.
+3. Zero External Dependencies (INV-LOCAL-03): Python Standardbibliothek (sqlite3) + Tkinter.
+4. Kontextabhängiger Export (INV-LOCAL-05): CSV sowie strukturiertes JSON (sqliteviewer-export-v1).
+5. Offline Web-Companion (INV-LOCAL-06): Lokale HTML/JS-Inspektion im Browser ohne Upload.
+6. Microsoft Store Integration (INV-LOCAL-07): Standard-AppX mit Dateiverknüpfungen (.db, .sqlite, .sqlite3).
+
+===============================================================================
+2. ZIELGRUPPEN & PERSONAS (PERSONA-01 BIS PERSONA-04)
+===============================================================================
+
+[PERSONA-01] Python- & Desktop-Entwickler
+- Profil: Softwareingenieure, die lokale SQLite-Datenbanken ihrer Anwendungen (PySide,
+  Tkinter, FastAPI, Django, CLI-Tools) schnell inspizieren, filtern und debuggen möchten.
+- Pain Point: Installation einer 300 MB Java-IDE nur zum Prüfen einer lokalen Test-DB ist unverhältnismäßig.
+- High-Intent Queries:
+  - "local-first SQLite viewer Python Tkinter"
+  - "lightweight SQLite browser without bloat"
+  - "inspect sqlite3 db from python app"
+  - "python tkinter sqlite gui table browser"
+
+[PERSONA-02] Datenschutzsensible Analysten & Wissenschaftler
+- Profil: Forscher, Datenanalysten und Prüfer, die vertrauliche Forschungsdaten,
+  Klinikdatensätze oder Umfrageergebnisse lokal explorieren müssen.
+- Pain Point: SaaS-Datenbank-Tools und moderne Cloud-Viewer übertragen Metadaten oder Zeilen.
+- High-Intent Queries:
+  - "offline SQLite database viewer zero network egress"
+  - "air-gapped SQLite viewer privacy first"
+  - "open source local SQLite explorer"
+  - "datenschutzkonformer SQLite Viewer offline"
+
+[PERSONA-03] DevOps, Systemadministratoren & Support-Teams
+- Profil: Incident-Responder, IT-Admins und technischer Kundensupport, die Support-
+  Snapshots, Logs oder SQLite-Dateien auf Kundensystemen ohne Administratorrechte analysieren.
+- Pain Point: Auf gesperrten Workstations dürfen keine Installer mit UAC-Prompt ausgeführt werden.
+- High-Intent Queries:
+  - "portable SQLite viewer Windows unprivileged"
+  - "inspect sqlite database RunAsInvoker"
+  - "support triage sqlite viewer usb stick"
+  - "portable sqlite table browser windows"
+
+[PERSONA-04] Microsoft Store Endnutzer & Non-Technical Evaluators
+- Profil: Windows 10/11 Anwender, die eine .db- oder .sqlite-Datei erhalten haben und per
+  Doppelklick ohne Konsolenbefehle tabellarisch durchsuchen möchten.
+- Pain Point: Windows bringt keinen nativen Viewer für SQLite-Dateien mit.
+- High-Intent Queries:
+  - "SQLite Viewer Pro Microsoft Store"
+  - "Windows 11 open db file viewer"
+  - "double click sqlite file Windows"
+  - "sqlite db datei oeffnen windows 10"
+
+===============================================================================
+3. VERGLEICHSMATRIX GEGENÜBER ALTERNATIVEN (10 DIMENSIONEN)
+===============================================================================
+
+| Dimension | SQLiteViewer (file-bricks) | DB Browser for SQLite | DBeaver | SQLiteStudio | Cloud SQL SaaS |
+|---|---|---|---|---|---|
+| Zero Network Egress (INV-LOCAL-01) | JA (100% offline) | JA | NEIN (Update/Cloud) | JA | NEIN (Cloud-Zwang) |
+| RunAsInvoker (INV-LOCAL-02) | JA (kein UAC) | JA | Oft Admin-Installer | JA | Browser |
+| Runtime Footprint (INV-LOCAL-03) | Minimal (Python stdlib) | C++/Qt Binaries | Schwer (JVM ~300MB) | C++/Qt Binaries | Remote Server |
+| Non-Destructive Default (INV-LOCAL-04)| JA (Read-Only Default)| Editier-Fokus | Editier-Fokus | Editier-Fokus | Schreib-Zugriff |
+| Dual Export CSV & JSON (INV-LOCAL-05)| JA (sqliteviewer-v1) | CSV only | CSV / JSON | CSV / JSON | Cloud Dump |
+| Offline Web Companion (INV-LOCAL-06) | JA (web_companion/) | NEIN | NEIN | NEIN | Web-basiert |
+| Microsoft Store AppX (INV-LOCAL-07)  | JA (9P6H501XB8JT) | Winget / MSI | Winget / MSI | Zip / Installer | NEIN |
+| Lizenz / Copyleft (INV-LOCAL-08)     | MIT (permissiv) | GPLv3 (Copyleft) | Apache/Proprietär | GPLv3 (Copyleft) | Proprietär |
+| Zweisprachige Parität (INV-LOCAL-09) | JA (100% EN/DE) | Teilweise UI | Teilweise UI | Teilweise UI | Nur Englisch |
+| Sicherheits-SLA (INV-LOCAL-10)       | 48h Response SLA | Best-Effort | Kommerziell | Best-Effort | Vendor SLA |
+
+===============================================================================
+4. RELEASE 2.1.0 AUDIT & MARKETING-HIGHLIGHTS
+===============================================================================
+
+- Internationale Benutzeroberfläche (i18n): Dynamische Umschaltung zwischen Deutsch und
+  Englisch über Menü und Einstellungsdialog (`locales/translations.json`).
+- Zweisprachige README-Architektur: Vollständige 16-Punkte Schnellnavigation mit
+  wechselseitiger Ankerparität zwischen `README.md` (EN) und `README_de.md` (DE).
+- Visuelle Diagramme: Architektur-Flussdiagramm und Export-Sequenzdiagramm nach
+  HOOK-BANNER-ASSET-01 mit quotierten Syntax-Attributen.
+- Drittanbieter-Lizenzaudit: Formales Audit `THIRD_PARTY_LICENSES.md` mit Bestätigung
+  von 0 externen Runtime-Abhängigkeiten und Zero-Copyleft-Garantie auf Nutzerdaten.
+- Vertragstests: Testsuite `tests/test_metadata.py` zur dauerhaften Sicherung von
+  Banner-Guardrails, Diagramm-Syntax, Sprachparität und PEP 621 Metadaten.

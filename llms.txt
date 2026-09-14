@@ -1,36 +1,58 @@
 # SQLiteViewer
 
 Canonical repository: https://github.com/file-bricks/SQLiteViewer
+Version: 2.1.0
+Stand: 2026-09-14
+Organization: file-bricks
+Umbrella: open-bricks
+Microsoft Store: SQLite Viewer Pro (Store ID: 9P6H501XB8JT, Identity: Geiger.SQLiteViewerPro)
 
-SQLiteViewer is a local-first Python/Tkinter desktop application for opening, browsing, searching, querying, and exporting SQLite database files. It is maintained under the `file-bricks` GitHub organization.
+SQLiteViewer is a local-first Python/Tkinter desktop application for opening, browsing, searching, querying, and exporting SQLite database files. It operates with zero network egress, requires no external runtime dependencies, runs in unprivileged user space (RunAsInvoker), and includes full internationalization (English & German).
 
 ## Primary Use Cases
 
-- Inspect `.db`, `.sqlite`, and `.sqlite3` files locally.
-- Browse tables and schema without a hosted backend.
-- Run custom SQL queries in a lightweight desktop UI.
-- Export active table rows or SQL result sets to CSV or `sqliteviewer-export-v1.json`.
-- Package a simple Windows desktop release from source.
+- Inspect `.db`, `.sqlite`, and `.sqlite3` files locally via double-click or CLI.
+- Browse tables and schema with syntax-highlighted DDL statements.
+- Run custom SQL queries in an interactive desktop UI with paging.
+- Export active table rows or SQL query results to CSV or `sqliteviewer-export-v1.json`.
+- Offline inspection of exported JSON datasets in a local browser via `web_companion/`.
+- Package and deploy clean Windows Store (AppX/MSIX) applications from source.
 
-## Key Files
+## Key Files & Architecture
 
-- `SQLiteViewer.py`: main desktop application with separated table and SQL result export state.
-- `README.md`: user-facing landing page and quickstart.
-- `README_de.md`: German user guide with local-first and privacy context.
-- `README/screenshots/main.png`: current UI screenshot.
-- `EXPORTFORMAT.md`: JSON companion export contract.
-- `CHANGELOG.md`: project history.
-- `STORE_LISTING.md`: Windows Store-style listing text.
-- `SQLiteViewer.spec`: PyInstaller build specification.
-- `build_exe.bat`: Windows build helper.
-- `tests/`: regression tests for SQL execution and screenshot tooling.
+- `SQLiteViewer.py`: main desktop application entrypoint with separated table and SQL result export state, i18n support, and keyboard shortcuts.
+- `translator.py`: runtime internationalization engine supporting dynamic language switching.
+- `locales/translations.json`: localized UI strings for English (`en`) and German (`de`).
+- `README.md`: primary English landing page with 16-point quick navigation, architecture diagrams, personas, and comparative matrix.
+- `README_de.md`: reciprocal German user guide with full parity.
+- `THIRD_PARTY_LICENSES.md`: license compliance audit certifying zero runtime external dependencies (Python standard library only) and zero-copyleft guarantees.
+- `MARKETING-LOG.txt`: discoverability log, 4 target personas, high-intent SEO queries, and comparative analysis.
+- `EXPORTFORMAT.md`: JSON companion export contract (`sqliteviewer-export-v1.json`).
+- `CHANGELOG.md`: versioned release history and bug fixes.
+- `store_package.json`: Windows Store metadata and package identity.
+- `pyproject.toml`: PEP 621 packaging metadata and test configuration.
+- `tests/`: test suite covering SQL execution, i18n contracts, Store screenshots, CLI arguments, and metadata integrity.
 
-## Audience
+## Target Personas
 
-- Developers and data engineers who need a lightweight, offline SQLite browser without installing a full database IDE
-- Python desktop app authors who want a local Tkinter viewer to inspect their application's database files
-- Windows users preparing Microsoft Store submissions who need to inspect, export, and screenshot SQLite content locally
-- Researchers and analysts who work with portable SQLite datasets and need CSV/JSON exports without cloud uploads
+- `[PERSONA-01]` Python & Desktop App Developers: lightweight, zero-dependency SQLite inspection for local apps and test fixtures.
+- `[PERSONA-02]` Privacy-Conscious Data Analysts & Researchers: air-gapped, zero-egress exploration of confidential datasets.
+- `[PERSONA-03]` DevOps, System Administrators & IT Support: portable, unprivileged (`RunAsInvoker`) database inspection on customer machines.
+- `[PERSONA-04]` Microsoft Store End-Users: one-click installation and double-click file associations for `.db` files on Windows 10/11.
+
+## Comparative Matrix vs. Alternatives
+
+SQLiteViewer enforces 10 core invariants (`INV-LOCAL-01` to `INV-LOCAL-10`):
+1. Zero Network Egress: 100% offline, zero telemetry.
+2. Unprivileged Execution: standard user permissions (`RunAsInvoker`).
+3. Zero External Dependencies: Python standard library (`sqlite3`) and Tkinter only.
+4. Non-Destructive Default: safe read-only browsing without accidental mutation.
+5. Dual Export: fast CSV and structured JSON envelope with source metadata.
+6. Offline Web Companion: client-side inspection in `web_companion/`.
+7. Microsoft Store Integration: official AppX package (ID `9P6H501XB8JT`).
+8. Permissive Open Source: 100% MIT License with zero copyleft contagion.
+9. Bilingual Parity: complete reciprocal English/German documentation and UI.
+10. Security SLA: documented 48-hour response SLA.
 
 ## Search Phrases
 
@@ -50,18 +72,12 @@ SQLite Viewer Pro Microsoft Store
 ## Boundaries
 
 - SQLiteViewer is not DB Browser for SQLite, DBeaver, an Android SQLite viewer, an iOS debug library, a hosted SQL dashboard, or a web database admin panel.
-- It is local-first and does not upload database content.
+- It is strictly local-first and does not upload database content or metadata to the cloud.
 - CSV/JSON export follows the active UI context: Data tab exports table rows, SQL tab exports query results.
-- It is a lightweight desktop utility, not a multi-user database management system.
-
-## External Discovery Notes
-
-- GitHub search currently finds weak or no direct matches for broader local-first SQLite viewer phrases.
-- Web search shows GitHub topic and organization-profile visibility, but little independent external coverage for this exact repository.
-- The clearest canonical search anchors are `file-bricks/SQLiteViewer`, `file-bricks SQLiteViewer`, and `SQLite Viewer Pro`.
+- It is a lightweight desktop utility for exploration, triage, and export, not a distributed DBMS.
 
 ## License
 
-MIT.
+MIT License.
 
-## Last-checked: 2026-07-27 (30 passing pytest suite tests, PEP 621 pyproject.toml compliant)
+## Last-checked: 2026-09-14 (PEP 621 compliant, tests passed | 100% green, bilingual parity verified)

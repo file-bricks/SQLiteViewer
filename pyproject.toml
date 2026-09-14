@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sqliteviewer"
-version = "2.0.1"
+version = "2.1.0"
 description = "Local-first Python/Tkinter desktop SQLite database browser for Windows, Linux, and macOS"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -38,7 +38,19 @@ classifiers = [
 ]
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/file-bricks/SQLiteViewer"
+Repository = "https://github.com/file-bricks/SQLiteViewer.git"
+Documentation = "https://github.com/file-bricks/SQLiteViewer/blob/master/README.md"
+"German Documentation" = "https://github.com/file-bricks/SQLiteViewer/blob/master/README_de.md"
+"LLM Context Index" = "https://github.com/file-bricks/SQLiteViewer/blob/master/llms.txt"
+"Third-Party Licenses" = "https://github.com/file-bricks/SQLiteViewer/blob/master/THIRD_PARTY_LICENSES.md"
+"Marketing Log" = "https://github.com/file-bricks/SQLiteViewer/blob/master/MARKETING-LOG.txt"
+Issues = "https://github.com/file-bricks/SQLiteViewer/issues"
+"Microsoft Store" = "https://apps.microsoft.com/detail/9P6H501XB8JT"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+addopts = "-ra -v"
