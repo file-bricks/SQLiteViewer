@@ -61,6 +61,45 @@ body {
   color: var(--accent);
 }
 
+.hero__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lang-switcher {
+  display: inline-flex;
+  gap: 0.25rem;
+  background: var(--accent-soft);
+  padding: 0.2rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.lang-btn {
+  min-height: 32px;
+  padding: 0 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lang-btn:hover {
+  color: var(--text);
+  filter: none;
+}
+
+.lang-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
 .hero h1,
 .panel h2 {
   margin: 0;

@@ -16,37 +16,43 @@
   <body>
     <main class="shell">
       <section class="hero">
-        <p class="eyebrow">SQLiteViewer Companion</p>
-        <h1>Lokale Exporte prüfen, ohne die Datenbank hochzuladen.</h1>
-        <p class="lead">
+        <div class="hero__top">
+          <p class="eyebrow" data-i18n="eyebrow">SQLiteViewer Companion</p>
+          <div class="lang-switcher" role="group" aria-label="Language">
+            <button type="button" class="lang-btn active" data-lang-btn="de">DE</button>
+            <button type="button" class="lang-btn" data-lang-btn="en">EN</button>
+          </div>
+        </div>
+        <h1 data-i18n="hero_title">Lokale Exporte prüfen, ohne die Datenbank hochzuladen.</h1>
+        <p class="lead" data-i18n="hero_lead">
           Dieser Companion öffnet `sqliteviewer-export-v1.json` direkt im Browser,
           zeigt Metadaten, Spalten und Ergebniszeilen an und bleibt bewusst offline-first.
         </p>
         <div class="hero__actions">
-          <button type="button" data-import-button>JSON laden</button>
-          <button type="button" class="button-secondary" data-demo-button>Demo öffnen</button>
-          <button type="button" class="button-ghost" data-clear-button>Zurücksetzen</button>
+          <button type="button" data-import-button data-i18n="action_load_json">JSON laden</button>
+          <button type="button" class="button-secondary" data-demo-button data-i18n="action_open_demo">Demo öffnen</button>
+          <button type="button" class="button-ghost" data-clear-button data-i18n="action_reset">Zurücksetzen</button>
           <input type="file" accept=".json,application/json" hidden data-file-input>
         </div>
-        <p class="status" data-status data-tone="neutral">Bereit.</p>
+        <p class="status" data-status data-tone="neutral" data-i18n="status_ready">Bereit.</p>
       </section>
 
       <section class="dropzone" data-drop-zone data-drag="idle">
-        <strong>Datei hier ablegen</strong>
-        <span>Unterstützt wird aktuell der Desktop-Export `sqliteviewer-export-v1.json`.</span>
+        <strong data-i18n="status_drag_idle_title">Datei hier ablegen</strong>
+        <span data-i18n="status_drag_idle_hint">Unterstützt wird aktuell der Desktop-Export `sqliteviewer-export-v1.json`.</span>
       </section>
 
       <section class="panel panel--summary">
         <div class="panel__header">
           <div>
-            <p class="panel__eyebrow">Quelle</p>
-            <h2>Export-Metadaten</h2>
+            <p class="panel__eyebrow" data-i18n="panel_source_eyebrow">Quelle</p>
+            <h2 data-i18n="panel_source_title">Export-Metadaten</h2>
           </div>
-          <span class="panel__hint" data-shell-state>Noch kein Export geladen.</span>
+          <span class="panel__hint" data-shell-state data-i18n="panel_source_empty">Noch kein Export geladen.</span>
         </div>
         <div class="meta-grid" data-meta-cards></div>
         <article class="query-box" data-query-box hidden>
-          <p class="query-box__label">SQL-Query</p>
+          <p class="query-box__label" data-i18n="query_label">SQL-Query</p>
           <pre data-query-text></pre>
         </article>
       </section>
@@ -54,22 +60,22 @@
       <section class="panel">
         <div class="panel__header">
           <div>
-            <p class="panel__eyebrow">Ansicht</p>
-            <h2>Ergebniszeilen</h2>
+            <p class="panel__eyebrow" data-i18n="panel_view_eyebrow">Ansicht</p>
+            <h2 data-i18n="panel_view_title">Ergebniszeilen</h2>
           </div>
           <span class="panel__hint" data-results-count>0 sichtbare Zeilen</span>
-          <button type="button" class="button-ghost" data-csv-export-button disabled>CSV exportieren</button>
+          <button type="button" class="button-ghost" data-csv-export-button disabled data-i18n="action_export_csv">CSV exportieren</button>
         </div>
         <label class="filter">
-          <span>Suche in sichtbaren Zeilen</span>
-          <input type="search" placeholder="Titel, ID, Query, BLOB-Hinweise …" data-filter-input>
+          <span data-i18n="search_label">Suche in sichtbaren Zeilen</span>
+          <input type="search" placeholder="Titel, ID, Query, BLOB-Hinweise …" data-filter-input data-i18n-placeholder="search_placeholder">
         </label>
         <div class="table-wrap">
           <table>
             <thead data-table-head></thead>
             <tbody data-table-body></tbody>
           </table>
-          <div class="empty-state" data-empty-state>
+          <div class="empty-state" data-empty-state data-i18n="empty_state_initial">
             Noch keine Daten sichtbar. Lade einen Export oder öffne die Demo.
           </div>
         </div>
@@ -78,14 +84,14 @@
       <section class="panel panel--notes">
         <div class="panel__header">
           <div>
-            <p class="panel__eyebrow">Bewusst klein gehalten</p>
-            <h2>Companion-Grenzen</h2>
+            <p class="panel__eyebrow" data-i18n="panel_notes_eyebrow">Bewusst klein gehalten</p>
+            <h2 data-i18n="panel_notes_title">Companion-Grenzen</h2>
           </div>
         </div>
         <ul class="notes">
-          <li>Keine Server-Uploads und kein Cloud-Sync.</li>
-          <li>Keine Schreibfunktionen zurück in Desktop oder Datenbank.</li>
-          <li>Rohe `.sqlite`-Dateien bleiben bewusst ein späterer Evaluationspfad.</li>
+          <li data-i18n="note_no_upload">Keine Server-Uploads und kein Cloud-Sync.</li>
+          <li data-i18n="note_no_write">Keine Schreibfunktionen zurück in Desktop oder Datenbank.</li>
+          <li data-i18n="note_raw_sqlite">Rohe `.sqlite`-Dateien bleiben bewusst ein späterer Evaluationspfad.</li>
         </ul>
       </section>
     </main>

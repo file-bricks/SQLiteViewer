@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.1] - 2026-09-18
+
+### Added
+- **Web-Companion Internationalization (SV-I18N-05):**
+  - Zweisprachige Lokalisierungsschicht (`web_companion/i18n.js`) fuer Deutsch (DE) und Englisch (EN) mit Fallback-Kette (`locale -> en -> de -> key`).
+  - Dynamischer Sprachwechsler (DE / EN) im Hero-Header mit automatischer Browser-Spracherkennung und lokaler Persistenz via `localStorage`.
+  - Vollstaendige `data-i18n`-Deklaration aller Texte, Placeholders, Tooltips und ARIA-Labels im Web-Companion (`web_companion/index.html`).
+  - Mehrsprachige Metadaten- und Zeilenzusammenfassung (`formatSourceSummary`) in `web_companion/library.js`.
+  - Offline-Shell-Cache-Aktualisierung (`web_companion/sw.js`, Cache-Version `sqliteviewer-companion-v4`).
+  - Umfassende Node.js Test-Suite (`web_companion/tests/i18n.test.mjs`) fuer Dictionary-Paritaet, Fallbacks, Parameter-Interpolation und DOM-Uebersetzung.
+
 ## [2.1.0] - 2026-09-14
 
 ### Added

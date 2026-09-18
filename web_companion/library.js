@@ -95,13 +95,16 @@ export function filterRows(exportData, options = {}) {
   return exportData.rows.filter((row) => row.searchText.includes(query));
 }
 
-export function formatSourceSummary(exportData) {
-  const exportedAt = exportData.exportedAt ?? "unbekannt";
-  const databaseName = exportData.source.databaseName ?? "unbekannte Datenbank";
+export function formatSourceSummary(exportData, options = {}) {
+  const locale = options.locale ?? options.lang ?? "de";
+  const exportedAt = exportData.exportedAt ?? (locale === "en" ? "unknown" : "unbekannt");
+  const databaseName = exportData.source.databaseName ?? (locale === "en" ? "unknown database" : "unbekannte Datenbank");
   const pathNote = exportData.source.databasePath
-    ? "voller lokaler Pfad im Export ausgeblendet"
-    : "kein lokaler Pfad im Export";
-  return `${exportData.appName} ${exportData.appVersion} · Export: ${exportedAt} · Quelle: ${databaseName} · ${pathNote}`;
+    ? (locale === "en" ? "full local path hidden in export" : "voller lokaler Pfad im Export ausgeblendet")
+    : (locale === "en" ? "no local path in export" : "kein lokaler Pfad im Export");
+  const sourcePrefix = locale === "en" ? "Source" : "Quelle";
+  const exportPrefix = "Export";
+  return `${exportData.appName} ${exportData.appVersion} · ${exportPrefix}: ${exportedAt} · ${sourcePrefix}: ${databaseName} · ${pathNote}`;
 }
 
 // Gibt einen RFC-4180-konformen CSV-String für die übergebenen Zeilen zurück.

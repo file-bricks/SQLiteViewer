@@ -1,10 +1,11 @@
-const CACHE_NAME = "sqliteviewer-companion-v3";
+const CACHE_NAME = "sqliteviewer-companion-v4";
 const OFFLINE_ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./library.js",
+  "./i18n.js",
   "./manifest.webmanifest",
   "./icons/sqliteviewer-companion-180.png",
   "./icons/Icon-192.png",

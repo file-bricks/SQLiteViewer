@@ -7,6 +7,13 @@ import {
   parseExport,
   sortRows,
 } from "./library.js";
+import {
+  detectLocale,
+  getLocale,
+  setLocale,
+  t,
+  translateDocument,
+} from "./i18n.js";
 
 const STORAGE_KEY = "sqliteviewer-web-companion:last-export";
 
@@ -34,6 +41,7 @@ const elements = {
   tableHead: document.querySelector("[data-table-head]"),
   tableBody: document.querySelector("[data-table-body]"),
   emptyState: document.querySelector("[data-empty-state]"),
+  langButtons: document.querySelectorAll("[data-lang-btn]"),
 };
 
 function setStatus(message, tone = "neutral") {
@@ -45,7 +53,7 @@ function persistExport(rawPayload) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rawPayload));
   } catch (_error) {
-    setStatus("Export geladen, aber der Browser konnte keine lokale Wiederherstellung speichern.", "warn");
+    setStatus(t("status_storage_warn"), "warn");
   }
 }
 
@@ -55,7 +63,7 @@ function restoreExport() {
     if (!raw) {
       return false;
     }
-    loadPayload(JSON.parse(raw), { persist: false, sourceLabel: "Zuletzt geladener Export wiederhergestellt." });
+    loadPayload(JSON.parse(raw), { persist: false, sourceLabel: t("status_restored") });
     return true;
   } catch (_error) {
     return false;
@@ -63,6 +71,7 @@ function restoreExport() {
 }
 
 function clearExport() {
+  const loc = getLocale();
   state.exportData = null;
   state.visibleRows = [];
   state.sortKey = null;
@@ -73,22 +82,24 @@ function clearExport() {
   elements.queryBox.hidden = true;
   elements.tableHead.innerHTML = "";
   elements.tableBody.innerHTML = "";
-  elements.resultsCount.textContent = "0 sichtbare Zeilen";
+  elements.resultsCount.textContent = t("results_count_zero", {}, loc);
+  elements.emptyState.textContent = t("empty_state_initial", {}, loc);
   elements.emptyState.hidden = false;
-  elements.shellState.textContent = "Noch kein Export geladen.";
+  elements.shellState.textContent = t("panel_source_empty", {}, loc);
   elements.csvExportButton.disabled = true;
   localStorage.removeItem(STORAGE_KEY);
-  setStatus("Lokaler Companion zurückgesetzt.", "neutral");
+  setStatus(t("status_reset", {}, loc), "neutral");
 }
 
 function renderMeta(exportData) {
+  const loc = getLocale();
   const cards = [
-    ["Datenbank", exportData.source.databaseName ?? "Unbekannt"],
-    ["Ansicht", exportData.source.view],
-    ["Tabelle", exportData.source.table ?? "—"],
-    ["Zeilen", `${exportData.rowCount}`],
-    ["Limit", exportData.source.rowLimit ?? "—"],
-    ["Sortierung", exportData.source.sortColumn
+    [t("meta_database", {}, loc), exportData.source.databaseName ?? t("meta_unknown", {}, loc)],
+    [t("meta_view", {}, loc), exportData.source.view],
+    [t("meta_table", {}, loc), exportData.source.table ?? "—"],
+    [t("meta_rows", {}, loc), `${exportData.rowCount}`],
+    [t("meta_limit", {}, loc), exportData.source.rowLimit ?? "—"],
+    [t("meta_sort", {}, loc), exportData.source.sortColumn
       ? `${exportData.source.sortColumn}${exportData.source.sortDescending ? " ↓" : " ↑"}`
       : "—"],
   ];
@@ -120,10 +131,11 @@ function renderMeta(exportData) {
     elements.queryBox.hidden = true;
   }
 
-  elements.shellState.textContent = formatSourceSummary(exportData);
+  elements.shellState.textContent = formatSourceSummary(exportData, { locale: loc });
 }
 
 function renderTable(exportData, rows) {
+  const loc = getLocale();
   elements.tableHead.innerHTML = "";
   elements.tableBody.innerHTML = "";
 
@@ -132,7 +144,7 @@ function renderTable(exportData, rows) {
     const th = document.createElement("th");
     th.dataset.col = column;
     th.tabIndex = 0;
-    th.title = `Nach „${column}" sortieren`;
+    th.title = t("sort_click_asc", {}, loc);
 
     const label = document.createElement("span");
     label.textContent = column;
@@ -155,7 +167,13 @@ function renderTable(exportData, rows) {
 
   if (rows.length === 0) {
     elements.emptyState.hidden = false;
-    elements.resultsCount.textContent = "0 sichtbare Zeilen";
+    elements.resultsCount.textContent = t("results_count_zero", {}, loc);
+    const query = elements.filterInput.value.trim();
+    if (query) {
+      elements.emptyState.textContent = t("empty_state_filtered", { query }, loc);
+    } else {
+      elements.emptyState.textContent = t("empty_state_initial", {}, loc);
+    }
     return;
   }
 
@@ -180,7 +198,11 @@ function renderTable(exportData, rows) {
 
   elements.tableBody.appendChild(fragment);
   elements.emptyState.hidden = true;
-  elements.resultsCount.textContent = `${rows.length} sichtbare Zeilen`;
+  const count = rows.length;
+  const countText = count === 1
+    ? t("results_count_one", {}, loc)
+    : t("results_count_other", { count }, loc);
+  elements.resultsCount.textContent = countText;
 }
 
 function applyFilter() {
@@ -205,19 +227,23 @@ function loadPayload(rawPayload, options = {}) {
     persistExport(rawPayload);
   }
   elements.csvExportButton.disabled = false;
-  setStatus(options.sourceLabel ?? "Export lokal geladen.", "success");
+  setStatus(options.sourceLabel ?? t("status_export_loaded", {
+    label: "Export",
+    name: exportData.source.databaseName ?? "export",
+    count: state.visibleRows.length
+  }), "success");
 }
 
 function loadDemo() {
   const demo = buildDemoExport();
-  loadPayload(demo.raw, { sourceLabel: "Demo-Export geladen." });
+  loadPayload(demo.raw, { sourceLabel: t("status_demo_loaded") });
 }
 
 function readFileAsText(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("Die Datei konnte nicht gelesen werden."));
+    reader.onerror = () => reject(new Error(t("status_read_error")));
     reader.readAsText(file, "utf-8");
   });
 }
@@ -228,9 +254,16 @@ async function handleFile(file) {
   }
   try {
     const text = await readFileAsText(file);
-    loadPayload(JSON.parse(text), { sourceLabel: `Export geladen: ${file.name}` });
+    const parsed = JSON.parse(text);
+    const count = parsed.result_rows?.length ?? 0;
+    const msg = t("status_export_loaded", {
+      label: "Export",
+      name: file.name,
+      count
+    });
+    loadPayload(parsed, { sourceLabel: msg });
   } catch (error) {
-    setStatus(error instanceof Error ? error.message : "Unbekannter Ladefehler.", "error");
+    setStatus(error instanceof Error ? error.message : t("status_read_error"), "error");
   }
 }
 
@@ -247,7 +280,37 @@ function handleCsvExport() {
   link.download = `${dbName}.csv`;
   link.click();
   URL.revokeObjectURL(url);
-  setStatus(`CSV exportiert: ${state.visibleRows.length} sichtbare Zeilen.`, "success");
+  const loc = getLocale();
+  const count = state.visibleRows.length;
+  const countStr = count === 1 ? t("results_count_one", {}, loc) : t("results_count_other", { count }, loc);
+  setStatus(`CSV export: ${countStr}.`, "success");
+}
+
+function updateLanguageButtons(locale) {
+  for (const btn of elements.langButtons) {
+    btn.classList.toggle("active", btn.dataset.langBtn === locale);
+  }
+}
+
+function changeLanguage(locale) {
+  const norm = setLocale(locale);
+  updateLanguageButtons(norm);
+  translateDocument(document, norm);
+  if (state.exportData) {
+    renderMeta(state.exportData);
+    applyFilter();
+  } else {
+    elements.shellState.textContent = t("panel_source_empty", {}, norm);
+    elements.resultsCount.textContent = t("results_count_zero", {}, norm);
+    elements.emptyState.textContent = t("empty_state_initial", {}, norm);
+    setStatus(t("status_ready", {}, norm), "neutral");
+  }
+}
+
+for (const btn of elements.langButtons) {
+  btn.addEventListener("click", () => {
+    changeLanguage(btn.dataset.langBtn);
+  });
 }
 
 elements.importButton.addEventListener("click", () => elements.fileInput.click());
@@ -316,9 +379,15 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// Initialize i18n
+const initialLocale = detectLocale();
+setLocale(initialLocale);
+updateLanguageButtons(initialLocale);
+translateDocument(document, initialLocale);
+
 const params = new URLSearchParams(window.location.search);
 if (params.get("demo") === "1") {
   loadDemo();
 } else if (!restoreExport()) {
-  setStatus("Bereit für lokale JSON-Exporte. Keine Server-Uploads.", "neutral");
+  setStatus(t("status_ready"), "neutral");
 }

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/library.test.mjs tests/pwa.test.mjs",
+    "test": "node --test tests/library.test.mjs tests/pwa.test.mjs tests/i18n.test.mjs",
     "smoke:pwa": "node --test tests/pwa.test.mjs"
   }
 }
