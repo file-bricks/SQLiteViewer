@@ -25,7 +25,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
-from typing import Optional, List, Tuple, Any
+from typing import List, Tuple, Any
 from translator import TranslationSystem
 
 APP_TITLE = "SQLite Viewer Pro"
@@ -770,8 +770,6 @@ class SqlViewer(tk.Tk):
         types = ["INTEGER", "TEXT", "REAL", "BLOB", "VARCHAR", "CHAR", "BOOLEAN",
                  "DATE", "DATETIME", "TIMESTAMP", "NUMERIC", "FLOAT", "DOUBLE"]
 
-        content = self.schema_text.get("1.0", tk.END)
-
         for keyword in keywords:
             self._highlight_word(self.schema_text, keyword, "keyword")
 
@@ -839,7 +837,7 @@ class SqlViewer(tk.Tk):
                 self._load_tables(current_table)  # Tabellenliste + aktuelle Auswahl neu laden
 
         except Exception as e:
-            self.sql_status.config(text=f"✗ Fehler")
+            self.sql_status.config(text="✗ Fehler")
             messagebox.showerror("SQL-Fehler", str(e))
 
     def _populate_sql_result(self, columns: List[str], rows: List[Tuple]):

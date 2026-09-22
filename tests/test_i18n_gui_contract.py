@@ -6,11 +6,8 @@ Tests für GUI Language Switching Contract, Dynamic Retranslate & Settings Persi
 """
 
 import json
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
-
-import pytest
 
 import SQLiteViewer
 from translator import TranslationSystem

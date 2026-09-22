@@ -2,7 +2,7 @@
 
 Canonical repository: https://github.com/file-bricks/SQLiteViewer
 Version: 2.1.0
-Stand: 2026-09-14
+Stand: 2026-09-22
 Organization: file-bricks
 Umbrella: open-bricks
 Microsoft Store: SQLite Viewer Pro (Store ID: 9P6H501XB8JT, Identity: Geiger.SQLiteViewerPro)
@@ -23,6 +23,7 @@ SQLiteViewer is a local-first Python/Tkinter desktop application for opening, br
 - `SQLiteViewer.py`: main desktop application entrypoint with separated table and SQL result export state, i18n support, and keyboard shortcuts.
 - `translator.py`: runtime internationalization engine supporting dynamic language switching.
 - `locales/translations.json`: localized UI strings for English (`en`) and German (`de`).
+- `NOTICE`: formal open-source attribution, copyright notice, § 521 BGB statutory liability disclaimer, and third-party license notices.
 - `README.md`: primary English landing page with 16-point quick navigation, architecture diagrams, personas, and comparative matrix.
 - `README_de.md`: reciprocal German user guide with full parity.
 - `THIRD_PARTY_LICENSES.md`: license compliance audit certifying zero runtime external dependencies (Python standard library only) and zero-copyleft guarantees.

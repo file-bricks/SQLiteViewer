@@ -10,7 +10,6 @@ Red-on-revert: SQLV_SRC -> PRE-Backup-Verzeichnis.
   B-09 translator._save_translations: OSError-Guard (read-only FS).
 """
 import json
-import math
 import os
 import sys
 from pathlib import Path

@@ -69,3 +69,32 @@ DECISIONS.md
 PORTIERUNGSPLAN.md
 TODO.md
 DONE.md
+
+# Multi-Host Synchronization & Cloud-Sync Artifacts
+*-WORKSTATION-LG*
+*-ASUS*
+*-ASUS-GEI*
+*-LAPTOP*
+*-Mac Studio*
+*-MacBook*
+
+# Canonical Lock-System Protection
+LOCK.user.*
+LOCK.until.*
+LOCK.condition.*
+LOCK.antigravity.*
+LOCK.team.*
+.automation-lock
+
+# Testing & Coverage
+.pytest_tmp/
+.ruff_cache/
+.coverage
+htmlcov/
+.hypothesis/
+.nyc_output/
+
+# Web Companion build & test caches
+web_companion/dist/
+web_companion/node_modules/
+

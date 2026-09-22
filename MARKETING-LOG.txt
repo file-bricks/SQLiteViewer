@@ -100,3 +100,23 @@ Kern-Mehrwerte:
   von 0 externen Runtime-Abhängigkeiten und Zero-Copyleft-Garantie auf Nutzerdaten.
 - Vertragstests: Testsuite `tests/test_metadata.py` zur dauerhaften Sicherung von
   Banner-Guardrails, Diagramm-Syntax, Sprachparität und PEP 621 Metadaten.
+
+===============================================================================
+5. TECHNICAL HYGIENE & CI MATRIX HÄRTUNG (PFAD A) - 2026-09-22
+===============================================================================
+
+- Formal NOTICE & Statutory Disclaimer: Neues `NOTICE`-Wurzel-Dokument für Urheberschaft,
+  RunAsInvoker-Invariante, Zero Egress (INV-LOCAL-01), Haftungsprivileg gem. § 521 BGB
+  und Lizenzerklärungen für Python-Standardbibliothek (PSF-2.0) sowie Tcl/Tk.
+- CI Matrix Multi-OS Härtung:
+  - `.github/workflows/source-platform-smoke.yml` triggert jetzt auf `master` und `main`.
+  - Matrix um `windows-latest` erweitert (Ubuntu, Windows, macOS).
+  - Job-Level `timeout-minutes: 10`, Concurrency-Abbrüche bei neuen Pushes.
+  - Headless-Rauch- und Metadaten-Vertragstests in CI integriert.
+  - Stale- und Welcome-Workflows mit Timeouts (10m / 5m) und Concurrency abgesichert.
+- PEP 621 Standardisierung: `license-files` in `pyproject.toml` deklariert, Notice-URL ergänzt.
+- Test- und Linter-Härtung:
+  - Pytest `--basetemp=.pytest_tmp` verhindert Windows-Junction-Rechtefehler.
+  - Ruff 0 Fehler: ungenutzte Imports und redundante Variablen rückstandslos bereinigt.
+  - 4 neue Metadaten-Vertragstests in `tests/test_metadata.py` (60/60 Tests grün).
+

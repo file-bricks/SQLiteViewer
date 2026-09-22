@@ -5,8 +5,6 @@ Testet Multi-Language-Unterstützung (DE, EN, ES, ZH, JA, RU),
 Fallback-Verhalten und Härtung von set_language() / add_translation().
 """
 
-import json
-from pathlib import Path
 from translator import TranslationSystem
 
 

@@ -129,9 +129,10 @@ def test_pyproject_metadata_and_urls():
     assert "LLM Context Index" in content
     assert "Third-Party Licenses" in content
     assert "Marketing Log" in content
+    assert "Notice" in content
     assert "Issues" in content
     assert "Microsoft Store" in content
-    assert 'addopts = "-ra -v"' in content
+    assert "addopts" in content and "-ra -v" in content
 
 
 def test_llms_txt_integrity():
@@ -139,7 +140,12 @@ def test_llms_txt_integrity():
     llms_file = REPO_ROOT / "llms.txt"
     assert llms_file.is_file(), "llms.txt must exist"
     content = llms_file.read_text(encoding="utf-8")
-    assert "Stand: 2026-09-14" in content or "Last-checked: 2026-09-14" in content
+    assert any(marker in content for marker in [
+        "Stand: 2026-09-14",
+        "Stand: 2026-09-22",
+        "Last-checked: 2026-09-14",
+        "Last-checked: 2026-09-22",
+    ])
     for i in range(1, 5):
         assert f"[PERSONA-{i:02d}]" in content
     assert "INV-LOCAL-01" in content
@@ -163,3 +169,74 @@ def test_changelog_recency():
     assert changelog_file.is_file(), "CHANGELOG.md must exist"
     content = changelog_file.read_text(encoding="utf-8")
     assert "## [2.1.0] - 2026-09-14" in content
+
+
+def test_notice_file_exists_and_valid():
+    """Verify root NOTICE file presence, invariants, statutory disclaimer, and attributions."""
+    notice_file = REPO_ROOT / "NOTICE"
+    assert notice_file.is_file(), "NOTICE file must exist in repository root"
+    content = notice_file.read_text(encoding="utf-8")
+    assert "SQLiteViewer" in content
+    assert "Copyright (c) 2026 Lukas Geiger" in content
+    assert "file-bricks" in content
+    assert "INV-LOCAL-01" in content
+    assert "§ 521 BGB" in content
+    assert "PSF-2.0" in content
+    assert "Tcl/Tk" in content
+
+
+def test_gitignore_lock_defense():
+    """Verify .gitignore includes multi-host sync and lock protection patterns."""
+    gi_file = REPO_ROOT / ".gitignore"
+    assert gi_file.is_file(), ".gitignore must exist"
+    content = gi_file.read_text(encoding="utf-8")
+    for pattern in [
+        "LOCK.user.*",
+        "LOCK.until.*",
+        "LOCK.condition.*",
+        "LOCK.antigravity.*",
+        "LOCK.team.*",
+        "*-WORKSTATION-LG*",
+        "*-ASUS*",
+        "*-LAPTOP*",
+        ".pytest_tmp/",
+    ]:
+        assert pattern in content, f".gitignore missing safety pattern: {pattern}"
+
+
+def test_github_actions_workflows_hardened():
+    """Verify CI workflows enforce timeout-minutes, concurrency control, and master branch triggers."""
+    wf_dir = REPO_ROOT / ".github" / "workflows"
+    smoke_wf = wf_dir / "source-platform-smoke.yml"
+    stale_wf = wf_dir / "stale.yml"
+    welcome_wf = wf_dir / "welcome.yml"
+
+    assert smoke_wf.is_file(), "source-platform-smoke.yml must exist"
+    smoke_content = smoke_wf.read_text(encoding="utf-8")
+    assert "master" in smoke_content
+    assert "windows-latest" in smoke_content
+    assert "timeout-minutes:" in smoke_content
+    assert "concurrency:" in smoke_content
+    assert "permissions:" in smoke_content
+
+    assert stale_wf.is_file(), "stale.yml must exist"
+    stale_content = stale_wf.read_text(encoding="utf-8")
+    assert "timeout-minutes:" in stale_content
+    assert "concurrency:" in stale_content
+
+    assert welcome_wf.is_file(), "welcome.yml must exist"
+    welcome_content = welcome_wf.read_text(encoding="utf-8")
+    assert "timeout-minutes:" in welcome_content
+    assert "concurrency:" in welcome_content
+
+
+def test_pyproject_pep621_hardening():
+    """Verify PEP 621 license-files, minversion, and ruff settings in pyproject.toml."""
+    pyproject_file = REPO_ROOT / "pyproject.toml"
+    assert pyproject_file.is_file(), "pyproject.toml must exist"
+    content = pyproject_file.read_text(encoding="utf-8")
+    assert "license-files" in content
+    assert '"NOTICE"' in content
+    assert "minversion =" in content
+    assert "[tool.ruff]" in content
+

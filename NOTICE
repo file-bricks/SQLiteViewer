@@ -1,0 +1,69 @@
+SQLiteViewer
+============
+
+Copyright (c) 2026 Lukas Geiger (c/o file-bricks / open-bricks)
+Licensed under the MIT License. See LICENSE for the full license text.
+
+This NOTICE file is provided for informational and attribution purposes
+alongside the license and must be preserved in redistributions of the
+source code and in substantial portions of the software.
+
+--------------------------------------------------------------------
+1. Purpose & Architecture
+--------------------------------------------------------------------
+
+SQLiteViewer (branded on Microsoft Windows as SQLite Viewer Pro) is an
+unprivileged, local-first desktop database browser and inspector for
+.db, .sqlite, and .sqlite3 database files built with Python and Tkinter.
+
+The package is explicitly designed with the following invariants:
+  * 100% Local-First & Air-Gapped (Zero Network Egress, INV-LOCAL-01).
+  * Unprivileged user-space execution (RunAsInvoker non-elevation, INV-LOCAL-02).
+  * Zero Mandatory External Runtime Dependencies (Python stdlib + Tkinter only, INV-LOCAL-03).
+  * Non-destructive browsing with safe ad-hoc SQL execution (INV-LOCAL-04).
+  * Structured context-aware CSV and JSON companion export (INV-LOCAL-05).
+  * Zero Copyleft on processed database files and exported artifacts (INV-LOCAL-08).
+  * 100% Bilingual Documentation & UI parity (DE / EN, INV-LOCAL-09).
+  * Documented 48-hour security disclosure response SLA (INV-LOCAL-10).
+
+--------------------------------------------------------------------
+2. Statutory Disclaimer / Haftung (§ 521 BGB)
+--------------------------------------------------------------------
+
+SQLiteViewer is distributed free of charge as open-source software
+(unentgeltliche Bereitstellung / Schenkung gem. §§ 516 ff. BGB).
+
+Under German law (§ 521 BGB) and the terms of the MIT License, liability
+is limited to intent (Vorsatz) and gross negligence (grobe Fahrlässigkeit).
+Liability for damages to life, body, or health remains governed by
+mandatory statutory provisions.
+
+USE AT YOUR OWN RISK. No warranty, no maintenance guarantee, and no
+fitness-for-purpose assumed.
+
+--------------------------------------------------------------------
+3. Third-Party Components & Dependencies
+--------------------------------------------------------------------
+
+SQLiteViewer relies exclusively on permissive, non-copyleft open-source
+runtimes and components:
+
+  * Python Standard Library (sqlite3, json, csv, etc.):
+    Python Software Foundation License version 2.0 (PSF-2.0).
+  * Tcl/Tk Windowing Toolkit (Tkinter GUI runtime):
+    Tcl/Tk License (permissive BSD-style).
+  * Web Companion (offline HTML5/ES6 viewer in web_companion/):
+    Pure client-side HTML, CSS, and modern vanilla JavaScript without
+    external CDN scripts or runtime tracking libraries.
+
+See THIRD_PARTY_LICENSES.md for comprehensive licensing and SPDX analysis.
+
+--------------------------------------------------------------------
+4. Contact & Organization
+--------------------------------------------------------------------
+
+Source Repository: https://github.com/file-bricks/SQLiteViewer
+Organization:      https://github.com/file-bricks
+Umbrella:          https://github.com/open-bricks
+Author:            Lukas Geiger
+Microsoft Store:   SQLite Viewer Pro (Store ID: 9P6H501XB8JT)

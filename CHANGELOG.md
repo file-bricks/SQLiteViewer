@@ -1,5 +1,23 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Formal NOTICE & Attribution:** Added root `NOTICE` file documenting copyright, unprivileged execution (`RunAsInvoker`), air-gapped zero network egress (`INV-LOCAL-01`), § 521 BGB statutory liability limitation, and PSF-2.0 / Tcl-Tk license attributions.
+- **CI Matrix & Workflow Hardening:**
+  - Extended `.github/workflows/source-platform-smoke.yml` to trigger on both `main` and `master` branches, added `windows-latest` to runner matrix alongside `ubuntu-latest` and `macos-latest`, enforced job-level `timeout-minutes: 10`, concurrency cancellation, and added metadata contract test execution in CI.
+  - Hardened `.github/workflows/stale.yml` with `timeout-minutes: 10` and concurrency cancellation guards.
+  - Hardened `.github/workflows/welcome.yml` with `timeout-minutes: 5` and scoped concurrency cancellation guards.
+- **PEP 621 Standardisierung:** Declared `license-files` in `pyproject.toml` (`LICENSE`, `NOTICE`, `THIRD_PARTY_LICENSES.md`, `THIRD_PARTY_LICENSES.txt`), added `Notice` URL in `[project.urls]`.
+- **Pytest Configuration & Windows Defense:** Configured `minversion = "7.0"`, `addopts = "-ra -v --basetemp=.pytest_tmp"` to eliminate Windows junction permission errors, and explicit `norecursedirs` exclusion rules.
+- **Multi-Host & Cloud Sync Defense:** Hardened `.gitignore` against synchronization artifacts (`*-WORKSTATION-LG*`, `*-ASUS*`, `*-LAPTOP*`, `*-Mac Studio*`, etc.) and system-wide lock patterns (`LOCK.user.*`, `LOCK.until.*`, `LOCK.condition.*`, etc.).
+- **Automated Contract Tests:** Expanded `tests/test_metadata.py` with 4 new contract tests verifying `NOTICE` presence, `.gitignore` defense patterns, workflow hardening (timeout, concurrency, permissions), and PEP 621 license-files declarations (60/60 tests passing, 100% green).
+
+### Changed
+- Configured `[tool.ruff]` linter in `pyproject.toml` and fixed unused imports/variables in `SQLiteViewer.py` and test modules (zero ruff lint warnings).
+- Updated test badge in `README.md` and `README_de.md` to reflect 60 passing tests and linked `NOTICE`.
+- Updated `llms.txt` context index (Stand: 2026-09-22) with NOTICE architecture mapping.
+
 ## [2.1.1] - 2026-09-18
 
 ### Added
