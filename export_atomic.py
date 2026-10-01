@@ -29,9 +29,15 @@ def database_files(viewer):
 
 
 def protect_destination(destination, sources):
+    lexical_target = Path(os.path.abspath(destination))
+    if os.name == 'nt' and any(
+        part not in ('.', '..') and part.endswith((' ', '.'))
+        for part in Path(destination).parts
+    ):
+        raise ValueError('Das Exportziel enthält einen mehrdeutigen Windows-Dateinamen. Bitte einen anderen Pfad wählen.')
     target = Path(destination).resolve()
     for source in sources:
-        if target == source:
+        if lexical_target == Path(os.path.abspath(source)) or target == source.resolve():
             raise ValueError('Das Exportziel ist eine geschützte Datenbankdatei. Bitte einen anderen Pfad wählen.')
         try:
             same = os.path.samefile(destination, source)

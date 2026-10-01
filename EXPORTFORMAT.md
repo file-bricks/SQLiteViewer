@@ -21,6 +21,8 @@ Standardbegleitdateien `-wal`, `-shm` und `-journal` gesperrt. Das gilt auch fü
 Dateialiase und für Begleitdateien, die noch nicht existieren. Ein Wechsel oder
 Schließen der Datenbank während des Dialogs hebt den ursprünglichen Schutz nicht
 auf; neu eingebundene Datenbanken werden zusätzlich berücksichtigt.
+Mehrdeutige Windows-Pfadkomponenten mit abschließendem Punkt oder Leerzeichen
+werden abgewiesen, bevor Windows den Zielnamen beim Schreiben normalisiert.
 
 Die Ausgabe wird zunächst vollständig in eine eigene temporäre Datei im
 Zielverzeichnis geschrieben, synchronisiert und geschlossen. Erst danach wird

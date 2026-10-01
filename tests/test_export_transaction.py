@@ -200,3 +200,27 @@ def test_identity_permission_failure_preserves_output(viewer, kind, tmp_path, mo
     run_export(fake, kind, target, monkeypatch)
     assert target.read_bytes() == b'previous'
     assert messages[0][0] == 'showerror'
+
+
+@pytest.mark.skipif(os.name != 'nt', reason='Win32 filename normalization')
+@pytest.mark.parametrize('kind', ['csv', 'json'])
+@pytest.mark.parametrize('suffix', ['.', ' '])
+def test_windows_sidecar_name_normalization_rejected(viewer, kind, suffix, monkeypatch):
+    fake, source, messages = viewer
+    reserved = source.with_name(source.name + '-wal')
+    run_export(fake, kind, str(reserved) + suffix, monkeypatch)
+    assert not reserved.exists()
+    assert messages[0][0] == 'showerror'
+
+
+def test_reserved_broken_symlink_name_is_protected(tmp_path, monkeypatch):
+    source = tmp_path / 'source.sqlite'
+    reserved = source.with_name(source.name + '-wal')
+    # Emulate resolution of a broken link without requiring Windows symlink privilege.
+    foreign = tmp_path / 'missing-foreign'
+    original = export_atomic.Path.resolve
+    def resolve(path, *args, **kwargs):
+        return foreign if path == reserved else original(path, *args, **kwargs)
+    monkeypatch.setattr(export_atomic.Path, 'resolve', resolve)
+    with pytest.raises(ValueError, match='geschützte Datenbankdatei'):
+        export_atomic.protect_destination(reserved, {reserved})
