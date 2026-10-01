@@ -13,6 +13,27 @@ Stand: 2026-05-25
 - Der Export ist offline-first und enthält keine Cloud-Synchronisation.
 - BLOB-Werte werden JSON-kompatibel als Base64-Struktur serialisiert.
 
+## Sichere Veröffentlichung von CSV und JSON
+
+Der Export hält sichtbare Daten und Herkunft vor dem Dateidialog fest. Als Ziel
+sind die offene Hauptdatenbank, per SQL eingebundene Datenbanken und deren
+Standardbegleitdateien `-wal`, `-shm` und `-journal` gesperrt. Das gilt auch für
+Dateialiase und für Begleitdateien, die noch nicht existieren. Ein Wechsel oder
+Schließen der Datenbank während des Dialogs hebt den ursprünglichen Schutz nicht
+auf; neu eingebundene Datenbanken werden zusätzlich berücksichtigt.
+
+Die Ausgabe wird zunächst vollständig in eine eigene temporäre Datei im
+Zielverzeichnis geschrieben, synchronisiert und geschlossen. Erst danach wird
+das Ziel nach erneuter Schutzprüfung ersetzt. Serialisierungs-, Schreib- oder
+Ersetzungsfehler erhalten eine vorhandene Ausgabe; fremde temporäre Dateien
+werden nicht entfernt. Fehler bei der Prüfung aktiver Datenbanken brechen den
+Export ab.
+
+Diese Prüfungen garantieren keine Transaktion gegen gleichzeitige externe
+Dateisystemänderungen zwischen letzter Prüfung und Ersetzung und keine
+Stromausfall-Dauerhaftigkeit. Besondere SQLite-VFS-/Superjournal-Dateien und
+App-Einstellungsdateien sind nicht Teil dieses Datenbankschutzvertrags.
+
 ## Struktur
 
 ```json
