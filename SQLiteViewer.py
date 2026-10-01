@@ -27,6 +27,7 @@ from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
 from typing import List, Tuple, Any
 from translator import TranslationSystem
+from export_atomic import atomic_export, database_files
 
 APP_TITLE = "SQLite Viewer Pro"
 APP_VERSION = "2.1.0"
@@ -992,6 +993,12 @@ class SqlViewer(tk.Tk):
             messagebox.showwarning("Export", action_state["empty_message"])
             return
 
+        try:
+            protected = database_files(self)
+        except Exception as e:
+            messagebox.showerror("Export-Fehler", str(e))
+            return
+
         table = export_context.get("table") or self.table_var.get() or export_context.get("view") or "export"
         default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
@@ -1006,7 +1013,9 @@ class SqlViewer(tk.Tk):
             return
 
         try:
-            with open(path, "w", newline="", encoding="utf-8-sig") as f:
+            protected |= database_files(self)
+            with atomic_export(path, protected, newline="", encoding="utf-8-sig",
+                               refresh_sources=lambda: database_files(self)) as f:
                 writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
                 writer.writerow(columns)
                 # Bugsweep 23: BLOB/bytes base64-kodieren, sonst landet ein b'...'-Rohliteral in der
@@ -1085,6 +1094,13 @@ class SqlViewer(tk.Tk):
             messagebox.showwarning("Export", action_state["empty_message"])
             return
 
+        try:
+            protected = database_files(self)
+            payload = self._build_export_payload()
+        except Exception as e:
+            messagebox.showerror("Export-Fehler", str(e))
+            return
+
         table = export_context.get("table") or self.table_var.get() or export_context.get("view") or "export"
         default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         path = filedialog.asksaveasfilename(
@@ -1098,8 +1114,9 @@ class SqlViewer(tk.Tk):
             return
 
         try:
-            payload = self._build_export_payload()
-            with open(path, "w", encoding="utf-8") as handle:
+            protected |= database_files(self)
+            with atomic_export(path, protected, encoding="utf-8",
+                               refresh_sources=lambda: database_files(self)) as handle:
                 json.dump(payload, handle, indent=2, ensure_ascii=False)
 
             self._set_status(f"Exportiert: {os.path.basename(path)}")
