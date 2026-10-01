@@ -43,4 +43,9 @@ jobs:
       - name: Run headless smoke and contract tests
         env:
           PYTHONIOENCODING: utf-8
-        run: python -m pytest tests tests/source_platform_smoke.py -v --basetemp=.pytest_tmp
+        run: python -m pytest tests/source_platform_smoke.py tests/test_metadata.py -v --basetemp=.pytest_tmp
+
+      - name: Run full regression suite
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python -m pytest tests -v --basetemp=.pytest_tmp
