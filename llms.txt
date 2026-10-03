@@ -81,4 +81,4 @@ SQLite Viewer Pro Microsoft Store
 
 MIT License.
 
-## Last-checked: 2026-09-14 (PEP 621 compliant, tests passed | 100% green, bilingual parity verified)
+## Last-checked: 2026-10-03 (PEP 621 compliant, 99 Pytest + 43 Node companion tests passed | 100% green, bilingual parity verified, PWA mobile icon inventory integrated)
