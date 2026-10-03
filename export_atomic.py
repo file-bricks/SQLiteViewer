@@ -20,7 +20,7 @@ def database_files(viewer):
             cursor.close()
     paths = set()
     for name in names:
-        if name == ':memory:':
+        if not name or name == ':memory:':
             continue
         for path in (Path(name).absolute(), Path(name).resolve()):
             paths.add(path)
@@ -29,6 +29,8 @@ def database_files(viewer):
 
 
 def protect_destination(destination, sources):
+    if os.path.isdir(destination):
+        raise ValueError('Das Exportziel darf kein Verzeichnis sein. Bitte einen Dateipfad angeben.')
     lexical_target = Path(os.path.abspath(destination))
     if os.name == 'nt' and any(
         part not in ('.', '..') and part.endswith((' ', '.'))
@@ -52,10 +54,11 @@ def atomic_export(destination, sources, *, encoding, newline=None, refresh_sourc
     """Publish a complete sibling temporary file after rechecking identity."""
     destination = Path(destination).absolute()
     protect_destination(destination, sources)
+    destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(mode='w', encoding=encoding, newline=newline,
-                                         dir=destination.absolute().parent,
+                                         dir=destination.parent,
                                          prefix='.sqliteviewer-export-', suffix='.tmp',
                                          delete=False) as handle:
             temporary = Path(handle.name)

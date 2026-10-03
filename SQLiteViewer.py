@@ -607,7 +607,7 @@ class SqlViewer(tk.Tk):
             return
         try:
             cur = self.conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+                "SELECT name FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name"
             )
             tables = [r[0] for r in cur.fetchall()]
             self.table_combo["values"] = tables
@@ -689,7 +689,7 @@ class SqlViewer(tk.Tk):
 
         try:
             cur = self.conn.execute(
-                "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table,)
+                "SELECT sql FROM sqlite_master WHERE type IN ('table', 'view') AND name=?", (table,)
             )
             result = cur.fetchone()
             if result and result[0]:
@@ -714,7 +714,7 @@ class SqlViewer(tk.Tk):
 
         try:
             cur = self.conn.execute(
-                "SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+                "SELECT name, sql FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name"
             )
             schemas = cur.fetchall()
 
@@ -1022,7 +1022,13 @@ class SqlViewer(tk.Tk):
                 # CSV (konsistent mit dem JSON-Export, der BLOBs ebenfalls base64-kodiert).
                 writer.writerows(
                     [
-                        [base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else v for v in row]
+                        [
+                            (
+                                base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else
+                                (base64.b64encode(bytes(v)).decode("ascii") if isinstance(v, (bytearray, memoryview)) else v)
+                            )
+                            for v in row
+                        ]
                         for row in rows
                     ]
                 )
@@ -1042,12 +1048,13 @@ class SqlViewer(tk.Tk):
             return str(value)
         if value is None or isinstance(value, (str, int, float, bool)):
             return value
-        if isinstance(value, bytes):
+        if isinstance(value, (bytes, bytearray, memoryview)):
+            raw_bytes = bytes(value)
             return {
                 "type": "blob",
                 "encoding": "base64",
-                "size_bytes": len(value),
-                "data": base64.b64encode(value).decode("ascii"),
+                "size_bytes": len(raw_bytes),
+                "data": base64.b64encode(raw_bytes).decode("ascii"),
             }
         return str(value)
 
@@ -1059,12 +1066,15 @@ class SqlViewer(tk.Tk):
         result_rows = []
 
         for row in rows:
-            result_rows.append(
-                {
-                    column: SqlViewer._serialize_export_value(self, row[index] if index < len(row) else None)
-                    for index, column in enumerate(columns)
-                }
-            )
+            row_dict = {}
+            seen_cols: dict[str, int] = {}
+            for index, column in enumerate(columns):
+                count = seen_cols.get(column, 0)
+                seen_cols[column] = count + 1
+                col_key = column if count == 0 else f"{column}_{count + 1}"
+                val = row[index] if index < len(row) else None
+                row_dict[col_key] = SqlViewer._serialize_export_value(self, val)
+            result_rows.append(row_dict)
 
         return {
             "schema_version": "sqliteviewer-export-v1",
@@ -1195,8 +1205,16 @@ class SqlViewer(tk.Tk):
                 self.tree.column(c, width=120, anchor="w")
 
             for row in rows:
-                values = [self._format_value(row[c]) for c in cols]
+                if isinstance(row, sqlite3.Row):
+                    values = [self._format_value(row[i]) for i in range(len(cols))]
+                elif isinstance(row, (tuple, list)):
+                    values = [self._format_value(row[i] if i < len(row) else None) for i in range(len(cols))]
+                else:
+                    values = [self._format_value(v) for v in row]
                 self.tree.insert("", tk.END, values=values)
+
+            if hasattr(self, "_update_export_actions"):
+                self._update_export_actions()
 
             self.row_count_var.set(f"Gefunden: {len(rows)}")
 
@@ -1264,7 +1282,9 @@ class SqlViewer(tk.Tk):
 
         for row in rows:
             if isinstance(row, sqlite3.Row):
-                values = [self._format_value(row[c]) for c in columns]
+                values = [self._format_value(row[i]) for i in range(len(columns))]
+            elif isinstance(row, (tuple, list)):
+                values = [self._format_value(row[i] if i < len(row) else None) for i in range(len(columns))]
             else:
                 values = [self._format_value(v) for v in row]
             self.tree.insert("", tk.END, values=values)
@@ -1273,7 +1293,7 @@ class SqlViewer(tk.Tk):
         """Formatiert einen Wert für die Anzeige."""
         if value is None:
             return "NULL"
-        if isinstance(value, bytes):
+        if isinstance(value, (bytes, bytearray, memoryview)):
             return f"[BLOB {len(value)} bytes]"
         return str(value)
 
