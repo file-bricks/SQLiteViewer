@@ -3,21 +3,28 @@
 ## [Unreleased]
 
 ### Added
+- **Security & License Contract Audit (5-Felder-SBOM & CVE-2025-7117 Floor):**
+  - Dependency-Floors & CVE-Schutz: `pyproject.toml` `[tool.pytest.ini_options]` `minversion` auf `>=9.1.1` gehärtet (Schutz vor CVE-2025-7117 / GHSA-6w46-j5rx-g56g); Toolchain-Spezifikation `requirements-dev.txt` angelegt mit `pytest>=9.1.1`, `ruff>=0.9.0`, `pyinstaller>=6.10.0`, `pyinstaller-hooks-contrib>=2024.0`, `altgraph>=0.17.4`, `packaging>=24.0` und `setuptools>=61.0`.
+  - PEP 621 Metadaten & Support: `pyproject.toml` um `maintainers = [{ name = "Lukas Geiger", email = "support@lukasgeiger.com" }]`, `[project.optional-dependencies]` (dev, build) und Security Advisories URL (`https://github.com/file-bricks/SQLiteViewer/security/advisories/new`) erweitert.
+  - 5-Felder-SBOM-Inventar: `THIRD_PARTY_LICENSES.txt` vollständig auf das kanonische Level 1 5-Felder-Schema (`Package:`, `License:`, `SPDX:`, `URL:`, `Notice:`) für Standardbibliothek (`python-stdlib`, `tkinter`, `sqlite3`), Build-/Dev-Toolchain (`pytest`, `pluggy`, `iniconfig`, `ruff`, `pyinstaller`, `altgraph`, `packaging`, `setuptools`) und Web-Companion umgestellt.
+  - Sicherheitsrichtlinie & SLAs: `SECURITY.md` um zweisprachige Struktur, 48-Hour Acknowledgment SLA, 5-Business-Day Triage SLA und verifizierte Maintainer-Sicherheitskontakte (`security@open-bricks.org`, `security@ellmos.ai`, `support@lukasgeiger.com`, `lukas@open-bricks.org`) gehärtet.
+  - Repository- & Gitignore-Hygiene: `.gitignore` gegen Secrets (`secrets.*`, `*.crt`, `*.pfx`, `*.cer`), Test-Artefakte (`pytest_out.txt`, `pytest*.txt`) und Cloud-Sync-Konflikte (`*.conflict`, `*-conflict-*`) abgesichert.
+  - Vertragstest-Suite: `tests/test_security_license_contract.py` mit 8 hermetischen Contract-Tests implementiert (Dependency-Floors, pytest minversion, 5-Felder-SBOM, Security-Policy SLAs, Gitignore-Regeln, Secret-/Pfad-Hygiene, Lizenz-Parität, Local-First Invarianten).
 - **Formal NOTICE & Attribution:** Added root `NOTICE` file documenting copyright, unprivileged execution (`RunAsInvoker`), air-gapped zero network egress (`INV-LOCAL-01`), § 521 BGB statutory liability limitation, and PSF-2.0 / Tcl-Tk license attributions.
 - **CI Matrix & Workflow Hardening:**
   - Extended `.github/workflows/source-platform-smoke.yml` to trigger on both `main` and `master` branches, added `windows-latest` to runner matrix alongside `ubuntu-latest` and `macos-latest`, enforced job-level `timeout-minutes: 10`, concurrency cancellation, and added metadata contract test execution in CI.
   - Hardened `.github/workflows/stale.yml` with `timeout-minutes: 10` and concurrency cancellation guards.
   - Hardened `.github/workflows/welcome.yml` with `timeout-minutes: 5` and scoped concurrency cancellation guards.
 - **PEP 621 Standardisierung:** Declared `license-files` in `pyproject.toml` (`LICENSE`, `NOTICE`, `THIRD_PARTY_LICENSES.md`, `THIRD_PARTY_LICENSES.txt`), added `Notice` URL in `[project.urls]`.
-- **Pytest Configuration & Windows Defense:** Configured `minversion = "7.0"`, `addopts = "-ra -v --basetemp=.pytest_tmp"` to eliminate Windows junction permission errors, and explicit `norecursedirs` exclusion rules.
+- **Pytest Configuration & Windows Defense:** Configured `minversion = "9.1.1"`, `addopts = "-ra -v --basetemp=.pytest_tmp"` to eliminate Windows junction permission errors, and explicit `norecursedirs` exclusion rules.
 - **Multi-Host & Cloud Sync Defense:** Hardened `.gitignore` against synchronization artifacts (`*-WORKSTATION-LG*`, `*-ASUS*`, `*-LAPTOP*`, `*-Mac Studio*`, etc.) and system-wide lock patterns (`LOCK.user.*`, `LOCK.until.*`, `LOCK.condition.*`, etc.).
 - **Automated Contract Tests:** Expanded `tests/test_metadata.py` with 4 new contract tests verifying `NOTICE` presence, `.gitignore` defense patterns, workflow hardening (timeout, concurrency, permissions), and PEP 621 license-files declarations (60/60 tests passing, 100% green).
 - **PWA & Mobile-Icon-Suite:** Vollständiges Icon-Inventar (`mobile_icons/` und `web_companion/icons/`) integriert mit Favicon, Maskable Icons und Apple Touch Icons.
 
 ### Changed
 - Configured `[tool.ruff]` linter in `pyproject.toml` and fixed unused imports/variables in `SQLiteViewer.py` and test modules (zero ruff lint warnings).
-- Updated test badge in `README.md` and `README_de.md` to reflect 99 passing tests (100% green).
-- Updated `llms.txt` Last-checked header to `2026-10-03` with 99 Pytest + 43 Node companion tests verified.
+- Updated test badge in `README.md` and `README_de.md` to reflect 107 passing tests (100% green).
+- Updated `llms.txt` Last-checked header to `2026-10-03` with 107 Pytest + 43 Node companion tests verified.
 
 ## [2.1.1] - 2026-09-18
 

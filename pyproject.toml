@@ -13,6 +13,9 @@ license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md", "THIRD_PARTY_LI
 authors = [
   { name = "file-bricks" }
 ]
+maintainers = [
+  { name = "Lukas Geiger", email = "support@lukasgeiger.com" }
+]
 keywords = [
   "sqlite",
   "database-browser",
@@ -39,6 +42,19 @@ classifiers = [
 ]
 dependencies = []
 
+[project.optional-dependencies]
+dev = [
+  "pytest>=9.1.1",
+  "ruff>=0.9.0",
+]
+build = [
+  "pyinstaller>=6.10.0",
+  "pyinstaller-hooks-contrib>=2024.0",
+  "altgraph>=0.17.4",
+  "packaging>=24.0",
+  "setuptools>=61.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/file-bricks/SQLiteViewer"
 Repository = "https://github.com/file-bricks/SQLiteViewer.git"
@@ -49,10 +65,11 @@ Documentation = "https://github.com/file-bricks/SQLiteViewer/blob/master/README.
 Notice = "https://github.com/file-bricks/SQLiteViewer/blob/master/NOTICE"
 "Marketing Log" = "https://github.com/file-bricks/SQLiteViewer/blob/master/MARKETING-LOG.txt"
 Issues = "https://github.com/file-bricks/SQLiteViewer/issues"
+"Security Advisories" = "https://github.com/file-bricks/SQLiteViewer/security/advisories/new"
 "Microsoft Store" = "https://apps.microsoft.com/detail/9P6H501XB8JT"
 
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "9.1.1"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]

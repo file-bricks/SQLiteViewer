@@ -26,13 +26,20 @@ BUGREPORT.md
 DIAGNOSE_REPORT.md
 
 # Secrets
+secrets.*
 .env
 .env.*
 credentials.json
+credentials*.json
 client_secret*.json
 token.json
+token*.json
 *.pem
 *.key
+*.crt
+*.pfx
+*.p12
+*.cer
 keyring/
 
 # Planung & Interne Doku
@@ -77,8 +84,13 @@ DONE.md
 *-LAPTOP*
 *-Mac Studio*
 *-MacBook*
+*.conflict
+*-conflict-*
 
 # Canonical Lock-System Protection
+LOCK
+LOCK.*
+*.lock
 LOCK.user.*
 LOCK.until.*
 LOCK.condition.*
@@ -88,8 +100,12 @@ LOCK.team.*
 
 # Testing & Coverage
 .pytest_tmp/
+.pytest_cache/
+pytest_out.txt
+pytest*.txt
 .ruff_cache/
 .coverage
+.coverage*
 htmlcov/
 .hypothesis/
 .nyc_output/
