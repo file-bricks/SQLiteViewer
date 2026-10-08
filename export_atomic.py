@@ -39,10 +39,11 @@ def protect_destination(destination, sources):
         raise ValueError('Das Exportziel enthält einen mehrdeutigen Windows-Dateinamen. Bitte einen anderen Pfad wählen.')
     target = Path(destination).resolve()
     for source in sources:
-        if lexical_target == Path(os.path.abspath(source)) or target == source.resolve():
+        source_path = Path(source)
+        if lexical_target == Path(os.path.abspath(source_path)) or target == source_path.resolve():
             raise ValueError('Das Exportziel ist eine geschützte Datenbankdatei. Bitte einen anderen Pfad wählen.')
         try:
-            same = os.path.samefile(destination, source)
+            same = os.path.samefile(destination, source_path)
         except FileNotFoundError:
             same = False
         if same:

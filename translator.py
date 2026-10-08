@@ -13,8 +13,10 @@ label.setText(translator.t('Datei oeffnen'))
 translator.set_language('en')
 """
 
+import os
 import json
 import re
+import tempfile
 from pathlib import Path
 from typing import Dict, List, Set
 
@@ -75,8 +77,23 @@ class TranslationSystem:
         # nicht abstuerzen — _save_translations wird aus UI-Callbacks (t()/add_translation) gerufen.
         try:
             self.translations_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.translations_file, 'w', encoding='utf-8') as f:
-                json.dump(self.translations, f, indent=2, ensure_ascii=False)
+            parent_dir = self.translations_file.parent
+            temp_path = None
+            try:
+                with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=parent_dir,
+                                                 prefix=".translations-", suffix=".tmp", delete=False) as f:
+                    temp_path = Path(f.name)
+                    json.dump(self.translations, f, indent=2, ensure_ascii=False)
+                    f.flush()
+                    os.fsync(f.fileno())
+                os.replace(temp_path, self.translations_file)
+                temp_path = None
+            finally:
+                if temp_path is not None:
+                    try:
+                        temp_path.unlink()
+                    except OSError:
+                        pass
         except OSError:
             pass
 
@@ -92,6 +109,8 @@ class TranslationSystem:
         """
         if key in self.translations:
             lang_dict = self.translations[key]
+            if not isinstance(lang_dict, dict):
+                return str(lang_dict) if lang_dict else key
             val = lang_dict.get(self.current_lang)
             if val:
                 return val

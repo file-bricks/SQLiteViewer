@@ -7,6 +7,7 @@ Verwendung:
     python manage_translations.py [--dir PROJEKTVERZEICHNIS]
 """
 
+import argparse
 import json
 import re
 import os
@@ -58,6 +59,68 @@ def find_german_strings(source_dir):
     return german_strings
 
 
+SUPPORTED_LANGUAGES = ["de", "en", "es", "zh", "ja", "ru"]
+
+
+def check_translations(source_dir="."):
+    """Prüft ob alle Übersetzungen für alle 6 Sprachen vollständig vorhanden sind."""
+    trans_file = os.path.join(source_dir, TRANSLATION_FILE)
+    if not os.path.exists(trans_file):
+        print(f"[!] Datei nicht gefunden: {trans_file}")
+        return False
+
+    try:
+        with open(trans_file, "r", encoding="utf-8") as f:
+            translations = json.load(f)
+    except Exception as e:
+        print(f"[!] Fehler beim Laden von {trans_file}: {e}")
+        return False
+
+    if not translations:
+        print(f"[!] {trans_file} ist leer.")
+        return False
+
+    missing_by_lang = {lang: [] for lang in SUPPORTED_LANGUAGES}
+    for key, lang_dict in translations.items():
+        if not isinstance(lang_dict, dict):
+            for lang in SUPPORTED_LANGUAGES:
+                missing_by_lang[lang].append(key)
+            continue
+        for lang in SUPPORTED_LANGUAGES:
+            val = lang_dict.get(lang)
+            if not val or not str(val).strip():
+                missing_by_lang[lang].append(key)
+
+    total_missing = sum(len(m) for m in missing_by_lang.values())
+    if total_missing > 0:
+        print(f"[!] Fehlende Übersetzungen festgestellt ({total_missing} gesamt über {len(translations)} Schlüssel):")
+        for lang, missing_keys in missing_by_lang.items():
+            if missing_keys:
+                print(f"  [{lang.upper()}]: {len(missing_keys)} fehlend (z.B. {missing_keys[:3]})")
+        return False
+
+    print(f"[ok] 100% Parität: Alle {len(translations)} Schlüssel sind in allen 6 Sprachen (DE, EN, ES, ZH, JA, RU) vorhanden.")
+    return True
+
+
+def show_stats(source_dir="."):
+    """Zeigt Statistiken über die Übersetzungen an."""
+    trans_file = os.path.join(source_dir, TRANSLATION_FILE)
+    if not os.path.exists(trans_file):
+        print(f"[!] Datei nicht gefunden: {trans_file}")
+        return
+
+    with open(trans_file, "r", encoding="utf-8") as f:
+        translations = json.load(f)
+
+    total = len(translations)
+    print(f"[i] Gesamtbestand: {total} Schlüssel in {trans_file}")
+    for lang in SUPPORTED_LANGUAGES:
+        count = sum(1 for v in translations.values() if isinstance(v, dict) and bool(v.get(lang, "").strip()))
+        pct = (count / total * 100) if total else 0
+        print(f"  {lang.upper()}: {count}/{total} ({pct:.1f}%)")
+
+
 def manage_translations(source_dir="."):
     trans_file = os.path.join(source_dir, TRANSLATION_FILE)
 
@@ -75,7 +138,7 @@ def manage_translations(source_dir="."):
     added = []
     for s in sorted(found):
         if s not in translations:
-            translations[s] = {"de": s, "en": ""}
+            translations[s] = {lang: (s if lang == "de" else "") for lang in SUPPORTED_LANGUAGES}
             added.append(s)
 
     os.makedirs(os.path.dirname(trans_file), exist_ok=True)
@@ -83,7 +146,7 @@ def manage_translations(source_dir="."):
         json.dump(translations, f, indent=2, ensure_ascii=False)
 
     if added:
-        print(f"[+] {len(added)} neue Eintraege hinzugefuegt:")
+        print(f"[+] {len(added)} neue Einträge hinzugefügt:")
         for s in added[:20]:
             print(f"    - {s}")
         if len(added) > 20:
@@ -91,15 +154,20 @@ def manage_translations(source_dir="."):
     else:
         print("[i] Keine neuen deutschen Strings gefunden.")
 
-    missing = [k for k, v in translations.items() if not v.get("en")]
-    if missing:
-        print(f"\n[!] {len(missing)} fehlende englische Uebersetzungen")
-    else:
-        print("\n[ok] Alle Strings haben englische Uebersetzungen.")
-
-    print(f"\n[i] Gesamt: {len(translations)} Strings in {trans_file}")
+    show_stats(source_dir)
 
 
 if __name__ == "__main__":
-    target = sys.argv[1] if len(sys.argv) > 1 else "."
-    manage_translations(target)
+    parser = argparse.ArgumentParser(description="Verwalte und prüfe Übersetzungen für SQLite Viewer.")
+    parser.add_argument("--dir", dest="source_dir", default=".", help="Projektverzeichnis")
+    parser.add_argument("--check", action="store_true", help="Vollständigkeit der 6 Sprachen prüfen und Exit-Code setzen")
+    parser.add_argument("--stats", action="store_true", help="Übersetzungs-Statistiken anzeigen")
+    args = parser.parse_args()
+
+    if args.check:
+        ok = check_translations(args.source_dir)
+        sys.exit(0 if ok else 1)
+    elif args.stats:
+        show_stats(args.source_dir)
+    else:
+        manage_translations(args.source_dir)

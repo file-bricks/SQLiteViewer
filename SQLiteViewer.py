@@ -108,9 +108,14 @@ class SqlViewer(tk.Tk):
     def _save_settings(self):
         try:
             p = self._get_settings_path()
+            p.parent.mkdir(parents=True, exist_ok=True)
             settings = {"language": getattr(self, "current_language", "de")}
-            with open(p, "w", encoding="utf-8") as f:
+            temp_p = p.with_suffix(".tmp")
+            with open(temp_p, "w", encoding="utf-8") as f:
                 json.dump(settings, f, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(temp_p, p)
         except Exception:
             pass
 
@@ -621,6 +626,16 @@ class SqlViewer(tk.Tk):
                 self._load_schema()
             else:
                 self.table_combo.set("")
+                self.schema_combo.set("")
+                if hasattr(self, "schema_table_var"):
+                    self.schema_table_var.set("")
+                self.current_columns = []
+                self.current_data = []
+                self.export_context = {}
+                self.sort_column = None
+                self.sort_reverse = False
+                if hasattr(self, "row_count_var"):
+                    self.row_count_var.set("")
                 self._clear_tree()
                 self._clear_schema_text()
                 self._update_export_actions()
@@ -648,6 +663,10 @@ class SqlViewer(tk.Tk):
                 return
 
             # Sortierung
+            if self.sort_column and self.sort_column not in cols:
+                self.sort_column = None
+                self.sort_reverse = False
+
             order_clause = ""
             if self.sort_column and self.sort_column in cols:
                 direction = "DESC" if self.sort_reverse else "ASC"
@@ -734,30 +753,52 @@ class SqlViewer(tk.Tk):
     def _get_table_info(self, table: str) -> str:
         """Holt zusätzliche Tabelleninformationen."""
         info_parts = []
+        if not self.conn:
+            return ""
 
+        # Spalteninfo
         try:
-            # Spalteninfo
             cur = self.conn.execute(f"PRAGMA table_info({self._ident(table)})")
-            columns = cur.fetchall()
-            info_parts.append(f"Spalten: {len(columns)}")
+            try:
+                columns = cur.fetchall()
+                info_parts.append(f"Spalten: {len(columns)}")
+            finally:
+                cur.close()
+        except Exception:
+            pass
 
-            # Zeilenanzahl
+        # Zeilenanzahl
+        try:
             cur = self.conn.execute(f"SELECT COUNT(*) FROM {self._ident(table)}")
-            count = cur.fetchone()[0]
-            info_parts.append(f"Zeilen: {count}")
+            try:
+                count = cur.fetchone()[0]
+                info_parts.append(f"Zeilen: {count}")
+            finally:
+                cur.close()
+        except Exception:
+            pass
 
-            # Indizes
+        # Indizes
+        try:
             cur = self.conn.execute(f"PRAGMA index_list({self._ident(table)})")
-            indexes = cur.fetchall()
-            if indexes:
-                info_parts.append(f"Indizes: {len(indexes)}")
+            try:
+                indexes = cur.fetchall()
+                if indexes:
+                    info_parts.append(f"Indizes: {len(indexes)}")
+            finally:
+                cur.close()
+        except Exception:
+            pass
 
-            # Foreign Keys
+        # Foreign Keys
+        try:
             cur = self.conn.execute(f"PRAGMA foreign_key_list({self._ident(table)})")
-            fks = cur.fetchall()
-            if fks:
-                info_parts.append(f"Foreign Keys: {len(fks)}")
-
+            try:
+                fks = cur.fetchall()
+                if fks:
+                    info_parts.append(f"Foreign Keys: {len(fks)}")
+            finally:
+                cur.close()
         except Exception:
             pass
 
@@ -794,7 +835,15 @@ class SqlViewer(tk.Tk):
             messagebox.showwarning("Warnung", "Keine Datenbank geöffnet.")
             return
 
-        sql = self.sql_text.get("1.0", tk.END).strip()
+        sql = ""
+        if hasattr(self.sql_text, "tag_ranges"):
+            try:
+                if self.sql_text.tag_ranges(tk.SEL):
+                    sql = self.sql_text.get(tk.SEL_FIRST, tk.SEL_LAST).strip()
+            except (tk.TclError, AttributeError):
+                pass
+        if not sql:
+            sql = self.sql_text.get("1.0", tk.END).strip()
         if not sql:
             return
 
@@ -1000,7 +1049,8 @@ class SqlViewer(tk.Tk):
             return
 
         table = export_context.get("table") or self.table_var.get() or export_context.get("view") or "export"
-        default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        safe_table = re.sub(r'[\\/*?:"<>|]', '_', str(table)).strip(' .') or "export"
+        default_name = f"{safe_table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
         path = filedialog.asksaveasfilename(
             title="Als CSV exportieren",
@@ -1112,7 +1162,8 @@ class SqlViewer(tk.Tk):
             return
 
         table = export_context.get("table") or self.table_var.get() or export_context.get("view") or "export"
-        default_name = f"{table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        safe_table = re.sub(r'[\\/*?:"<>|]', '_', str(table)).strip(' .') or "export"
+        default_name = f"{safe_table}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         path = filedialog.asksaveasfilename(
             title="Als JSON exportieren",
             defaultextension=".json",
@@ -1141,7 +1192,7 @@ class SqlViewer(tk.Tk):
 
     def _search_data(self):
         """Filtert die Daten basierend auf dem Suchbegriff."""
-        search_term = self.search_var.get().strip()
+        search_term = (self.search_var.get() or "").strip() if hasattr(self, "search_var") and self.search_var is not None else ""
 
         if not search_term:
             # Zeige alle Daten
@@ -1158,10 +1209,8 @@ class SqlViewer(tk.Tk):
         # Suche in allen Spalten
         try:
             try:
-                limit = int(self.limit_var.get())
+                limit = max(1, int(self.limit_var.get()))
             except (ValueError, TypeError, tk.TclError):  # Bugsweep 23: leere/ungueltige Spinbox -> TclError
-                limit = DEFAULT_LIMIT
-            if limit < 1:
                 limit = DEFAULT_LIMIT
 
             # Spalten immer per PRAGMA aus der Tabelle holen. self.current_columns kann
@@ -1239,8 +1288,6 @@ class SqlViewer(tk.Tk):
 
         if had_search and hasattr(self, "table_var") and (self.table_var.get() or "").strip():
             self.load_selected_table()
-        elif hasattr(self, "row_count_var") and self.row_count_var is not None:
-            self.row_count_var.set("")
 
         return "break"
 

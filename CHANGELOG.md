@@ -26,6 +26,14 @@
 - Updated test badge in `README.md` and `README_de.md` to reflect 107 passing tests (100% green).
 - Updated `llms.txt` Last-checked header to `2026-10-03` with 107 Pytest + 43 Node companion tests verified.
 
+### Fixed
+- **Empty Table State & Export Action Cleanup:** `_load_tables()` bereinigt Tabellen- und Schema-Dropdowns, Spalten-/Zeilen-Caches und Export-Kontexte vollständig bei leeren Datenbanken (z. B. nach `DROP TABLE`), setzt Zeilenzähler zurück und deaktiviert Export-Aktionen.
+- **Defensive Sort & Search Invariants:** `load_selected_table()` setzt ungültige Sortierspalten defensiv zurück; `_clear_search()` belässt den aktiven Tabellenzähler intakt beim Drücken von Escape; `_search_data()` validiert Limit defensiv.
+- **SQL Editor Selection Execution:** `execute_sql()` führt bei aktiver Selektion im SQL-Editor gezielt den markierten Block aus, um SQLite `ProgrammingError` bei Mehrfachanweisungen zu vermeiden.
+- **Decoupled Table Metadata Inspection:** `_get_table_info()` entkoppelt Spalten-, Zähl-, Index- und Fremdschlüssel-Prüfungen in isolierte Blöcke mit Cursor-Cleanup.
+- **Filename Sanitization:** `export_csv()` und `export_json()` filtern unzulässige Sonderzeichen (`/\:*?"<>|`) aus Standard-Dateinamen.
+- **Atomic Persistence & Translation Parity:** `_save_settings()` und `translator.py` (`_save_translations()`) sichern Konfigurationen atomar über temporäre Dateien; `manage_translations.py` unterstützt `--check` zur Validierung der 6-Sprachen-Parität (DE, EN, ES, ZH, JA, RU).
+
 ## [2.1.1] - 2026-09-18
 
 ### Added
