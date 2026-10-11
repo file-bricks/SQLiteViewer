@@ -143,13 +143,17 @@ def test_llms_txt_integrity():
     assert any(marker in content for marker in [
         "Stand: 2026-09-14",
         "Stand: 2026-09-22",
+        "Stand: 2026-10-11",
         "Last-checked: 2026-09-14",
         "Last-checked: 2026-09-22",
+        "Last-checked: 2026-10-08",
+        "Last-checked: 2026-10-11",
     ])
     for i in range(1, 5):
         assert f"[PERSONA-{i:02d}]" in content
     assert "INV-LOCAL-01" in content
     assert "THIRD_PARTY_LICENSES.md" in content
+    assert "THIRD_PARTY_LICENSES.txt" in content
 
 
 def test_store_package_consistency():
@@ -240,3 +244,121 @@ def test_pyproject_pep621_hardening():
     assert "minversion =" in content
     assert "[tool.ruff]" in content
 
+
+def test_ascii_four_view_topology_bilateral_parity():
+    """Verify ASCII Four-View Architectural Topology presence and bilateral parity in README and README_de."""
+    content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    assert "Visual Four-View Architectural Topology" in content_en
+    assert "Visuelle Vier-Sichten-Architekturtopologie" in content_de
+
+    # Check 4 English views
+    assert "[VIEW 1: TKINTER GUI, USER INPUT & CLI INTEGRATION]" in content_en
+    assert "[VIEW 2: ATOMIC TRANSACTIONAL EXPORT & SERIALIZATION ENGINE]" in content_en
+    assert "[VIEW 3: SQLITE3 CORE DRIVER & DDL SCHEMA INTROSPECTION]" in content_en
+    assert "[VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]" in content_en
+
+    # Check 4 German views
+    assert "[SICHT 1: TKINTER-BENUTZEROBERFLÄCHE, NUTZEREINGABEN & CLI-INTEGRATION]" in content_de
+    assert "[SICHT 2: ATOMARER TRANSAKTIONALER EXPORT & SERIALISIERUNG]" in content_de
+    assert "[SICHT 3: SQLITE3-KERN, SCHEMA-INTROSPEKTION & SICHERE ABFRAGEN]" in content_de
+    assert "[SICHT 4: RUNASINVOKER-ISOLATION, ZERO-EGRESS & AUDIT-INTEGRITÄT]" in content_de
+
+    # Check 17 bilateral section anchors in both
+    for i in range(1, 18):
+        anchor = f'<a id="sec-{i:02d}"></a>'
+        assert anchor in content_en, f"Anchor {anchor} missing in README.md"
+        assert anchor in content_de, f"Anchor {anchor} missing in README_de.md"
+
+
+def test_contributing_bilingual_contract():
+    """Verify CONTRIBUTING.md contains bilateral Plan D guidelines, 10 invariants, disclaimer, and 48h SLA."""
+    contrib_file = REPO_ROOT / "CONTRIBUTING.md"
+    assert contrib_file.is_file(), "CONTRIBUTING.md must exist"
+    content = contrib_file.read_text(encoding="utf-8")
+
+    assert "## Deutsch" in content
+    assert "## English" in content
+    assert r"C:\_Local_DEV\repos\SQLiteViewer" in content
+    assert "RunAsInvoker" in content
+    assert "§ 521 BGB" in content
+    assert "support@lukasgeiger.com" in content
+    for i in range(1, 11):
+        inv = f"INV-LOCAL-{i:02d}"
+        assert inv in content, f"{inv} missing in CONTRIBUTING.md"
+
+
+def test_pep_621_contributing_and_plain_license_urls():
+    """Verify pyproject.toml includes Contributing and Level 1 SBOM URLs and license-files whitelist."""
+    pyproject_file = REPO_ROOT / "pyproject.toml"
+    assert pyproject_file.is_file(), "pyproject.toml must exist"
+    content = pyproject_file.read_text(encoding="utf-8")
+
+    assert 'Contributing = "https://github.com/file-bricks/SQLiteViewer/blob/master/CONTRIBUTING.md"' in content
+    assert '"Level 1 SBOM (Plain Text)" = "https://github.com/file-bricks/SQLiteViewer/blob/master/THIRD_PARTY_LICENSES.txt"' in content
+    assert '"CONTRIBUTING.md"' in content
+
+
+def test_level_1_sbom_currency_20261011():
+    """Verify Level 1 SBOM plain-text companion currency and audit integrity."""
+    sbom_txt = REPO_ROOT / "THIRD_PARTY_LICENSES.txt"
+    sbom_md = REPO_ROOT / "THIRD_PARTY_LICENSES.md"
+    assert sbom_txt.is_file(), "THIRD_PARTY_LICENSES.txt must exist"
+    assert sbom_md.is_file(), "THIRD_PARTY_LICENSES.md must exist"
+
+    txt_content = sbom_txt.read_text(encoding="utf-8")
+    md_content = sbom_md.read_text(encoding="utf-8")
+
+    assert "Checked: 2026-10-11" in txt_content
+    assert "Audited: 2026-10-11" in txt_content
+    assert "Stand:** 2026-10-11" in md_content
+    assert "THIRD_PARTY_LICENSES.txt" in md_content
+
+    # Invariants in both
+    for i in range(1, 11):
+        inv = f"INV-LOCAL-{i:02d}"
+        assert inv in txt_content, f"{inv} missing in THIRD_PARTY_LICENSES.txt"
+        assert inv in md_content, f"{inv} missing in THIRD_PARTY_LICENSES.md"
+
+
+def test_marketing_log_section_7_pfad_b_20261011():
+    """Verify local MARKETING-LOG.txt documents Section 7 Pfad B revision and 3 recommendations."""
+    marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
+    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    content = marketing_file.read_text(encoding="utf-8")
+
+    assert "7. PFAD B MARKETING, DISCOVERABILITY & VISUELLE TOPOLOGIE REVISION (2026-10-11)" in content
+    assert "REC-20261011-01" in content
+    assert "REC-20261011-02" in content
+    assert "REC-20261011-03" in content
+
+
+def test_badges_recency_and_test_count_20261011():
+    """Verify badges in README.md and README_de.md reflect 2026-10-11 currency and 134 passing tests."""
+    content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    assert "Verified-2026--10--11-blue.svg" in content_en
+    assert "Gepr%C3%BCft-2026--10--11-blue.svg" in content_de
+    assert "Tests-134%20passed" in content_en
+    assert "Tests-134%20bestanden" in content_de
+    assert "Contributing-Guidelines" in content_en
+    assert "Beitragsrichtlinie" in content_de
+
+
+def test_version_freeze_discipline_210():
+    """Verify version 2.1.0 remains strictly frozen across all metadata manifests per policy T-20260920-167562623."""
+    pyproject_file = REPO_ROOT / "pyproject.toml"
+    content_pyproject = pyproject_file.read_text(encoding="utf-8")
+    assert 'version = "2.1.0"' in content_pyproject
+
+    llms_file = REPO_ROOT / "llms.txt"
+    content_llms = llms_file.read_text(encoding="utf-8")
+    assert "Version: 2.1.0" in content_llms
+
+    sbom_txt = (REPO_ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
+    assert "Version: 2.1.0" in sbom_txt
+
+    sbom_md = (REPO_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
+    assert "**Version:** 2.1.0" in sbom_md

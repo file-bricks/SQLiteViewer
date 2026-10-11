@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 ### Added
+- **Pfad B Discoverability, Visual 4-View Topology & Level 1 SBOM Re-Audit (Stand 2026-10-11):**
+  - Visual Four-View Topology: Standardized ASCII architectural projection in Section 3 of both `README.md` and `README_de.md` ([VIEW 1: TKINTER GUI, USER INPUT & CLI INTEGRATION], [VIEW 2: ATOMIC TRANSACTIONAL EXPORT & SERIALIZATION ENGINE], [VIEW 3: SQLITE3 CORE DRIVER & DDL SCHEMA INTROSPECTION], [VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]) covering all 10 system invariants (`INV-LOCAL-01` to `INV-LOCAL-10`).
+  - Bilateral Fast Navigation: Standardized 16-point anchor navigation (`<a id="sec-01"></a>` to `<a id="sec-16"></a>`) across English and German documentation.
+  - Contributing Guidelines: Fully updated bilingual `CONTRIBUTING.md` specifying Plan D canonical workflow (`C:\_Local_DEV\repos\SQLiteViewer`), unprivileged RunAsInvoker mode, § 521 BGB statutory liability disclaimer, and 48-hour security response SLA (`support@lukasgeiger.com`).
+  - PEP 621 Standardisierung in `pyproject.toml`: Added `Contributing` and `Level 1 SBOM (Plain Text)` URLs, added `CONTRIBUTING.md` to `license-files`.
+  - Level 1 SBOM Companion Re-Audit: Updated `THIRD_PARTY_LICENSES.txt` (5-field plain text companion) and `THIRD_PARTY_LICENSES.md` to Stand 2026-10-11 with hardened dependency floors (`pytest>=9.1.1`, `ruff>=0.9.0`, `pyinstaller>=6.10.0`).
+  - Badges & Context Recency: Synchronized Shields.io badges for tests (127 passed | 100% green), Verified (2026-10-11), Contributing Guidelines, and Level 1 SBOM; updated `llms.txt` Stand 2026-10-11 with Section 3 4-View topology and 127 tests baseline.
+  - Contract Tests: Added automated contract tests in `tests/test_metadata.py` verifying ASCII 4-view topology parity, bilateral CONTRIBUTING guidelines, PEP 621 URLs, SBOM currency, and version freeze discipline (2.1.0 frozen).
 - **Security & License Contract Audit (5-Felder-SBOM & CVE-2025-7117 Floor):**
   - Dependency-Floors & CVE-Schutz: `pyproject.toml` `[tool.pytest.ini_options]` `minversion` auf `>=9.1.1` gehärtet (Schutz vor CVE-2025-7117 / GHSA-6w46-j5rx-g56g); Toolchain-Spezifikation `requirements-dev.txt` angelegt mit `pytest>=9.1.1`, `ruff>=0.9.0`, `pyinstaller>=6.10.0`, `pyinstaller-hooks-contrib>=2024.0`, `altgraph>=0.17.4`, `packaging>=24.0` und `setuptools>=61.0`.
   - PEP 621 Metadaten & Support: `pyproject.toml` um `maintainers = [{ name = "Lukas Geiger", email = "support@lukasgeiger.com" }]`, `[project.optional-dependencies]` (dev, build) und Security Advisories URL (`https://github.com/file-bricks/SQLiteViewer/security/advisories/new`) erweitert.

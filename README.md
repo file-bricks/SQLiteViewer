@@ -6,7 +6,10 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/Notice-Attribution-blue.svg" alt="Notice & Attribution"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/Tests-127%20passed%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Passing"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Tests-134%20passed%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Passing"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Verified-2026--10--11-blue.svg" alt="Verified 2026-10-11"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-Guidelines-green.svg" alt="Contributing Guidelines"></a>
+  <a href="THIRD_PARTY_LICENSES.txt"><img src="https://img.shields.io/badge/Level%201%20SBOM-Plain%20Text-blue.svg" alt="Level 1 SBOM Plain Text"></a>
   <a href="store_package.json"><img src="https://img.shields.io/badge/Microsoft%20Store-9P6H501XB8JT-0078D7?logo=windows&logoColor=white" alt="Microsoft Store ID: 9P6H501XB8JT"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/Zero%20Egress-100%25%20Offline-success.svg" alt="Zero Egress"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/Privileges-RunAsInvoker-blue.svg" alt="RunAsInvoker"></a>
@@ -27,25 +30,27 @@
 
 ## Quick Navigation
 
-1. [What is SQLiteViewer?](#what-is-sqliteviewer)
-2. [Target Personas & Discoverability](#target-personas--discoverability)
-3. [Architecture & Data Flow](#architecture--data-flow)
-4. [Export Lifecycle Sequence](#export-lifecycle-sequence)
-5. [Comparative Matrix vs. Alternatives](#comparative-matrix-vs-alternatives)
-6. [Core Features](#core-features)
-7. [Getting Started & Installation](#getting-started--installation)
-8. [Usage & Workflow](#usage--workflow)
-9. [Keyboard Shortcuts](#keyboard-shortcuts)
-10. [Export Contract & Companion](#export-contract--companion)
-11. [Microsoft Store & Packaging](#microsoft-store--packaging)
-12. [Governance & System Invariants](#governance--system-invariants)
-13. [Third-Party Licenses & Transparency](#third-party-licenses--transparency)
-14. [Ecosystem & Sister Projects](#ecosystem--sister-projects)
-15. [Security & Privacy](#security--privacy)
-16. [Contract Tests & Verification](#contract-tests--verification)
+1. [What is SQLiteViewer?](#sec-01)
+2. [Target Personas & Discoverability](#sec-02)
+3. [Architecture & Data Flow](#sec-03)
+4. [Export Lifecycle Sequence](#sec-04)
+5. [Comparative Matrix vs. Alternatives](#sec-05)
+6. [Core Features](#sec-06)
+7. [Getting Started & Installation](#sec-07)
+8. [Usage & Workflow](#sec-08)
+9. [Keyboard Shortcuts](#sec-09)
+10. [Export Contract & Companion](#sec-10)
+11. [Microsoft Store & Packaging](#sec-11)
+12. [Governance & System Invariants](#sec-12)
+13. [Third-Party Licenses & Transparency](#sec-13)
+14. [Ecosystem & Sister Projects](#sec-14)
+15. [Security & Privacy](#sec-15)
+16. [Contract Tests & Verification](#sec-16)
+17. [License & Liability](#sec-17)
 
 ---
 
+<a id="sec-01"></a>
 ## What is SQLiteViewer?
 
 **SQLiteViewer** is a lightweight, portable desktop browser for `.db`, `.sqlite`, and `.sqlite3` database files. Designed for developers, researchers, system administrators, and privacy-conscious users, it allows you to open databases instantly, inspect tables and DDL schema definitions, filter records, execute ad-hoc SQL queries, and export data as CSV or structured JSON—all without cloud connectivity or heavy multi-megabyte runtime overhead.
@@ -54,6 +59,7 @@
 
 ---
 
+<a id="sec-02"></a>
 ## Target Personas & Discoverability
 
 SQLiteViewer is built to serve four primary personas with zero friction:
@@ -96,6 +102,7 @@ SQLiteViewer is built to serve four primary personas with zero friction:
 
 ---
 
+<a id="sec-03"></a>
 ## Architecture & Data Flow
 
 SQLiteViewer executes in a single unprivileged process (`RunAsInvoker`). The graphical user interface connects directly to Python's built-in `sqlite3` engine, keeping all database interactions entirely local.
@@ -130,8 +137,54 @@ flowchart TD
     class Exporter,CSVFile,JSONFile,Companion export;
 ```
 
+### Visual Four-View Architectural Topology
+
+```text
++==================================================================================================+
+|                          SQLITEVIEWER: FOUR-VIEW ARCHITECTURAL TOPOLOGY                          |
++==================================================================================================+
+|                                                                                                  |
+|  [VIEW 1: TKINTER GUI, USER INPUT & CLI INTEGRATION]                                             |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Desktop Windowing: Tkinter / ttk unprivileged desktop GUI with native styling & palettes  |  |
+|  | - Shortcut Dispatcher: Ctrl+O (open), Ctrl+F (search), Ctrl+E (export), F5 (refresh), F9 (SQL)|  |
+|  | - Interactive Workspaces: Data Browser (Treeview & paging), Schema DDL, SQL Editor console   |  |
+|  | - CLI & File Association: Direct database launch via sys.argv[1] & Windows double-click      |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [VIEW 2: ATOMIC TRANSACTIONAL EXPORT & SERIALIZATION ENGINE]                                    |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Context-Aware Dispatch: Dynamically resolves active view (Table records vs. SQL results) |  |
+|  | - Format Serializers: Delimited streaming CSV exporter & structured JSON envelope          |  |
+|  | - Export Envelope v1: sqliteviewer-export-v1 schema with source query & table metadata (INV)|  |
+|  | - Atomic File Safety: Filename sanitization, parent directory creation & safe file replace  |  |
+|  | - Web Companion Bridge: Zero-upload local offline dataset review via web_companion/        |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [VIEW 3: SQLITE3 CORE DRIVER & DDL SCHEMA INTROSPECTION]                                        |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Embedded Database Engine: Direct bindings to Python standard library sqlite3 (zero pip)  |  |
+|  | - Schema Introspection: Queries sqlite_master for table DDL, indices, triggers & PRAGMAs    |  |
+|  | - Defensive Query Pipeline: Parameterized queries, LIKE wildcard escaping & selection exec  |  |
+|  | - Non-Destructive Exploration: Safe read-only connection mode protecting user databases    |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]                             |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Zero Network Egress Boundary: 100% offline air-gapped execution (INV-LOCAL-01)           |  |
+|  | - RunAsInvoker Non-Elevation: Standard user privileges without UAC prompts (INV-LOCAL-02)   |  |
+|  | - Level 1 SBOM Plain-Text Companion: THIRD_PARTY_LICENSES.txt Stand 2026-10-11 re-audited  |  |
+|  | - Multi-Host Cloud-Sync Defense: Hardened .gitignore rules against sync conflicts & locks   |  |
+|  +--------------------------------------------------------------------------------------------+  |
++==================================================================================================+
+```
+
 ---
 
+<a id="sec-04"></a>
 ## Export Lifecycle Sequence
 
 Export operations adhere to a strict context-aware protocol. The active UI tab governs whether table records or custom SQL query result sets are extracted.
@@ -167,6 +220,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-05"></a>
 ## Comparative Matrix vs. Alternatives
 
 SQLiteViewer is purpose-built as a local-first desktop viewer. It compares against popular alternatives across 10 architectural criteria:
@@ -186,6 +240,7 @@ SQLiteViewer is purpose-built as a local-first desktop viewer. It compares again
 
 ---
 
+<a id="sec-06"></a>
 ## Core Features
 
 - **Fast Table Browser:** Sortable columns, adjustable column widths, and responsive paging for databases with millions of records.
@@ -199,6 +254,7 @@ SQLiteViewer is purpose-built as a local-first desktop viewer. It compares again
 
 ---
 
+<a id="sec-07"></a>
 ## Getting Started & Installation
 
 ### Option A: Microsoft Store (Recommended for Windows)
@@ -229,6 +285,7 @@ python SQLiteViewer.py path/to/database.sqlite
 
 ---
 
+<a id="sec-08"></a>
 ## Usage & Workflow
 
 1. **Open a Database:** Press `Ctrl+O` or drag and drop a `.db`, `.sqlite`, or `.sqlite3` file onto the window.
@@ -240,6 +297,7 @@ python SQLiteViewer.py path/to/database.sqlite
 
 ---
 
+<a id="sec-09"></a>
 ## Keyboard Shortcuts
 
 | Shortcut | Action | Scope |
@@ -253,6 +311,7 @@ python SQLiteViewer.py path/to/database.sqlite
 
 ---
 
+<a id="sec-10"></a>
 ## Export Contract & Companion
 
 SQLiteViewer implements the **`sqliteviewer-export-v1`** schema specification (documented in full in [`EXPORTFORMAT.md`](EXPORTFORMAT.md)). Unlike raw dumps, exported JSON envelopes contain structured provenance metadata:
@@ -285,6 +344,7 @@ The exported file can be dropped into the standalone [`web_companion/`](web_comp
 
 ---
 
+<a id="sec-11"></a>
 ## Microsoft Store & Packaging
 
 SQLiteViewer is packaged as a standard Windows Desktop Bridge application (`SQLite Viewer Pro`):
@@ -297,6 +357,7 @@ SQLiteViewer is packaged as a standard Windows Desktop Bridge application (`SQLi
 
 ---
 
+<a id="sec-12"></a>
 ## Governance & System Invariants
 
 SQLiteViewer strictly adheres to the ten foundational system invariants of the `open-bricks` and `file-bricks` desktop family:
@@ -316,6 +377,7 @@ SQLiteViewer strictly adheres to the ten foundational system invariants of the `
 
 ---
 
+<a id="sec-13"></a>
 ## Third-Party Licenses & Transparency
 
 SQLiteViewer relies exclusively on permissive, open-source foundations. Complete audit documentation is maintained in [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
@@ -327,6 +389,7 @@ SQLiteViewer relies exclusively on permissive, open-source foundations. Complete
 
 ---
 
+<a id="sec-14"></a>
 ## Ecosystem & Sister Projects
 
 SQLiteViewer is maintained under the [**file-bricks**](https://github.com/file-bricks) organization and forms part of the wider [**open-bricks**](https://github.com/open-bricks) open-source desktop software suite.
@@ -340,6 +403,7 @@ Sister projects in the ecosystem:
 
 ---
 
+<a id="sec-15"></a>
 ## Security & Privacy
 
 - **Privacy Policy:** Read our complete privacy declaration in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md). SQLiteViewer collects zero telemetry and transmits no user data.
@@ -347,6 +411,7 @@ Sister projects in the ecosystem:
 
 ---
 
+<a id="sec-16"></a>
 ## Contract Tests & Verification
 
 The integrity of SQLiteViewer's functionality, UI contracts, and metadata is enforced by an automated pytest test suite:
@@ -365,6 +430,7 @@ Test coverage includes:
 
 ---
 
+<a id="sec-17"></a>
 ## License & Liability
 
 This project is licensed under the [MIT License](LICENSE).

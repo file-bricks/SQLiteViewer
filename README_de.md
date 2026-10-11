@@ -6,7 +6,10 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-green.svg" alt="Lizenz: MIT"></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/Hinweis-Attribution-blue.svg" alt="Hinweis & Attribution"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/Tests-127%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Bestanden"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Tests-134%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Bestanden"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Gepr%C3%BCft-2026--10--11-blue.svg" alt="Geprüft 2026-10-11"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Beitragsrichtlinie-Guidelines-green.svg" alt="Beitragsrichtlinie"></a>
+  <a href="THIRD_PARTY_LICENSES.txt"><img src="https://img.shields.io/badge/Level%201%20SBOM-Plain%20Text-blue.svg" alt="Level 1 SBOM Plain Text"></a>
   <a href="store_package.json"><img src="https://img.shields.io/badge/Microsoft%20Store-9P6H501XB8JT-0078D7?logo=windows&logoColor=white" alt="Microsoft Store ID: 9P6H501XB8JT"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/Zero%20Egress-100%25%20Offline-success.svg" alt="Zero Egress"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/Privilegien-RunAsInvoker-blue.svg" alt="RunAsInvoker"></a>
@@ -27,25 +30,27 @@
 
 ## Schnellnavigation
 
-1. [Was ist SQLiteViewer?](#was-ist-sqliteviewer)
-2. [Zielgruppen & Auffindbarkeit](#zielgruppen--auffindbarkeit)
-3. [Architektur & Datenfluss](#architektur--datenfluss)
-4. [Export-Lebenszyklus](#export-lebenszyklus)
-5. [Vergleichsmatrix gegenüber Alternativen](#vergleichsmatrix-gegenüber-alternativen)
-6. [Kernfunktionen](#kernfunktionen)
-7. [Schnellstart & Installation](#schnellstart--installation)
-8. [Nutzung & Arbeitsablauf](#nutzung--arbeitsablauf)
-9. [Tastenkürzel](#tastenkürzel)
-10. [Exportformat & Web-Companion](#exportformat--web-companion)
-11. [Microsoft Store & Paketierung](#microsoft-store--paketierung)
-12. [Governance & System-Invarianten](#governance--system-invarianten)
-13. [Drittanbieter-Lizenzen & Transparenz](#drittanbieter-lizenzen--transparenz)
-14. [Ökosystem & Schwesterprojekte](#ökosystem--schwesterprojekte)
-15. [Sicherheit & Datenschutz](#sicherheit--datenschutz)
-16. [Vertragstests & Verifikation](#vertragstests--verifikation)
+1. [Was ist SQLiteViewer?](#sec-01)
+2. [Zielgruppen & Auffindbarkeit](#sec-02)
+3. [Architektur & Datenfluss](#sec-03)
+4. [Export-Lebenszyklus](#sec-04)
+5. [Vergleichsmatrix gegenüber Alternativen](#sec-05)
+6. [Kernfunktionen](#sec-06)
+7. [Schnellstart & Installation](#sec-07)
+8. [Nutzung & Arbeitsablauf](#sec-08)
+9. [Tastenkürzel](#sec-09)
+10. [Exportformat & Web-Companion](#sec-10)
+11. [Microsoft Store & Paketierung](#sec-11)
+12. [Governance & System-Invarianten](#sec-12)
+13. [Drittanbieter-Lizenzen & Transparenz](#sec-13)
+14. [Ökosystem & Schwesterprojekte](#sec-14)
+15. [Sicherheit & Datenschutz](#sec-15)
+16. [Vertragstests & Verifikation](#sec-16)
+17. [Lizenz & Haftung](#sec-17)
 
 ---
 
+<a id="sec-01"></a>
 ## Was ist SQLiteViewer?
 
 **SQLiteViewer** ist ein leichtgewichtiger, portabler Desktop-Browser für `.db`-, `.sqlite`- und `.sqlite3`-Datenbankdateien. Entwickelt für Programmierer, Analysten, Systemadministratoren und datenschutzbewusste Anwender, ermöglicht das Tool das sofortige Öffnen lokaler Datenbanken, die Prüfung von Tabellen und DDL-Schemas, das Filtern von Datensätzen, das Ausführen von Ad-hoc-SQL-Abfragen und den Export sichtbarer Daten als CSV oder strukturiertes JSON – völlig ohne Cloud-Anbindung oder schwere Laufzeitumgebungen.
@@ -54,6 +59,7 @@
 
 ---
 
+<a id="sec-02"></a>
 ## Zielgruppen & Auffindbarkeit
 
 SQLiteViewer wurde für vier zentrale Nutzergruppen und Anwendungsfälle konzipiert:
@@ -96,6 +102,7 @@ SQLiteViewer wurde für vier zentrale Nutzergruppen und Anwendungsfälle konzipi
 
 ---
 
+<a id="sec-03"></a>
 ## Architektur & Datenfluss
 
 SQLiteViewer läuft als schlanker, unprivilegierter Einzelprozess (`RunAsInvoker`). Die grafische Benutzeroberfläche kommuniziert direkt mit der in Python integrierten `sqlite3`-Engine, wodurch sämtliche Datenbankzugriffe vollständig auf dem lokalen Host verbleiben.
@@ -130,8 +137,54 @@ flowchart TD
     class Exporter,CSVFile,JSONFile,Companion export;
 ```
 
+### Visuelle Vier-Sichten-Architekturtopologie
+
+```text
++==================================================================================================+
+|                        SQLITEVIEWER: VIER-SICHTEN-ARCHITEKTURTOPOLOGIE                           |
++==================================================================================================+
+|                                                                                                  |
+|  [SICHT 1: TKINTER-BENUTZEROBERFLÄCHE, NUTZEREINGABEN & CLI-INTEGRATION]                         |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Desktop-Fenstersystem: Tkinter / ttk unprivilegierte Desktop-GUI mit nativem Styling      |  |
+|  | - Tastenkürzel-Verteilung: Strg+O (Öffnen), Strg+F (Suchen), Strg+E (Export), F5 (Neu), F9   |  |
+|  | - Arbeitsbereiche: Tabellen-Browser (Treeview & Paging), Schema-DDL, SQL-Editor-Konsole     |  |
+|  | - CLI & Dateiverknüpfung: Direkter Start per sys.argv[1] und Windows-Explorer-Doppelklick   |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [SICHT 2: ATOMARER TRANSAKTIONALER EXPORT & SERIALISIERUNG]                                     |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Kontextsensitive Weiterleitung: Erkennt aktiven Tab (Tabellendaten vs. SQL-Ergebnisse)     |  |
+|  | - Format-Serialisierer: Fließender CSV-Streaming-Export & strukturierter JSON-Envelope       |  |
+|  | - Export-Envelope v1: sqliteviewer-export-v1 Schema mit Quellabfrage- & Tabellenmetadaten    |  |
+|  | - Atomare Dateisicherheit: Dateinamen-Bereinigung, Verzeichnisanlage & sicheres Ersetzen    |  |
+|  | - Web-Companion-Brücke: Lokale Offline-Datensatzanalyse ohne Upload via web_companion/      |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [SICHT 3: SQLITE3-KERN, SCHEMA-INTROSPEKTION & SICHERE ABFRAGEN]                                |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Integrierte Engine: Direkte Bindung an Python-Standardbibliothek sqlite3 (ohne Pip-Pakete) |  |
+|  | - Schema-Introspektion: Fragt sqlite_master für DDL, Indizes, Trigger & PRAGMAs ab          |  |
+|  | - Defensive Abfrage-Pipeline: Parametrisierte SQLs, LIKE-Maskierung & Selektionsausführung   |  |
+|  | - Nicht-destruktive Erkundung: Sicherer Lesezugriff schützt Nutzerdatenbanken vor Mutation   |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [SICHT 4: RUNASINVOKER-ISOLATION, ZERO-EGRESS & AUDIT-INTEGRITÄT]                               |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | - Zero Network Egress Grenze: 100% offline, isolierte Ausführung ohne Sockets (INV-LOCAL-01)|  |
+|  | - RunAsInvoker Standardnutzer: Keine UAC-Elevation oder Administratorrechte (INV-LOCAL-02)  |  |
+|  | - Level 1 SBOM Textbegleiter: THIRD_PARTY_LICENSES.txt Stand 2026-10-11 re-auditiert        |  |
+|  | - Multi-Host Cloud-Sync Schutz: Gehärtete .gitignore-Regeln gegen Sync-Konflikte & Locks    |  |
+|  +--------------------------------------------------------------------------------------------+  |
++==================================================================================================+
+```
+
 ---
 
+<a id="sec-04"></a>
 ## Export-Lebenszyklus
 
 Der Datenexport folgt einem strikten kontextsensitiven Protokoll. Der aktuell geöffnete Tab bestimmt, ob Zeilen der Tabellenansicht oder Abfrageergebnisse des SQL-Editors exportiert werden.
@@ -167,6 +220,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec-05"></a>
 ## Vergleichsmatrix gegenüber Alternativen
 
 SQLiteViewer wurde als fokussiertes, lokales Desktop-Werkzeug konzipiert. Die Gegenüberstellung mit bekannten Alternativen über 10 Kriterien verdeutlicht die Positionierung:
@@ -178,7 +232,7 @@ SQLiteViewer wurde als fokussiertes, lokales Desktop-Werkzeug konzipiert. Die Ge
 | **Laufzeit-Abhängigkeiten** (`INV-LOCAL-03`) | **Null (Python Standard)** | C++ / Qt-Bibliotheken | Schwer (JVM ~300 MB) | C++ / Qt-Bibliotheken | Server-Infrastruktur |
 | **Nicht-destruktiver Standard** (`INV-LOCAL-04`)| **JA (Read-Only Default)** | Schreib-/Editierfokus | Schreib-/Editierfokus | Schreib-/Editierfokus | Direkte Mutation |
 | **Kontextsensitiver Export** (`INV-LOCAL-05`)| **JA (CSV + JSON-Envelope)**| Nur CSV | CSV, JSON, XML | CSV, JSON, HTML | Cloud-Datenexport |
-| **Offline Web-Companion** (`INV-LOCAL-06`)| **JA (`web_companion/`)** | NEIN | NEIN | NEIN | Reine Web-App |
+| **Offline Browser-Companion** (`INV-LOCAL-06`)| **JA (`web_companion/`)** | NEIN | NEIN | NEIN | Reine Web-App |
 | **Microsoft Store Paketierung** (`INV-LOCAL-07`) | **JA (`9P6H501XB8JT`)** | Winget / MSI | Winget / MSI | Zip / Setup | Keine Desktop-App |
 | **Permissive Lizenz** (`INV-LOCAL-08`) | **MIT (Zero Copyleft)** | GPLv3 (Copyleft) | Apache / Kommerziell | GPLv3 (Copyleft) | Proprietär |
 | **Zweisprachige Parität EN/DE** (`INV-LOCAL-09`) | **JA (100% Wechselseitig)**| Teilweise UI | Teilweise UI | Teilweise UI | Nur Englisch |
@@ -186,6 +240,7 @@ SQLiteViewer wurde als fokussiertes, lokales Desktop-Werkzeug konzipiert. Die Ge
 
 ---
 
+<a id="sec-06"></a>
 ## Kernfunktionen
 
 - **Schneller Tabellen-Browser:** Sortierbare Spalten, dynamische Spaltenbreiten und responsives Paging für Datenbanken mit vielen Datensätzen.
@@ -199,6 +254,7 @@ SQLiteViewer wurde als fokussiertes, lokales Desktop-Werkzeug konzipiert. Die Ge
 
 ---
 
+<a id="sec-07"></a>
 ## Schnellstart & Installation
 
 ### Option A: Microsoft Store (Empfohlen für Windows)
@@ -229,6 +285,7 @@ python SQLiteViewer.py pfad/zur/datenbank.sqlite
 
 ---
 
+<a id="sec-08"></a>
 ## Nutzung & Arbeitsablauf
 
 1. **Datenbank öffnen:** `Strg+O` drücken oder eine `.db`-, `.sqlite`- bzw. `.sqlite3`-Datei per Drag & Drop ins Fenster ziehen.
@@ -240,6 +297,7 @@ python SQLiteViewer.py pfad/zur/datenbank.sqlite
 
 ---
 
+<a id="sec-09"></a>
 ## Tastenkürzel
 
 | Tastenkürzel | Aktion | Bereich |
@@ -253,6 +311,7 @@ python SQLiteViewer.py pfad/zur/datenbank.sqlite
 
 ---
 
+<a id="sec-10"></a>
 ## Exportformat & Web-Companion
 
 SQLiteViewer nutzt für strukturierte Exporte die Spezifikation **`sqliteviewer-export-v1`** (vollständig dokumentiert in [`EXPORTFORMAT.md`](EXPORTFORMAT.md)). JSON-Exporte enthalten Herkunfts- und Filtermetadaten:
@@ -285,6 +344,7 @@ Die erzeugte Datei kann direkt im eigenständigen Browser-Tool [`web_companion/`
 
 ---
 
+<a id="sec-11"></a>
 ## Microsoft Store & Paketierung
 
 SQLiteViewer ist als Standard-Desktop-Bridge-Anwendung für Windows paketiert:
@@ -297,6 +357,7 @@ SQLiteViewer ist als Standard-Desktop-Bridge-Anwendung für Windows paketiert:
 
 ---
 
+<a id="sec-12"></a>
 ## Governance & System-Invarianten
 
 SQLiteViewer erfüllt alle zehn System-Invarianten des `open-bricks`- und `file-bricks`-Desktop-Verbunds:
@@ -316,6 +377,7 @@ SQLiteViewer erfüllt alle zehn System-Invarianten des `open-bricks`- und `file-
 
 ---
 
+<a id="sec-13"></a>
 ## Drittanbieter-Lizenzen & Transparenz
 
 SQLiteViewer setzt konsequent auf offene, freie Standards. Die vollständige Lizenzdokumentation ist in [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) hinterlegt.
@@ -327,6 +389,7 @@ SQLiteViewer setzt konsequent auf offene, freie Standards. Die vollständige Liz
 
 ---
 
+<a id="sec-14"></a>
 ## Ökosystem & Schwesterprojekte
 
 SQLiteViewer wird innerhalb der Organisation [**file-bricks**](https://github.com/file-bricks) geführt und ist Teil der freien Desktop-Suite [**open-bricks**](https://github.com/open-bricks).
@@ -340,6 +403,7 @@ Verwandte Werkzeuge im Verbund:
 
 ---
 
+<a id="sec-15"></a>
 ## Sicherheit & Datenschutz
 
 - **Datenschutzerklärung:** Alle Details in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md). SQLiteViewer erfasst keine Benutzerdaten und sendet keine Telemetrie.
@@ -347,6 +411,7 @@ Verwandte Werkzeuge im Verbund:
 
 ---
 
+<a id="sec-16"></a>
 ## Vertragstests & Verifikation
 
 Die Integrität der Funktionen, Lokalisierungen und Metadaten wird durch eine automatisierte Testsuite gesichert:
@@ -365,6 +430,7 @@ Enthaltene Testmodule:
 
 ---
 
+<a id="sec-17"></a>
 ## Lizenz & Haftung
 
 Dieses Projekt ist unter der [MIT-Lizenz](LICENSE) lizenziert.

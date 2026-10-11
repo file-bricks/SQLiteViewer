@@ -1,13 +1,14 @@
 # Third-Party Licenses & Runtime Invariants
 
-**Repository:** `file-bricks/SQLiteViewer`  
-**Stand:** 2026-09-14  
-**Version:** 2.1.0  
-**SPDX-License-Identifier:** MIT  
-**Application Title:** SQLite Viewer Pro  
-**Store ID:** `9P6H501XB8JT`  
-**Identity Name:** `Geiger.SQLiteViewerPro`  
-**Umbrella Ecosystem:** `open-bricks` / `file-bricks`  
+**Repository:** `file-bricks/SQLiteViewer`
+**Stand:** 2026-10-11
+**Version:** 2.1.0
+**SPDX-License-Identifier:** MIT
+**Application Title:** SQLite Viewer Pro
+**Store ID:** `9P6H501XB8JT`
+**Identity Name:** `Geiger.SQLiteViewerPro`
+**Umbrella Ecosystem:** `open-bricks` / `file-bricks`
+**SBOM Companion:** [`THIRD_PARTY_LICENSES.txt`](THIRD_PARTY_LICENSES.txt) (Level 1 Plain-Text 5-Field Inventory)
 
 ---
 
@@ -32,8 +33,10 @@ SQLiteViewer is built exclusively upon the **Python Standard Library** and stand
 
 | Package / Component | Version | License (SPDX) | Type / Purpose | Copyleft? |
 |---|---|---|---|---|
-| **pytest** | >= 8.0.0 | `MIT` | Automated unit, regression, and metadata contract testing | No |
-| **ruff** | >= 0.4.0 | `MIT OR Apache-2.0` | Static analysis, code formatting, and linting | No |
+| **pytest** | >= 9.1.1 | `MIT` | Automated unit, regression, and metadata contract testing (CVE-2025-7117 mitigated) | No |
+| **ruff** | >= 0.9.0 | `MIT OR Apache-2.0` | Static analysis, code formatting, and linting | No |
+| **pyinstaller** | >= 6.10.0 | `GPL-2.0-or-later WITH Bootloader-Exception` | Standalone executable packaging (non-copyleft bundling) | No (Exception) |
+
 
 ---
 

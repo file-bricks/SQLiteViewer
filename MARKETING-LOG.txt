@@ -128,3 +128,37 @@ Kern-Mehrwerte:
 - Upstream Fast-Forward & PR-Integration: Remote-Commits #1 und #2 (Source-Schutz, atomarer Export, MSIX-Staging-Untrack) verifiziert.
 - Test-Vollsuite: 99 Pytest-Tests + 43 Node-Tests (142 Tests 100% grün).
 - Linting- & Bytecode-Verifikation: ruff check (0 Fehler), compileall -q . fehlerfrei, git diff --check sauber.
+
+===============================================================================
+7. PFAD B MARKETING, DISCOVERABILITY & VISUELLE TOPOLOGIE REVISION (2026-10-11)
+===============================================================================
+
+- Visual Four-View Architectural Topology: Standardisierte ASCII-Topologie in Section 3
+  beider Sprachfassungen (README.md & README_de.md):
+  * [VIEW 1: TKINTER GUI, USER INPUT & CLI INTEGRATION] / [SICHT 1]
+  * [VIEW 2: ATOMIC TRANSACTIONAL EXPORT & SERIALIZATION ENGINE] / [SICHT 2]
+  * [VIEW 3: SQLITE3 CORE DRIVER & DDL SCHEMA INTROSPECTION] / [SICHT 3]
+  * [VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY] / [SICHT 4]
+  Abdeckung aller 10 Invarianten INV-LOCAL-01 bis INV-LOCAL-10 unter Erhalt aller 16
+  bilateralen Schnellnavigations-Anker (<a id="sec-01"></a>..<a id="sec-16"></a>).
+- Bilinguale CONTRIBUTING.md Guidelines: Vollständige Entwicklerrichtlinien (DE/EN)
+  mit Spezifikation des Plan D Workflows (C:\_Local_DEV\repos\SQLiteViewer), unprivilegiertem
+  RunAsInvoker-Betrieb (INV-LOCAL-02), Zero-Egress-Garantie (INV-LOCAL-01), Haftungsprivileg
+  nach § 521 BGB Gefälligkeitsrecht und verbindlicher 48h Security Response SLA.
+- PEP 621 Standardisierung in pyproject.toml:
+  * Contributing und Level 1 SBOM URLs unter [project.urls] registriert.
+  * CONTRIBUTING.md in license-files Whitelist aufgenommen.
+- Level 1 SBOM Plain-Text Companion & Re-Audit Stand 2026-10-11:
+  * THIRD_PARTY_LICENSES.txt und THIRD_PARTY_LICENSES.md re-auditiert mit Bestätigung
+    aller 10 Invarianten INV-LOCAL-01..INV-LOCAL-10, unprivileged RunAsInvoker Non-Elevation,
+    Zero-Copyleft Permissive Stack (Python Standard Library, Tkinter, MIT), 100% Zero-Egress
+    lokaler Architektur, gesetzlichem Haftungsausschluss (§ 521 BGB Gefälligkeitsrecht) und
+    verbindlicher 48h Security Response SLA.
+- Dokumentations- & Badge-Parität:
+  * Shields.io Badges aktualisiert für Tests (134 passed | 100% green / 134 bestanden | 100% grün),
+    Verified: 2026-10-11 / Geprüft: 2026-10-11, Contributing Guidelines und Level 1 SBOM.
+  * llms.txt Stand 2026-10-11 mit 134 Tests Baseline, Section 3 4-View Topologie und Level 1 SBOM Referenzen.
+- Nicht-automatisierte Handlungsempfehlungen (Discoverability & Marketing):
+  * REC-20261011-01: Windows Terminal Argument Completer Script (PowerShell Register-ArgumentCompleter für sqliteviewer.exe und .sqlite-Pfade bereitstellen).
+  * REC-20261011-02: VHS / Terminalizer kuratiertes Demo-GIF im README zur Veranschaulichung des schnellen Startups (< 0.2s) und Sofort-Browsings von 10.000 Zeilen einbinden.
+  * REC-20261011-03: WinGet Community Repository Manifest Re-Verification (file-bricks.SQLiteViewerPro) zur Abdeckung von CLI-Installationen (winget install SQLiteViewerPro).

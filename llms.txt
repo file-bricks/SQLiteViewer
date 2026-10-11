@@ -2,7 +2,7 @@
 
 Canonical repository: https://github.com/file-bricks/SQLiteViewer
 Version: 2.1.0
-Stand: 2026-09-22
+Stand: 2026-10-11
 Organization: file-bricks
 Umbrella: open-bricks
 Microsoft Store: SQLite Viewer Pro (Store ID: 9P6H501XB8JT, Identity: Geiger.SQLiteViewerPro)
@@ -24,9 +24,11 @@ SQLiteViewer is a local-first Python/Tkinter desktop application for opening, br
 - `translator.py`: runtime internationalization engine supporting dynamic language switching.
 - `locales/translations.json`: localized UI strings for English (`en`) and German (`de`).
 - `NOTICE`: formal open-source attribution, copyright notice, § 521 BGB statutory liability disclaimer, and third-party license notices.
-- `README.md`: primary English landing page with 16-point quick navigation, architecture diagrams, personas, and comparative matrix.
+- `CONTRIBUTING.md`: bilateral developer guidelines with Plan D workflow, 10 system invariants, § 521 BGB disclaimer, and 48h SLA.
+- `README.md`: primary English landing page with 16-point quick navigation, Section 3 Visual 4-View Topology, architecture diagrams, personas, and comparative matrix.
 - `README_de.md`: reciprocal German user guide with full parity.
 - `THIRD_PARTY_LICENSES.md`: license compliance audit certifying zero runtime external dependencies (Python standard library only) and zero-copyleft guarantees.
+- `THIRD_PARTY_LICENSES.txt`: Level 1 SBOM Plain-Text Companion with 5-field schema.
 - `MARKETING-LOG.txt`: discoverability log, 4 target personas, high-intent SEO queries, and comparative analysis.
 - `EXPORTFORMAT.md`: JSON companion export contract (`sqliteviewer-export-v1.json`).
 - `CHANGELOG.md`: versioned release history and bug fixes.
@@ -81,4 +83,4 @@ SQLite Viewer Pro Microsoft Store
 
 MIT License.
 
-## Last-checked: 2026-10-08 (PEP 621 compliant, 127 Pytest + 43 Node companion tests passed | 100% green, 5-field SBOM Level 1 inventory, resilience bugfixes verified)
+## Last-checked: 2026-10-11 (PEP 621 compliant, Section 3 Visual 4-View Topology, 134 Pytest + 43 Node companion tests passed | 100% green, Level 1 SBOM companion verified)
