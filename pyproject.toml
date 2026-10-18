@@ -69,11 +69,13 @@ Notice = "https://github.com/file-bricks/SQLiteViewer/blob/master/NOTICE"
 Issues = "https://github.com/file-bricks/SQLiteViewer/issues"
 "Security Advisories" = "https://github.com/file-bricks/SQLiteViewer/security/advisories/new"
 "Microsoft Store" = "https://apps.microsoft.com/detail/9P6H501XB8JT"
+"Parent Organization" = "https://github.com/file-bricks"
+"Umbrella Ecosystem" = "https://github.com/open-bricks"
 
 [tool.pytest.ini_options]
 minversion = "9.1.1"
 testpaths = ["tests"]
-python_files = ["test_*.py"]
+python_files = ["test_*.py", "*_smoke.py"]
 python_functions = ["test_*"]
 addopts = "-ra -v --basetemp=.pytest_tmp"
 norecursedirs = [".git", ".pytest_cache", ".ruff_cache", "build", "dist", ".venv", "runs", ".work", "assets", "store_assets", "store_package", "web_companion/node_modules"]

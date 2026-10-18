@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- **Pfad A Technische Hygiene, CI-Matrix-Härtung, PEP 621 Standardisierung & Vertragstest-Erweiterung (Stand 2026-10-18):**
+  - CI-Matrix-Härtung: `.github/workflows/source-platform-smoke.yml` erweitert um Python 3.10 Runner (`matrix.python-version = ["3.10", "3.11", "3.12"]`) zur aktiven Absicherung des deklarierten PEP 621 `requires-python = ">=3.10"` Floors sowie Integration eines automatisierten `ruff check .` Linting-Schritts.
+  - Multi-Host- & Cloud-Sync-Schutz: `.gitignore` gehärtet gegen Duplikatkopien von Synchronisationsdiensten (`* (Kopie)*`, `* (kopie)*`, `* (Copy)*`, `* (copy)*`), Locking-Artefakte (`uv.lock`) und Test-/Coverage-Caches (`.wheel-smoke/`, `wheelhouse/`, `.tox/`).
+  - PEP 621 Standardisierung in `pyproject.toml`: Erweiterung der Projekt-URLs um Ökosystem-Aliase (`"Parent Organization"` -> file-bricks, `"Umbrella Ecosystem"` -> open-bricks); Vereinheitlichung der Pytest-Dateimuster (`python_files = ["test_*.py", "*_smoke.py"]`) zur automatischen Erkennung headless Smoke-Tests.
+  - Unterordner-README-Parität: Prüfung aller Unterordner auf DE/EN-README-Parität nach P-006 Stufe 1; Aufnahme des Befunds für `web_companion/` in `MARKETING-LOG.txt` für den P-006 Leerlauf-Sprachzug.
+  - Vertragstest-Erweiterung: `tests/test_metadata.py` um 4 neue Contract-Tests (`test_pytest_configuration_unified_smoke_discovery`, `test_extended_gitignore_patterns`, `test_subfolder_readme_inventory_documented`, `test_marketing_log_section_8_pfad_a_20261018`) erweitert und Badge-Prüfung auf Stand 2026-10-18 gehärtet.
 - **Pfad B Discoverability, Visual 4-View Topology & Level 1 SBOM Re-Audit (Stand 2026-10-11):**
   - Visual Four-View Topology: Standardized ASCII architectural projection in Section 3 of both `README.md` and `README_de.md` ([VIEW 1: TKINTER GUI, USER INPUT & CLI INTEGRATION], [VIEW 2: ATOMIC TRANSACTIONAL EXPORT & SERIALIZATION ENGINE], [VIEW 3: SQLITE3 CORE DRIVER & DDL SCHEMA INTROSPECTION], [VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]) covering all 10 system invariants (`INV-LOCAL-01` to `INV-LOCAL-10`).
   - Bilateral Fast Navigation: Standardized 16-point anchor navigation (`<a id="sec-01"></a>` to `<a id="sec-16"></a>`) across English and German documentation.

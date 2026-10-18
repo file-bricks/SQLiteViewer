@@ -86,11 +86,16 @@ DONE.md
 *-MacBook*
 *.conflict
 *-conflict-*
+* (Kopie)*
+* (kopie)*
+* (Copy)*
+* (copy)*
 
 # Canonical Lock-System Protection
 LOCK
 LOCK.*
 *.lock
+uv.lock
 LOCK.user.*
 LOCK.until.*
 LOCK.condition.*
@@ -109,6 +114,9 @@ pytest*.txt
 htmlcov/
 .hypothesis/
 .nyc_output/
+.wheel-smoke/
+wheelhouse/
+.tox/
 
 # Web Companion build & test caches
 web_companion/dist/

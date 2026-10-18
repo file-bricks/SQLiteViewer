@@ -162,3 +162,33 @@ Kern-Mehrwerte:
   * REC-20261011-01: Windows Terminal Argument Completer Script (PowerShell Register-ArgumentCompleter für sqliteviewer.exe und .sqlite-Pfade bereitstellen).
   * REC-20261011-02: VHS / Terminalizer kuratiertes Demo-GIF im README zur Veranschaulichung des schnellen Startups (< 0.2s) und Sofort-Browsings von 10.000 Zeilen einbinden.
   * REC-20261011-03: WinGet Community Repository Manifest Re-Verification (file-bricks.SQLiteViewerPro) zur Abdeckung von CLI-Installationen (winget install SQLiteViewerPro).
+
+===============================================================================
+8. PFAD A REPOSITORY-HYGIENE, CI-MATRIX-HÄRTUNG & PEP 621 STANDARDISIERUNG (2026-10-18)
+===============================================================================
+
+- CI-Matrix-Härtung (.github/workflows/source-platform-smoke.yml):
+  * Python-Versionsmatrix um Python 3.10 erweitert: os [ubuntu-latest, windows-latest, macos-latest] x python-version ["3.10", "3.11", "3.12"], um den in pyproject.toml deklarierten PEP 621 Floor (requires-python = ">=3.10") auf allen drei Plattformen aktiv zu validieren.
+  * Automatisierter Ruff-Linting-Schritt in CI-Workflow integriert (pip install pytest ruff && ruff check .).
+  * Vereinheitlichte Testausführung via python -m pytest -v --basetemp=.pytest_tmp.
+- Multi-Host- & Cloud-Sync-Schutz (.gitignore):
+  * Muster gegen Duplikatkopien ergänzt: * (Kopie)*, * (kopie)*, * (Copy)*, * (copy)*.
+  * Lock- und Toolchain-Schutz erweitert: uv.lock, .wheel-smoke/, wheelhouse/, .tox/.
+- PEP 621 Standardisierung (pyproject.toml):
+  * Ökosystem-Aliase in [project.urls] eingepflegt:
+    "Parent Organization" = "https://github.com/file-bricks"
+    "Umbrella Ecosystem" = "https://github.com/open-bricks"
+  * Pytest-Dateimuster harmonisiert: python_files = ["test_*.py", "*_smoke.py"] zur automatischen Erkennung headless Smoke-Tests.
+- Unterordner-README-Inventar (P-006 / README-PARITAET-INVENTAR_2026-08-17):
+  * Befund: web_companion/README.md liegt aktuell als deutschsprachiges Dokument vor; web_companion/README_de.md fehlt.
+  * Vormerkung: Unterordner-README-Parität wird für den planmäßigen P-006-Leerlauf-Sprachzug vorgemerkt (gemäß Vorgabe kein unautorisierter Übersetzungs-Quick-Fix im Pfad A).
+- Vertragstest-Erweiterung (tests/test_metadata.py):
+  * 4 neue Contract-Tests:
+    1. test_pytest_configuration_unified_smoke_discovery: Prüft python_files Konfiguration auf Einbindung von *_smoke.py.
+    2. test_extended_gitignore_patterns: Prüft Vorhandensein von Kopie-/Duplikat- und Lockmustern in .gitignore.
+    3. test_subfolder_readme_inventory_documented: Prüft Dokumentation des web_companion README-Befunds im MARKETING-LOG.txt.
+    4. test_marketing_log_section_8_pfad_a_20261018: Prüft Vorhandensein und Vollständigkeit von Abschnitt 8 im MARKETING-LOG.txt.
+  * Härtung bestehender Contract-Tests für CI Python 3.10 Matrix, PEP 621 Ökosystem-URLs und Badge-Stand 2026-10-18.
+- Dokumentations- & Badge-Parität:
+  * Badges in README.md & README_de.md auf Stand 2026-10-18 und neue Gesamt-Testanzahl aktualisiert.
+  * llms.txt Last-checked auf 2026-10-18 aktualisiert.

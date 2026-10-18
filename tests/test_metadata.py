@@ -132,6 +132,8 @@ def test_pyproject_metadata_and_urls():
     assert "Notice" in content
     assert "Issues" in content
     assert "Microsoft Store" in content
+    assert '"Parent Organization"' in content
+    assert '"Umbrella Ecosystem"' in content
     assert "addopts" in content and "-ra -v" in content
 
 
@@ -144,10 +146,12 @@ def test_llms_txt_integrity():
         "Stand: 2026-09-14",
         "Stand: 2026-09-22",
         "Stand: 2026-10-11",
+        "Stand: 2026-10-18",
         "Last-checked: 2026-09-14",
         "Last-checked: 2026-09-22",
         "Last-checked: 2026-10-08",
         "Last-checked: 2026-10-11",
+        "Last-checked: 2026-10-18",
     ])
     for i in range(1, 5):
         assert f"[PERSONA-{i:02d}]" in content
@@ -204,6 +208,9 @@ def test_gitignore_lock_defense():
         "*-ASUS*",
         "*-LAPTOP*",
         ".pytest_tmp/",
+        "* (kopie)*",
+        "* (copy)*",
+        "uv.lock",
     ]:
         assert pattern in content, f".gitignore missing safety pattern: {pattern}"
 
@@ -219,6 +226,8 @@ def test_github_actions_workflows_hardened():
     smoke_content = smoke_wf.read_text(encoding="utf-8")
     assert "master" in smoke_content
     assert "windows-latest" in smoke_content
+    assert '"3.10"' in smoke_content
+    assert "ruff check" in smoke_content
     assert "timeout-minutes:" in smoke_content
     assert "concurrency:" in smoke_content
     assert "permissions:" in smoke_content
@@ -335,14 +344,12 @@ def test_marketing_log_section_7_pfad_b_20261011():
 
 
 def test_badges_recency_and_test_count_20261011():
-    """Verify badges in README.md and README_de.md reflect 2026-10-11 currency and 134 passing tests."""
+    """Verify badges in README.md and README_de.md reflect currency and passing tests."""
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert "Verified-2026--10--11-blue.svg" in content_en
-    assert "Gepr%C3%BCft-2026--10--11-blue.svg" in content_de
-    assert "Tests-134%20passed" in content_en
-    assert "Tests-134%20bestanden" in content_de
+    assert "Verified-2026--10--11-blue.svg" in content_en or "Verified-2026--10--18-blue.svg" in content_en
+    assert "Gepr%C3%BCft-2026--10--11-blue.svg" in content_de or "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de
 
@@ -362,3 +369,50 @@ def test_version_freeze_discipline_210():
 
     sbom_md = (REPO_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
     assert "**Version:** 2.1.0" in sbom_md
+
+
+def test_pytest_configuration_unified_smoke_discovery():
+    """Verify pyproject.toml pytest configuration automatically discovers smoke tests."""
+    pyproject_file = REPO_ROOT / "pyproject.toml"
+    assert pyproject_file.is_file(), "pyproject.toml must exist"
+    content = pyproject_file.read_text(encoding="utf-8")
+    assert "*_smoke.py" in content, "pytest configuration must include *_smoke.py pattern"
+
+
+def test_extended_gitignore_patterns():
+    """Verify .gitignore includes duplicate copy patterns and toolchain cache patterns."""
+    gi_file = REPO_ROOT / ".gitignore"
+    assert gi_file.is_file(), ".gitignore must exist"
+    content = gi_file.read_text(encoding="utf-8")
+    for pattern in ["* (Kopie)*", "* (Copy)*", ".wheel-smoke/", "wheelhouse/", ".tox/"]:
+        assert pattern in content, f".gitignore missing pattern: {pattern}"
+
+
+def test_subfolder_readme_inventory_documented():
+    """Verify Unterordner-README inventory (web_companion) is documented in MARKETING-LOG.txt per P-006."""
+    marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
+    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    content = marketing_file.read_text(encoding="utf-8")
+    assert "web_companion/README.md" in content, "web_companion README inventory must be documented"
+    assert "web_companion/README_de.md" in content, "web_companion German parity status must be documented"
+
+
+def test_marketing_log_section_8_pfad_a_20261018():
+    """Verify Section 8 Pfad A technical hygiene entry exists in MARKETING-LOG.txt."""
+    marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
+    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    content = marketing_file.read_text(encoding="utf-8")
+    assert "8. PFAD A REPOSITORY-HYGIENE, CI-MATRIX-HÄRTUNG & PEP 621 STANDARDISIERUNG (2026-10-18)" in content
+
+
+def test_badges_recency_and_test_count_20261018():
+    """Verify badges in README.md and README_de.md reflect 2026-10-18 currency and passing tests."""
+    content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    assert "Verified-2026--10--18-blue.svg" in content_en
+    assert "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de
+    assert "Tests-146%20passed" in content_en
+    assert "Tests-146%20bestanden" in content_de
+    assert "Contributing-Guidelines" in content_en
+    assert "Beitragsrichtlinie" in content_de

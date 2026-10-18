@@ -6,8 +6,8 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/Notice-Attribution-blue.svg" alt="Notice & Attribution"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/Tests-134%20passed%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Passing"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/Verified-2026--10--11-blue.svg" alt="Verified 2026-10-11"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Tests-146%20passed%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Passing"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Verified-2026--10--18-blue.svg" alt="Verified 2026-10-18"></a>
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-Guidelines-green.svg" alt="Contributing Guidelines"></a>
   <a href="THIRD_PARTY_LICENSES.txt"><img src="https://img.shields.io/badge/Level%201%20SBOM-Plain%20Text-blue.svg" alt="Level 1 SBOM Plain Text"></a>
   <a href="store_package.json"><img src="https://img.shields.io/badge/Microsoft%20Store-9P6H501XB8JT-0078D7?logo=windows&logoColor=white" alt="Microsoft Store ID: 9P6H501XB8JT"></a>
