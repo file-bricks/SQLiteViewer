@@ -2,11 +2,15 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  assertImportByteSize,
   buildDemoExport,
   exportToCsv,
   filterRows,
   formatCellValue,
   formatSourceSummary,
+  MAX_IMPORT_BYTES,
+  MAX_IMPORT_COLUMNS,
+  MAX_IMPORT_ROWS,
   parseExport,
   SCHEMA,
   sortRows,
@@ -59,6 +63,22 @@ test("parseExport maps metadata and rows", () => {
 
 test("parseExport rejects unknown schema", () => {
   assert.throws(() => parseExport({ ...SAMPLE, schema_version: "other-v1" }), /Unbekanntes Schema/);
+});
+
+test("parseExport begrenzt die Zahl der Spalten und Ergebniszeilen", () => {
+  assert.throws(
+    () => parseExport({ ...SAMPLE, columns: Array.from({ length: MAX_IMPORT_COLUMNS + 1 }, (_, index) => `c${index}`) }),
+    /IMPORT_TOO_MANY_COLUMNS/
+  );
+  assert.throws(
+    () => parseExport({ ...SAMPLE, result_rows: Array.from({ length: MAX_IMPORT_ROWS + 1 }, () => ({ id: 1 })) }),
+    /IMPORT_TOO_MANY_ROWS/
+  );
+});
+
+test("assertImportByteSize akzeptiert die Grenze und weist größere Dateien zurück", () => {
+  assert.doesNotThrow(() => assertImportByteSize(MAX_IMPORT_BYTES));
+  assert.throws(() => assertImportByteSize(MAX_IMPORT_BYTES + 1), /IMPORT_FILE_TOO_LARGE/);
 });
 
 test("formatCellValue renders blob metadata readably", () => {

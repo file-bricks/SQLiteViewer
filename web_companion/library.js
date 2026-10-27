@@ -1,4 +1,16 @@
 export const SCHEMA = "sqliteviewer-export-v1";
+export const MAX_IMPORT_BYTES = 8 * 1024 * 1024;
+export const MAX_IMPORT_COLUMNS = 100;
+export const MAX_IMPORT_ROWS = 2_000;
+
+export function assertImportByteSize(byteSize) {
+  if (!Number.isFinite(byteSize) || byteSize < 0) {
+    throw new RangeError("IMPORT_INVALID_FILE_SIZE");
+  }
+  if (byteSize > MAX_IMPORT_BYTES) {
+    throw new RangeError("IMPORT_FILE_TOO_LARGE");
+  }
+}
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -44,9 +56,15 @@ export function parseExport(payload) {
   if (!Array.isArray(payload.columns)) {
     throw new Error("Export enthält keine gültige Spaltenliste.");
   }
+  if (payload.columns.length > MAX_IMPORT_COLUMNS) {
+    throw new RangeError("IMPORT_TOO_MANY_COLUMNS");
+  }
 
   if (!Array.isArray(payload.result_rows)) {
     throw new Error("Export enthält keine gültigen Ergebniszeilen.");
+  }
+  if (payload.result_rows.length > MAX_IMPORT_ROWS) {
+    throw new RangeError("IMPORT_TOO_MANY_ROWS");
   }
 
   const columns = payload.columns.map((column) => String(column));

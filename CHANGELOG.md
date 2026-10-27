@@ -41,6 +41,7 @@
 - Updated `llms.txt` Last-checked header to `2026-10-03` with 107 Pytest + 43 Node companion tests verified.
 
 ### Fixed
+- **Web/PWA-Companion Importgrenzen:** Lokale JSON-Importe werden vor dem Lesen auf 8 MiB begrenzt; der Exportvertrag akzeptiert höchstens 100 Spalten und 2.000 Ergebniszeilen. Überschreitungen erhalten eine lokalisierte Fehlermeldung, statt große Nutzlasten bis in Rendering und lokale Wiederherstellung zu übernehmen. Node-Vertragstests decken die Dateigröße sowie beide Strukturgrenzen ab; der Service-Worker-Cache wurde auf v5 erhöht.
 - **Empty Table State & Export Action Cleanup:** `_load_tables()` bereinigt Tabellen- und Schema-Dropdowns, Spalten-/Zeilen-Caches und Export-Kontexte vollständig bei leeren Datenbanken (z. B. nach `DROP TABLE`), setzt Zeilenzähler zurück und deaktiviert Export-Aktionen.
 - **Defensive Sort & Search Invariants:** `load_selected_table()` setzt ungültige Sortierspalten defensiv zurück; `_clear_search()` belässt den aktiven Tabellenzähler intakt beim Drücken von Escape; `_search_data()` validiert Limit defensiv.
 - **SQL Editor Selection Execution:** `execute_sql()` führt bei aktiver Selektion im SQL-Editor gezielt den markierten Block aus, um SQLite `ProgrammingError` bei Mehrfachanweisungen zu vermeiden.

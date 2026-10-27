@@ -35,6 +35,9 @@ export const TRANSLATIONS = {
     status_export_loaded: "{label} geladen: {name} ({count} sichtbare Zeilen).",
     status_storage_warn: "Export geladen, aber der Browser konnte keine lokale Wiederherstellung speichern.",
     status_read_error: "Datei konnte nicht gelesen werden.",
+    status_import_too_large: "Datei ist größer als das lokale Importlimit von {limit}.",
+    status_import_too_many_columns: "Export enthält mehr als {limit} Spalten und wurde nicht geladen.",
+    status_import_too_many_rows: "Export enthält mehr als {limit} Ergebniszeilen und wurde nicht geladen.",
     
     // Panel 1: Source & Metadata
     panel_source_eyebrow: "Quelle",
@@ -107,6 +110,9 @@ export const TRANSLATIONS = {
     status_export_loaded: "{label} loaded: {name} ({count} visible rows).",
     status_storage_warn: "Export loaded, but the browser could not store local restoration.",
     status_read_error: "File could not be read.",
+    status_import_too_large: "File exceeds the local import limit of {limit}.",
+    status_import_too_many_columns: "Export contains more than {limit} columns and was not loaded.",
+    status_import_too_many_rows: "Export contains more than {limit} result rows and was not loaded.",
     
     // Panel 1: Source & Metadata
     panel_source_eyebrow: "Source",

@@ -48,6 +48,10 @@ Dann im Browser öffnen:
 - Keine Schreibfunktionen zurück in Desktop oder Datenbank
 - Kein rohes `.sqlite`-Parsing im ersten Companion-Stand
 - Keine Hintergrund-Synchronisation
+- Importiert werden höchstens 8 MiB pro Datei, 100 Spalten und 2.000 Ergebniszeilen.
+  So bleiben Dateiimport, Rendering und lokale Wiederherstellung auf üblichen
+  Browsern nachvollziehbar begrenzt; größere Exporte werden im Companion nicht
+  geöffnet und können im Desktop-Programm gezielter reduziert exportiert werden.
 
 Wenn später echte Nachfrage nach Browser-SQLite entsteht, kann ein
 WASM-/`sql.js`-Pfad separat evaluiert werden. Für den aktuellen Usecase reicht

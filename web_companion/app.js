@@ -1,9 +1,13 @@
 import {
+  assertImportByteSize,
   buildDemoExport,
   exportToCsv,
   filterRows,
   formatCellValue,
   formatSourceSummary,
+  MAX_IMPORT_BYTES,
+  MAX_IMPORT_COLUMNS,
+  MAX_IMPORT_ROWS,
   parseExport,
   sortRows,
 } from "./library.js";
@@ -248,11 +252,31 @@ function readFileAsText(file) {
   });
 }
 
+function importLimitMessage(error) {
+  const loc = getLocale();
+  if (!(error instanceof RangeError)) {
+    return null;
+  }
+
+  const formatCount = (value) => new Intl.NumberFormat(loc).format(value);
+  if (error.message === "IMPORT_FILE_TOO_LARGE") {
+    return t("status_import_too_large", { limit: `${MAX_IMPORT_BYTES / (1024 * 1024)} MiB` }, loc);
+  }
+  if (error.message === "IMPORT_TOO_MANY_COLUMNS") {
+    return t("status_import_too_many_columns", { limit: formatCount(MAX_IMPORT_COLUMNS) }, loc);
+  }
+  if (error.message === "IMPORT_TOO_MANY_ROWS") {
+    return t("status_import_too_many_rows", { limit: formatCount(MAX_IMPORT_ROWS) }, loc);
+  }
+  return null;
+}
+
 async function handleFile(file) {
   if (!file) {
     return;
   }
   try {
+    assertImportByteSize(file.size);
     const text = await readFileAsText(file);
     const parsed = JSON.parse(text);
     const count = parsed.result_rows?.length ?? 0;
@@ -263,7 +287,7 @@ async function handleFile(file) {
     });
     loadPayload(parsed, { sourceLabel: msg });
   } catch (error) {
-    setStatus(error instanceof Error ? error.message : t("status_read_error"), "error");
+    setStatus(importLimitMessage(error) ?? (error instanceof Error ? error.message : t("status_read_error")), "error");
   }
 }
 
