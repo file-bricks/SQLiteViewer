@@ -188,6 +188,23 @@ test("exportToCsv mit leerem Zeilenarray gibt nur den Header zurück", () => {
   assert.equal(csv, "id,payload,title");
 });
 
+test("exportToCsv neutralisiert Tabellenformeln in Headern und Stringzellen", () => {
+  const parsed = parseExport({
+    ...SAMPLE,
+    columns: ["=header", "safe"],
+    result_rows: [
+      { "=header": "=1+1", safe: -3 },
+      { "=header": " \uFEFF@SUM(A1:A2)", safe: "'literal" },
+      { "=header": "\t+CMD", safe: 7 }
+    ]
+  });
+  const csv = exportToCsv(parsed.columns, parsed.rows);
+  assert.equal(
+    csv,
+    "'=header,safe\r\n'=1+1,-3\r\n' \uFEFF@SUM(A1:A2),'literal\r\n'\t+CMD,7"
+  );
+});
+
 // --- sortRows ---
 
 test("sortRows ohne sortKey gibt Kopie in Originalreihenfolge zurück", () => {

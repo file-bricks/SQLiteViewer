@@ -111,17 +111,23 @@ export function formatSourceSummary(exportData, options = {}) {
 // columns: string[] — Spaltenköpfe aus exportData.columns
 // rows: ParsedRow[] — Zeilen aus parseExport().rows (ggf. bereits gefiltert)
 export function exportToCsv(columns, rows) {
-  function escapeCsvField(value) {
-    const text = value === null || value === undefined ? "" : String(value);
+  function escapeCsvField(value, originalValue = value) {
+    let text = value === null || value === undefined ? "" : String(value);
+    if (typeof originalValue === "string") {
+      const effective = text.replace(/^[\u0000-\u0020\uFEFF]+/u, "");
+      if (/^[\t\r]/u.test(text) || /^[=+\-@]/u.test(effective)) {
+        text = `'${text}`;
+      }
+    }
     if (text.includes(",") || text.includes('"') || text.includes("\n") || text.includes("\r")) {
       return '"' + text.replace(/"/g, '""') + '"';
     }
     return text;
   }
 
-  const header = columns.map(escapeCsvField).join(",");
+  const header = columns.map((column) => escapeCsvField(column, column)).join(",");
   const dataLines = rows.map((row) =>
-    row.cells.map((cell) => escapeCsvField(formatCellValue(cell))).join(",")
+    row.cells.map((cell) => escapeCsvField(formatCellValue(cell), cell)).join(",")
   );
   return [header, ...dataLines].join("\r\n");
 }

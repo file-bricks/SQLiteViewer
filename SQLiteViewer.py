@@ -33,6 +33,18 @@ APP_TITLE = "SQLite Viewer Pro"
 APP_VERSION = "2.1.0"
 DEFAULT_LIMIT = 1000
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
+_CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
+_CSV_IGNORABLE_PREFIX = "".join(chr(code) for code in range(0x21)) + "\ufeff"
+
+
+def _csv_safe_value(value: Any):
+    """Neutralisiert Stringwerte, die Tabellenkalkulationen als Formel deuten können."""
+    if not isinstance(value, str):
+        return value
+    effective = value.lstrip(_CSV_IGNORABLE_PREFIX)
+    if value.startswith(("\t", "\r")) or effective.startswith(_CSV_FORMULA_PREFIXES):
+        return "'" + value
+    return value
 
 
 class SqlViewer(tk.Tk):
@@ -1067,7 +1079,7 @@ class SqlViewer(tk.Tk):
             with atomic_export(path, protected, newline="", encoding="utf-8-sig",
                                refresh_sources=lambda: database_files(self)) as f:
                 writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(columns)
+                writer.writerow(_csv_safe_value(column) for column in columns)
                 # Bugsweep 23: BLOB/bytes base64-kodieren, sonst landet ein b'...'-Rohliteral in der
                 # CSV (konsistent mit dem JSON-Export, der BLOBs ebenfalls base64-kodiert).
                 writer.writerows(
@@ -1075,7 +1087,7 @@ class SqlViewer(tk.Tk):
                         [
                             (
                                 base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else
-                                (base64.b64encode(bytes(v)).decode("ascii") if isinstance(v, (bytearray, memoryview)) else v)
+                                (base64.b64encode(bytes(v)).decode("ascii") if isinstance(v, (bytearray, memoryview)) else _csv_safe_value(v))
                             )
                             for v in row
                         ]

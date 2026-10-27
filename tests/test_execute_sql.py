@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 import sqlite3
 from types import SimpleNamespace
@@ -795,6 +796,39 @@ def test_export_csv_allows_empty_table(tmp_path, monkeypatch):
     assert not warnings, f"Kein Warning erwartet für leere Tabelle, bekam: {warnings}"
     lines = export_path.read_text(encoding="utf-8-sig").splitlines()
     assert lines == ["id;name"], f"Erwartet nur Header-Zeile, bekam: {lines}"
+
+
+def test_export_csv_neutralizes_spreadsheet_formulas(tmp_path, monkeypatch):
+    export_path = tmp_path / "formula_values.csv"
+    fake = SimpleNamespace(
+        current_columns=["=header", "safe"],
+        current_data=[("=1+1", 7), (" \ufeff@SUM(A1:A2)", -3), ("'literal", b"blob")],
+        table_var=SimpleNamespace(get=lambda: "items"),
+        _set_status=lambda *_args, **_kwargs: None,
+    )
+
+    monkeypatch.setattr(SQLiteViewer.filedialog, "asksaveasfilename", lambda **_k: str(export_path))
+    monkeypatch.setattr(SQLiteViewer.messagebox, "showinfo", lambda *_a, **_k: None)
+
+    SQLiteViewer.SqlViewer.export_csv(fake)
+
+    with export_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.reader(handle, delimiter=";"))
+    assert rows == [
+        ["'=header", "safe"],
+        ["'=1+1", "7"],
+        ["' \ufeff@SUM(A1:A2)", "-3"],
+        ["'literal", "YmxvYg=="],
+    ]
+
+
+def test_csv_safe_value_covers_formula_prefix_variants():
+    dangerous = ["=1+1", "+SUM(A1:A2)", "-1+2", "@SUM(A1:A2)", "\t=CMD", "\r+CMD", " \ufeff@CMD"]
+    assert [SQLiteViewer._csv_safe_value(value) for value in dangerous] == [
+        "'" + value for value in dangerous
+    ]
+    assert SQLiteViewer._csv_safe_value("'literal") == "'literal"
+    assert SQLiteViewer._csv_safe_value(-3) == -3
 
 
 def test_heading_command_sorts_once_per_click():
