@@ -8,7 +8,7 @@
 
   <Identity Name="Geiger.SQLiteViewerPro"
             Publisher="CN=52596601-BAB4-4F3F-B182-E8F3F273B202"
-            Version="2.0.1.0" />
+            Version="2.1.0.0" />
 
   <Properties>
     <DisplayName>SQLite Viewer Pro</DisplayName>

@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = []
+datas = [('locales/translations.json', 'locales'), ('SQLiteViewer.ico', '.')]
 binaries = []
 hiddenimports = ['_tkinter']
 tmp_ret = collect_all('tkinter')
