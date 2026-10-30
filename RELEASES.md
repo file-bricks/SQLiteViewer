@@ -34,4 +34,4 @@ releases/
 - 2026-04-29: Lokales EXE-Bundle, Source-ZIP und Checksummen aus dem damaligen Arbeitsstand aktualisiert.
 - 2026-07-22: Erneute unabhängige SHA-256-Prüfung; EXE-Provenienzabweichung als
   Release-Block dokumentiert. Kein Neubuild, kein Austausch und kein Upload.
-- 2026-10-30: Store-Paket `releases/windowsstore/v2.1.0/SQLiteViewerPro-2.1.0.0.msix` (Store-ID `9P6H501XB8JT`) inkl. CSV-Formelschutz (`0777549`), harmonisierten Icons (`resources.pri`) und Pre-Submit-Gate-Receipt gebaut und verifiziert.
+- 2026-10-30: Store-Paket `releases/windowsstore/v2.1.0/SQLiteViewerPro-2.1.0.0.msix` (Store-ID `9P6H501XB8JT`, SHA256 `0290e12bdb648f2253acd30ed41cae4770c6d5459b3d122645b4a11e3bfec0c8`) inkl. CSV-Formelschutz (`0777549`), harmonisierten Icons (`resources.pri`) und Pre-Submit-Gate-Receipt gebaut, verifiziert und als Partner-Center-Submission `1152921505702275474` (Status `Certification`) eingereicht.
