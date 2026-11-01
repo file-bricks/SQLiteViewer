@@ -147,6 +147,7 @@ def test_llms_txt_integrity():
         "Stand: 2026-09-22",
         "Stand: 2026-10-11",
         "Stand: 2026-10-18",
+        "Stand: 2026-11-01",
         "Last-checked: 2026-09-14",
         "Last-checked: 2026-09-22",
         "Last-checked: 2026-10-08",
@@ -348,8 +349,8 @@ def test_badges_recency_and_test_count_20261011():
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert "Verified-2026--10--11-blue.svg" in content_en or "Verified-2026--10--18-blue.svg" in content_en
-    assert "Gepr%C3%BCft-2026--10--11-blue.svg" in content_de or "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de
+    assert any(v in content_en for v in ["Verified-2026--10--11-blue.svg", "Verified-2026--10--18-blue.svg", "Verified-2026--11--01-blue.svg"])
+    assert any(v in content_de for v in ["Gepr%C3%BCft-2026--10--11-blue.svg", "Gepr%C3%BCft-2026--10--18-blue.svg", "Gepr%C3%BCft-2026--11--01-blue.svg"])
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de
 
@@ -410,9 +411,9 @@ def test_badges_recency_and_test_count_20261018():
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert "Verified-2026--10--18-blue.svg" in content_en
-    assert "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de
-    assert "Tests-146%20passed" in content_en
-    assert "Tests-146%20bestanden" in content_de
+    assert "Verified-2026--10--18-blue.svg" in content_en or "Verified-2026--11--01-blue.svg" in content_en
+    assert "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de or "Gepr%C3%BCft-2026--11--01-blue.svg" in content_de
+    assert any(p in content_en for p in ["Tests-146%20passed", "Tests-153%20passed", "Tests-155%20passed"])
+    assert any(p in content_de for p in ["Tests-146%20bestanden", "Tests-153%20bestanden", "Tests-155%20bestanden"])
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de

@@ -446,5 +446,245 @@
     "zh": "找到:",
     "ja": "見つかりました:",
     "ru": "Найдено:"
+  },
+  "SQL-Editor": {
+    "de": "SQL-Editor",
+    "en": "SQL-Editor",
+    "es": "Editor SQL",
+    "zh": "SQL 编辑器",
+    "ja": "SQL エディタ",
+    "ru": "Редактор SQL"
+  },
+  "Tastaturkürzel & Barrierefreiheit…": {
+    "de": "Tastaturkürzel & Barrierefreiheit…",
+    "en": "Keyboard Shortcuts & Accessibility…",
+    "es": "Atajos de teclado y accesibilidad…",
+    "zh": "键盘快捷键与无障碍…",
+    "ja": "キーボードショートカットとアクセシビリティ…",
+    "ru": "Сочетания клавиш и специальные возможности…"
+  },
+  "Tastaturkürzel & Barrierefreiheit": {
+    "de": "Tastaturkürzel & Barrierefreiheit",
+    "en": "Keyboard Shortcuts & Accessibility",
+    "es": "Atajos de teclado y accesibilidad",
+    "zh": "键盘快捷键与无障碍",
+    "ja": "キーボードショートカットとアクセシビリティ",
+    "ru": "Сочетания клавиш и специальные возможности"
+  },
+  "Über SQLite Viewer": {
+    "de": "Über SQLite Viewer",
+    "en": "About SQLite Viewer",
+    "es": "Acerca de SQLite Viewer",
+    "zh": "关于 SQLite Viewer",
+    "ja": "SQLite Viewer について",
+    "ru": "О программе SQLite Viewer"
+  },
+  "Über SQLite Viewer…": {
+    "de": "Über SQLite Viewer…",
+    "en": "About SQLite Viewer…",
+    "es": "Acerca de SQLite Viewer…",
+    "zh": "关于 SQLite Viewer…",
+    "ja": "SQLite Viewer について…",
+    "ru": "О программе SQLite Viewer…"
+  },
+  "Tabelle auswählen": {
+    "de": "Tabelle auswählen",
+    "en": "Select table",
+    "es": "Seleccionar tabla",
+    "zh": "选择表格",
+    "ja": "テーブルを選択",
+    "ru": "Выбрать таблицу"
+  },
+  "Maximale Zeilenanzahl festlegen (1 bis 1.000.000)": {
+    "de": "Maximale Zeilenanzahl festlegen (1 bis 1.000.000)",
+    "en": "Set maximum row limit (1 to 1,000,000)",
+    "es": "Establecer límite máximo de filas (1 a 1.000.000)",
+    "zh": "设置最大行数限制 (1 至 1,000,000)",
+    "ja": "最大行数制限を設定 (1 から 1,000,000)",
+    "ru": "Установить лимит строк (от 1 до 1 000 000)"
+  },
+  "Volltextsuche in aktiver Tabelle (Eingabe / Escape zum Leeren)": {
+    "de": "Volltextsuche in aktiver Tabelle (Eingabe / Escape zum Leeren)",
+    "en": "Full-text search in active table (Enter / Escape to clear)",
+    "es": "Búsqueda de texto completo en la tabla activa (Enter / Escape para borrar)",
+    "zh": "在当前表格中全文搜索 (回车确认 / Escape 清空)",
+    "ja": "アクティブなテーブルで全文検索 (Enter / Escape でクリア)",
+    "ru": "Полнотекстовый поиск по активной таблице (Enter / Escape для очистки)"
+  },
+  "Tabelle und Daten neu laden (F5)": {
+    "de": "Tabelle und Daten neu laden (F5)",
+    "en": "Reload table and data (F5)",
+    "es": "Recargar tabla y datos (F5)",
+    "zh": "重新加载表格与数据 (F5)",
+    "ja": "テーブルとデータを再読み込み (F5)",
+    "ru": "Перезагрузить таблицу и данные (F5)"
+  },
+  "Aktive Daten exportieren (Strg+E / Menü)": {
+    "de": "Aktive Daten exportieren (Strg+E / Menü)",
+    "en": "Export active data (Ctrl+E / Menu)",
+    "es": "Exportar datos activos (Ctrl+E / Menú)",
+    "zh": "导出当前数据 (Ctrl+E / 菜单)",
+    "ja": "アクティブなデータをエクスポート (Ctrl+E / メニュー)",
+    "ru": "Экспортировать текущие данные (Ctrl+E / Меню)"
+  },
+  "Tabelle für Schema-Definition wählen": {
+    "de": "Tabelle für Schema-Definition wählen",
+    "en": "Select table for schema definition",
+    "es": "Seleccionar tabla para definición de esquema",
+    "zh": "选择用于架构定义的表格",
+    "ja": "スキーマ定義のテーブルを選択",
+    "ru": "Выбрать таблицу для определения схемы"
+  },
+  "Alle CREATE TABLE Schemata anzeigen": {
+    "de": "Alle CREATE TABLE Schemata anzeigen",
+    "en": "Show all CREATE TABLE schemas",
+    "es": "Mostrar todos los esquemas CREATE TABLE",
+    "zh": "显示所有 CREATE TABLE 架构",
+    "ja": "すべての CREATE TABLE スキーマを表示",
+    "ru": "Показать все схемы CREATE TABLE"
+  },
+  "SQL-Abfrage ausführen (F9)": {
+    "de": "SQL-Abfrage ausführen (F9)",
+    "en": "Execute SQL query (F9)",
+    "es": "Ejecutar consulta SQL (F9)",
+    "zh": "执行 SQL 查询 (F9)",
+    "ja": "SQL クエリを実行 (F9)",
+    "ru": "Выполнить SQL-запрос (F9)"
+  },
+  "SQL-Eingabe leeren": {
+    "de": "SQL-Eingabe leeren",
+    "en": "Clear SQL input",
+    "es": "Borrar entrada SQL",
+    "zh": "清空 SQL 输入",
+    "ja": "SQL 入力をクリア",
+    "ru": "Очистить ввод SQL"
+  },
+  "Globale Tastaturkürzel": {
+    "de": "Globale Tastaturkürzel",
+    "en": "Global Keyboard Shortcuts",
+    "es": "Atajos de teclado globales",
+    "zh": "全局键盘快捷键",
+    "ja": "グローバルキーボードショートカット",
+    "ru": "Глобальные сочетания клавиш"
+  },
+  "Tastaturnavigation & Screenreader (WCAG 2.1 AA)": {
+    "de": "Tastaturnavigation & Screenreader (WCAG 2.1 AA)",
+    "en": "Keyboard Navigation & Screen Reader (WCAG 2.1 AA)",
+    "es": "Navegación por teclado y lector de pantalla (WCAG 2.1 AA)",
+    "zh": "键盘导航与屏幕阅读器 (WCAG 2.1 AA)",
+    "ja": "キーボードナビゲーションとスクリーンリーダー (WCAG 2.1 AA)",
+    "ru": "Клавиатурная навигация и экранный диктор (WCAG 2.1 AA)"
+  },
+  "Vorwärts / Rückwärts durch Steuerelemente springen": {
+    "de": "Vorwärts / Rückwärts durch Steuerelemente springen",
+    "en": "Navigate forward / backward through controls",
+    "es": "Saltar adelante / atrás por los controles",
+    "zh": "在控件之间向前 / 向后切换",
+    "ja": "コントロール間を順方向 / 逆方向に移動",
+    "ru": "Переход вперед / назад по элементам управления"
+  },
+  "Menüs direkt aufrufen (Alt+D Datei, Alt+B Bearbeiten, Alt+A Ansicht, Alt+H Hilfe)": {
+    "de": "Menüs direkt aufrufen (Alt+D Datei, Alt+B Bearbeiten, Alt+A Ansicht, Alt+H Hilfe)",
+    "en": "Access menus directly (Alt+D File, Alt+B Edit, Alt+A View, Alt+H Help)",
+    "es": "Acceder a menús directamente (Alt+D Archivo, Alt+B Editar, Alt+A Ver, Alt+H Ayuda)",
+    "zh": "直接访问菜单 (Alt+D 文件, Alt+B 编辑, Alt+A 视图, Alt+H 帮助)",
+    "ja": "メニューに直接アクセス (Alt+D ファイル, Alt+B 編集, Alt+A 表示, Alt+H ヘルプ)",
+    "ru": "Прямой доступ к меню (Alt+D Файл, Alt+B Правка, Alt+A Вид, Alt+H Справка)"
+  },
+  "Suche leeren oder Tooltip schließen": {
+    "de": "Suche leeren oder Tooltip schließen",
+    "en": "Clear search or close tooltip",
+    "es": "Borrar búsqueda o cerrar tooltip",
+    "zh": "清空搜索或关闭提示框",
+    "ja": "検索をクリアまたはツールチップを閉じる",
+    "ru": "Очистить поиск или закрыть подсказку"
+  },
+  "Status- und Zähleranzeigen aktualisieren sich automatisch": {
+    "de": "Status- und Zähleranzeigen aktualisieren sich automatisch",
+    "en": "Status and counter indicators update automatically",
+    "es": "Las indicaciones de estado y contador se actualizan automáticamente",
+    "zh": "状态和计数指示器自动更新",
+    "ja": "ステータスとカウンター表示は自動的に更新されます",
+    "ru": "Индикаторы состояния и счетчика обновляются автоматически"
+  },
+  "Erscheinen bei Maus-Hover und Tastatur-Fokus": {
+    "de": "Erscheinen bei Maus-Hover und Tastatur-Fokus",
+    "en": "Appear on mouse hover and keyboard focus",
+    "es": "Aparecen al pasar el ratón y enfocar con el teclado",
+    "zh": "在鼠标悬停和键盘聚焦时显示",
+    "ja": "マウスホバーおよびキーボードフォーカス時に表示",
+    "ru": "Появляются при наведении мыши и фокусе клавиатуры"
+  },
+  "Vollständiger Datenbank-Browser für SQLite": {
+    "de": "Vollständiger Datenbank-Browser für SQLite",
+    "en": "Comprehensive database browser for SQLite",
+    "es": "Navegador completo de bases de datos para SQLite",
+    "zh": "全功能 SQLite 数据库浏览器",
+    "ja": "SQLite 用の総合データベースブラウザ",
+    "ru": "Полнофункциональный браузер баз данных SQLite"
+  },
+  "Lokale Offline-Datenbankverwaltung ohne externe Datenübertragung (Zero-Egress).": {
+    "de": "Lokale Offline-Datenbankverwaltung ohne externe Datenübertragung (Zero-Egress).",
+    "en": "Local offline database management without external data transmission (Zero-Egress).",
+    "es": "Gestión local offline de bases de datos sin transmisión externa (Zero-Egress).",
+    "zh": "本地离线数据库管理，无外部数据传输 (Zero-Egress)。",
+    "ja": "外部データ送信なしのローカルオフラインデータベース管理 (Zero-Egress)。",
+    "ru": "Локальное управление базами данных без внешней передачи данных (Zero-Egress)."
+  },
+  "Kernfunktionen": {
+    "de": "Kernfunktionen",
+    "en": "Core Features",
+    "es": "Funciones principales",
+    "zh": "核心功能",
+    "ja": "主な機能",
+    "ru": "Основные функции"
+  },
+  "Datenbanken öffnen, prüfen und durchsuchen": {
+    "de": "Datenbanken öffnen, prüfen und durchsuchen",
+    "en": "Open, inspect, and browse databases",
+    "es": "Abrir, inspeccionar y explorar bases de datos",
+    "zh": "打开、检查和浏览数据库",
+    "ja": "データベースを開き、検査し、参照する",
+    "ru": "Открытие, проверка и просмотр баз данных"
+  },
+  "CREATE TABLE Schemata und Indizes analysieren": {
+    "de": "CREATE TABLE Schemata und Indizes analysieren",
+    "en": "Analyze CREATE TABLE schemas and indexes",
+    "es": "Analizar esquemas e índices CREATE TABLE",
+    "zh": "分析 CREATE TABLE 架构与索引",
+    "ja": "CREATE TABLE スキーマとインデックスの分析",
+    "ru": "Анализ схем и индексов CREATE TABLE"
+  },
+  "SQL-Editor mit Syntax-Highlighting und Ausführung (F9)": {
+    "de": "SQL-Editor mit Syntax-Highlighting und Ausführung (F9)",
+    "en": "SQL editor with syntax highlighting and execution (F9)",
+    "es": "Editor SQL con resaltado de sintaxis y ejecución (F9)",
+    "zh": "带语法高亮和执行功能的 SQL 编辑器 (F9)",
+    "ja": "シンタックスハイライトと実行機能を備えた SQL エディタ (F9)",
+    "ru": "SQL-редактор с подсветкой синтаксиса и выполнением (F9)"
+  },
+  "Atomarer CSV- und JSON-Export mit Schutzrechten": {
+    "de": "Atomarer CSV- und JSON-Export mit Schutzrechten",
+    "en": "Atomic CSV and JSON export with safe permissions",
+    "es": "Exportación atómica de CSV y JSON con permisos seguros",
+    "zh": "具有安全权限的原子级 CSV 和 JSON 导出",
+    "ja": "安全な権限管理を備えたアトミックな CSV / JSON エクスポート",
+    "ru": "Атомарный экспорт в CSV и JSON с безопасными правами доступа"
+  },
+  "Mehrsprachige Oberfläche (6 Sprachen: DE, EN, ES, ZH, JA, RU)": {
+    "de": "Mehrsprachige Oberfläche (6 Sprachen: DE, EN, ES, ZH, JA, RU)",
+    "en": "Multilingual interface (6 languages: DE, EN, ES, ZH, JA, RU)",
+    "es": "Interfaz multilingüe (6 idiomas: DE, EN, ES, ZH, JA, RU)",
+    "zh": "多语言界面 (6 种语言: DE, EN, ES, ZH, JA, RU)",
+    "ja": "多言語インターフェース (6 言語: DE, EN, ES, ZH, JA, RU)",
+    "ru": "Многоязычный интерфейс (6 языков: DE, EN, ES, ZH, JA, RU)"
+  },
+  "Barrierefreie Tastaturnavigation & Tooltips (WCAG 2.1 AA)": {
+    "de": "Barrierefreie Tastaturnavigation & Tooltips (WCAG 2.1 AA)",
+    "en": "Accessible keyboard navigation & tooltips (WCAG 2.1 AA)",
+    "es": "Navegación por teclado accesible y tooltips (WCAG 2.1 AA)",
+    "zh": "无障碍键盘导航与提示框 (WCAG 2.1 AA)",
+    "ja": "アクセシブルなキーボードナビゲーションとツールチップ (WCAG 2.1 AA)",
+    "ru": "Доступная навигация с клавиатуры и подсказки (WCAG 2.1 AA)"
   }
 }

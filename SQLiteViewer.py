@@ -47,6 +47,86 @@ def _csv_safe_value(value: Any):
     return value
 
 
+class ToolTip:
+    """Barrierefreies, leichtgewichtiges Tooltip-Widget für Tkinter-Komponenten.
+    Unterstützt Maus-Hover (<Enter>/<Leave>), Tastaturfokus (<FocusIn>/<FocusOut>),
+    Schließen via <Escape> (WCAG 2.1 AA 1.4.13) und Statusleisten-Rückmeldung.
+    """
+
+    def __init__(self, widget: tk.Widget, text: str = "", app: Any = None, status_text: str | None = None):
+        self.widget = widget
+        self.text = text
+        self.status_text = status_text if status_text is not None else text
+        self.app = app
+        self.tip_window: tk.Toplevel | None = None
+        self.widget.bind("<Enter>", self.show_tip, add="+")
+        self.widget.bind("<Leave>", self.hide_tip, add="+")
+        self.widget.bind("<FocusIn>", self._on_focus_in, add="+")
+        self.widget.bind("<FocusOut>", self._on_focus_out, add="+")
+        self.widget.bind("<ButtonPress>", self.hide_tip, add="+")
+        self.widget.bind("<Escape>", self.hide_tip, add="+")
+
+    def set_text(self, text: str, status_text: str | None = None) -> None:
+        self.text = text
+        if status_text is not None:
+            self.status_text = status_text
+        if self.tip_window and self.tip_window.winfo_exists():
+            for child in self.tip_window.winfo_children():
+                if isinstance(child, tk.Label):
+                    child.config(text=self.text)
+
+    def _on_focus_in(self, event: Any = None) -> None:
+        if self.app and hasattr(self.app, "_set_status") and self.status_text:
+            self.app._set_status(self.status_text)
+        self.show_tip(event)
+
+    def _on_focus_out(self, event: Any = None) -> None:
+        self.hide_tip(event)
+
+    def show_tip(self, event: Any = None) -> None:
+        if self.tip_window or not self.text:
+            return
+        try:
+            x = self.widget.winfo_rootx() + 20
+            y = self.widget.winfo_rooty() + self.widget.winfo_height() + 5
+        except Exception:
+            return
+
+        try:
+            self.tip_window = tw = tk.Toplevel(self.widget)
+            tw.wm_overrideredirect(True)
+            tw.wm_geometry(f"+{x}+{y}")
+            tw.bind("<Escape>", self.hide_tip)
+            try:
+                tw.attributes("-topmost", True)
+            except Exception:
+                pass
+
+            label = tk.Label(
+                tw,
+                text=self.text,
+                justify=tk.LEFT,
+                background="#2c3e50",
+                foreground="#ffffff",
+                relief=tk.SOLID,
+                borderwidth=1,
+                font=("Segoe UI" if os.name == "nt" else "Arial", 9),
+                padx=8,
+                pady=4,
+            )
+            label.pack(ipadx=1)
+        except Exception:
+            self.tip_window = None
+
+    def hide_tip(self, event: Any = None) -> None:
+        if self.tip_window:
+            try:
+                self.tip_window.destroy()
+            except Exception:
+                pass
+            self.tip_window = None
+
+
 class SqlViewer(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -78,6 +158,7 @@ class SqlViewer(tk.Tk):
         self.sql_result_export_context: dict[str, Any] = {}
         self.sort_column: str | None = None
         self.sort_reverse: bool = False
+        self._tooltips: List[Tuple[Any, str, str]] = []
 
         # UI
         self._build_menu()
@@ -91,6 +172,75 @@ class SqlViewer(tk.Tk):
 
         # BUG 4: Sauberes Schließen via WM_DELETE_WINDOW
         self.protocol("WM_DELETE_WINDOW", self._on_close)
+
+    def _add_tooltip(self, widget: tk.Widget, text_key: str, status_key: str | None = None) -> ToolTip:
+        """Erzeugt einen barrierefreien ToolTip und registriert ihn für dynamische Sprachaktualisierung."""
+        s_key = status_key or text_key
+        tip = ToolTip(widget, text=self.tr(text_key), app=self, status_text=self.tr(s_key))
+        if not hasattr(self, "_tooltips"):
+            self._tooltips = []
+        self._tooltips.append((tip, text_key, s_key))
+        return tip
+
+    def _switch_tab(self, index: int):
+        """Wechselt barrierefrei den Notebook-Reiter."""
+        if hasattr(self, "notebook") and self.notebook:
+            try:
+                self.notebook.select(index)
+            except Exception:
+                pass
+
+    def show_shortcuts_help(self):
+        """Zeigt ein barrierefreies modales Dialogfenster mit allen Tastaturkürzeln und WCAG-Hinweisen."""
+        title = self.tr("Tastaturkürzel & Barrierefreiheit")
+        text = (
+            f"{APP_TITLE} v{APP_VERSION} – {self.tr('Tastaturkürzel & Barrierefreiheit')}\n\n"
+            f"{self.tr('Globale Tastaturkürzel')}:\n"
+            f"• Strg + O        : {self.tr('Datenbank öffnen…')}\n"
+            f"• Strg + W        : {self.tr('Datenbank schließen')}\n"
+            f"• Strg + E        : {self.tr('Als CSV exportieren…')}\n"
+            f"• Strg + Shift + E: {self.tr('Als JSON exportieren…')}\n"
+            f"• Strg + F        : {self.tr('Suchen…')}\n"
+            f"• Strg + A        : {self.tr('Alle auswählen')}\n"
+            f"• F5              : {self.tr('Aktualisieren')}\n"
+            f"• F9              : {self.tr('▶ Ausführen (F9)')}\n"
+            f"• Strg + 1        : {self.tr('Daten-Tab')} (📊)\n"
+            f"• Strg + 2        : {self.tr('Schema-Tab')} (🔧)\n"
+            f"• Strg + 3        : {self.tr('SQL-Editor')} (💻)\n"
+            f"• F1              : {self.tr('Tastaturkürzel & Barrierefreiheit…')}\n"
+            f"• Shift + F1      : {self.tr('Über…')}\n"
+            f"• Strg + Q        : {self.tr('Beenden')}\n\n"
+            f"{self.tr('Tastaturnavigation & Screenreader (WCAG 2.1 AA)')}:\n"
+            f"• Tab / Shift+Tab : {self.tr('Vorwärts / Rückwärts durch Steuerelemente springen')}\n"
+            f"• Alt + Menütaste : {self.tr('Menüs direkt aufrufen (Alt+D Datei, Alt+B Bearbeiten, Alt+A Ansicht, Alt+H Hilfe)')}\n"
+            f"• Escape          : {self.tr('Suche leeren oder Tooltip schließen')}\n"
+            f"• Statusleiste    : {self.tr('Status- und Zähleranzeigen aktualisieren sich automatisch')}\n"
+            f"• Tooltips        : {self.tr('Erscheinen bei Maus-Hover und Tastatur-Fokus')}"
+        )
+        messagebox.showinfo(title, text)
+
+    def show_about_dialog(self):
+        """Zeigt einen barrierefreien Informationsdialog über SQLite Viewer an."""
+        title = self.tr("Über SQLite Viewer")
+        text = (
+            f"{APP_TITLE}\n"
+            f"Version {APP_VERSION}\n\n"
+            f"{self.tr('Vollständiger Datenbank-Browser für SQLite')}\n"
+            f"{self.tr('Lokale Offline-Datenbankverwaltung ohne externe Datenübertragung (Zero-Egress).')}\n\n"
+            f"{self.tr('Kernfunktionen')}:\n"
+            f"• {self.tr('Datenbanken öffnen, prüfen und durchsuchen')}\n"
+            f"• {self.tr('CREATE TABLE Schemata und Indizes analysieren')}\n"
+            f"• {self.tr('SQL-Editor mit Syntax-Highlighting und Ausführung (F9)')}\n"
+            f"• {self.tr('Atomarer CSV- und JSON-Export mit Schutzrechten')}\n"
+            f"• {self.tr('Mehrsprachige Oberfläche (6 Sprachen: DE, EN, ES, ZH, JA, RU)')}\n"
+            f"• {self.tr('Barrierefreie Tastaturnavigation & Tooltips (WCAG 2.1 AA)')}\n\n"
+            f"Lizenz: MIT\n"
+            f"© 2026 lukisch & doc-bricks / file-bricks"
+        )
+        messagebox.showinfo(title, text)
+
+    def _show_about(self):
+        self.show_about_dialog()
 
     @staticmethod
     def _get_settings_path() -> Path:
@@ -222,6 +372,7 @@ class SqlViewer(tk.Tk):
         if hasattr(self, "help_menu") and self.help_menu:
             try:
                 self.help_menu.entryconfigure(0, label=self.tr("Über…"))
+                self.help_menu.entryconfigure(1, label=self.tr("Tastaturkürzel & Barrierefreiheit…"))
             except Exception:
                 pass
 
@@ -305,6 +456,14 @@ class SqlViewer(tk.Tk):
             except Exception:
                 pass
 
+        # 8. Tooltips dynamisch aktualisieren
+        if hasattr(self, "_tooltips") and self._tooltips:
+            for tip, text_key, s_key in self._tooltips:
+                try:
+                    tip.set_text(self.tr(text_key), self.tr(s_key))
+                except Exception:
+                    pass
+
     def _setup_styles(self):
         """Konfiguriere ttk Styles."""
         style = ttk.Style()
@@ -315,32 +474,32 @@ class SqlViewer(tk.Tk):
     def _build_menu(self):
         menubar = tk.Menu(self)
 
-        # Datei-Menü
+        # Datei-Menü (Alt+D)
         self.file_menu = tk.Menu(menubar, tearoff=False)
-        self.file_menu.add_command(label=self.tr("Datenbank öffnen…"), command=self.open_db, accelerator="Ctrl+O")
-        self.file_menu.add_command(label=self.tr("Datenbank schließen"), command=self.close_db)
+        self.file_menu.add_command(label=self.tr("Datenbank öffnen…"), command=self.open_db, accelerator="Ctrl+O", underline=0)
+        self.file_menu.add_command(label=self.tr("Datenbank schließen"), command=self.close_db, accelerator="Ctrl+W", underline=10)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label=self.tr("Als CSV exportieren…"), command=self.export_csv, accelerator="Ctrl+E")
+        self.file_menu.add_command(label=self.tr("Als CSV exportieren…"), command=self.export_csv, accelerator="Ctrl+E", underline=4)
         self.export_csv_menu_index = self.file_menu.index("end")
-        self.file_menu.add_command(label=self.tr("Als JSON exportieren…"), command=self.export_json)
+        self.file_menu.add_command(label=self.tr("Als JSON exportieren…"), command=self.export_json, accelerator="Ctrl+Shift+E", underline=4)
         self.export_json_menu_index = self.file_menu.index("end")
         self.file_menu.add_separator()
-        self.file_menu.add_command(label=self.tr("Beenden"), command=self._on_close, accelerator="Ctrl+Q")
-        menubar.add_cascade(label=self.tr("Datei"), menu=self.file_menu)
+        self.file_menu.add_command(label=self.tr("Beenden"), command=self._on_close, accelerator="Ctrl+Q", underline=0)
+        menubar.add_cascade(label=self.tr("Datei"), menu=self.file_menu, underline=0)
 
-        # Bearbeiten-Menü
+        # Bearbeiten-Menü (Alt+B)
         self.edit_menu = tk.Menu(menubar, tearoff=False)
-        self.edit_menu.add_command(label=self.tr("Suchen…"), command=self._focus_search, accelerator="Ctrl+F")
-        self.edit_menu.add_command(label=self.tr("Alle auswählen"), command=self._select_all, accelerator="Ctrl+A")
+        self.edit_menu.add_command(label=self.tr("Suchen…"), command=self._focus_search, accelerator="Ctrl+F", underline=0)
+        self.edit_menu.add_command(label=self.tr("Alle auswählen"), command=self._select_all, accelerator="Ctrl+A", underline=0)
         self.edit_menu.add_separator()
-        self.edit_menu.add_command(label=self.tr("Aktualisieren"), command=self.load_selected_table, accelerator="F5")
-        menubar.add_cascade(label=self.tr("Bearbeiten"), menu=self.edit_menu)
+        self.edit_menu.add_command(label=self.tr("Aktualisieren"), command=self.load_selected_table, accelerator="F5", underline=0)
+        menubar.add_cascade(label=self.tr("Bearbeiten"), menu=self.edit_menu, underline=0)
 
-        # Ansicht-Menü
+        # Ansicht-Menü (Alt+A)
         self.view_menu = tk.Menu(menubar, tearoff=False)
-        self.view_menu.add_command(label=self.tr("Daten-Tab"), command=lambda: self.notebook.select(0))
-        self.view_menu.add_command(label=self.tr("Schema-Tab"), command=lambda: self.notebook.select(1))
-        self.view_menu.add_command(label=self.tr("SQL-Editor"), command=lambda: self.notebook.select(2))
+        self.view_menu.add_command(label=self.tr("Daten-Tab"), command=lambda: self._switch_tab(0), accelerator="Ctrl+1", underline=0)
+        self.view_menu.add_command(label=self.tr("Schema-Tab"), command=lambda: self._switch_tab(1), accelerator="Ctrl+2", underline=0)
+        self.view_menu.add_command(label=self.tr("SQL-Editor"), command=lambda: self._switch_tab(2), accelerator="Ctrl+3", underline=0)
         self.view_menu.add_separator()
 
         # Sprach-Untermenü
@@ -361,27 +520,39 @@ class SqlViewer(tk.Tk):
                 value=code,
                 command=lambda c=code: self.change_language(c),
             )
-        self.view_menu.add_cascade(label=self.tr("Sprache"), menu=self.lang_menu)
-        menubar.add_cascade(label=self.tr("Ansicht"), menu=self.view_menu)
+        self.view_menu.add_cascade(label=self.tr("Sprache"), menu=self.lang_menu, underline=0)
+        menubar.add_cascade(label=self.tr("Ansicht"), menu=self.view_menu, underline=0)
 
-        # Hilfe-Menü
+        # Hilfe-Menü (Alt+H)
         self.help_menu = tk.Menu(menubar, tearoff=False)
-        self.help_menu.add_command(label=self.tr("Über…"), command=self._show_about)
-        menubar.add_cascade(label=self.tr("Hilfe"), menu=self.help_menu)
+        self.help_menu.add_command(label=self.tr("Über…"), command=self.show_about_dialog, accelerator="Shift+F1", underline=0)
+        self.help_menu.add_command(label=self.tr("Tastaturkürzel & Barrierefreiheit…"), command=self.show_shortcuts_help, accelerator="F1", underline=0)
+        menubar.add_cascade(label=self.tr("Hilfe"), menu=self.help_menu, underline=0)
 
         self.menubar = menubar
         self.config(menu=menubar)
 
         # Shortcuts
         self.bind_all("<Control-o>", lambda e: self.open_db())
+        self.bind_all("<Control-w>", lambda e: self.close_db())
         self.bind_all("<Control-q>", lambda e: self._on_close())
         self.bind_all("<Control-e>", lambda e: self.export_csv())
+        self.bind_all("<Control-E>", lambda e: self.export_json())
+        self.bind_all("<Control-Shift-E>", lambda e: self.export_json())
+        self.bind_all("<Control-Shift-e>", lambda e: self.export_json())
         self.bind_all("<Control-f>", lambda e: self._focus_search())
         self.bind_all("<Control-a>", lambda e: self._select_all())
         self.bind_all("<F5>", lambda e: self.load_selected_table())
+        self.bind_all("<F1>", lambda e: self.show_shortcuts_help())
+        self.bind_all("<Shift-F1>", lambda e: self.show_about_dialog())
+        self.bind_all("<Control-1>", lambda e: self._switch_tab(0))
+        self.bind_all("<Control-2>", lambda e: self._switch_tab(1))
+        self.bind_all("<Control-3>", lambda e: self._switch_tab(2))
 
     # ==================== TOOLBAR ====================
     def _build_toolbar(self):
+        tr = getattr(self, "tr", lambda k: k)
+        add_tip = getattr(self, "_add_tooltip", lambda *args, **kwargs: None)
         bar = ttk.Frame(self, padding=(8, 6))
         bar.pack(side=tk.TOP, fill=tk.X)
 
@@ -390,32 +561,42 @@ class SqlViewer(tk.Tk):
         self.db_label.pack(side=tk.LEFT, padx=(0, 10))
 
         # Tabellen-Auswahl
-        ttk.Label(bar, text="Tabelle:").pack(side=tk.LEFT)
+        self.table_label = ttk.Label(bar, text=tr("Tabelle:"))
+        self.table_label.pack(side=tk.LEFT)
         self.table_var = tk.StringVar()
         self.table_combo = ttk.Combobox(bar, textvariable=self.table_var, state="readonly", width=25)
         self.table_combo.pack(side=tk.LEFT, padx=6)
         self.table_combo.bind("<<ComboboxSelected>>", lambda e: self.load_selected_table())
+        add_tip(self.table_combo, "Tabelle auswählen")
 
         # Limit
-        ttk.Label(bar, text="Limit:").pack(side=tk.LEFT, padx=(10, 0))
+        self.limit_label = ttk.Label(bar, text=tr("Limit:"))
+        self.limit_label.pack(side=tk.LEFT, padx=(10, 0))
         self.limit_var = tk.IntVar(value=DEFAULT_LIMIT)
         self.limit_entry = ttk.Spinbox(bar, from_=1, to=1_000_000, increment=100,
                                         textvariable=self.limit_var, width=8)
         self.limit_entry.pack(side=tk.LEFT, padx=6)
+        add_tip(self.limit_entry, "Maximale Zeilenanzahl festlegen (1 bis 1.000.000)")
 
         # Suchfeld
-        ttk.Label(bar, text="Suche:").pack(side=tk.LEFT, padx=(15, 0))
+        self.search_label = ttk.Label(bar, text=tr("Suche:"))
+        self.search_label.pack(side=tk.LEFT, padx=(15, 0))
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(bar, textvariable=self.search_var, width=20)
         self.search_entry.pack(side=tk.LEFT, padx=4)
         self.search_entry.bind("<Return>", lambda e: self._search_data())
         self.search_entry.bind("<KeyRelease>", lambda e: self._search_data())
         self.search_entry.bind("<Escape>", self._clear_search)
+        add_tip(self.search_entry, "Volltextsuche in aktiver Tabelle (Eingabe / Escape zum Leeren)")
 
         # Buttons
-        ttk.Button(bar, text="⟳ Aktualisieren", command=self.load_selected_table, width=13).pack(side=tk.LEFT, padx=4)
-        self.export_button = ttk.Button(bar, text="📋 Export", command=self.export_csv)
+        self.refresh_button = ttk.Button(bar, text=tr("⟳ Aktualisieren"), command=self.load_selected_table, width=13)
+        self.refresh_button.pack(side=tk.LEFT, padx=4)
+        add_tip(self.refresh_button, "Tabelle und Daten neu laden (F5)")
+
+        self.export_button = ttk.Button(bar, text=tr("📋 Export"), command=self.export_csv)
         self.export_button.pack(side=tk.LEFT, padx=4)
+        add_tip(self.export_button, "Aktive Daten exportieren (Strg+E / Menü)")
 
     # ==================== NOTEBOOK (Tabs) ====================
     def _build_notebook(self):
@@ -462,17 +643,23 @@ class SqlViewer(tk.Tk):
     def _build_schema_tab(self):
         """Schema-Tab mit CREATE TABLE Statements."""
         # Toolbar
+        tr = getattr(self, "tr", lambda k: k)
+        add_tip = getattr(self, "_add_tooltip", lambda *args, **kwargs: None)
         toolbar = ttk.Frame(self.schema_frame, padding=5)
         toolbar.pack(fill=tk.X)
 
-        ttk.Label(toolbar, text="Tabelle:").pack(side=tk.LEFT)
+        self.schema_table_label = ttk.Label(toolbar, text=tr("Tabelle:"))
+        self.schema_table_label.pack(side=tk.LEFT)
         self.schema_table_var = tk.StringVar()
         self.schema_combo = ttk.Combobox(toolbar, textvariable=self.schema_table_var,
                                           state="readonly", width=30)
         self.schema_combo.pack(side=tk.LEFT, padx=6)
         self.schema_combo.bind("<<ComboboxSelected>>", lambda e: self._load_schema())
+        add_tip(self.schema_combo, "Tabelle für Schema-Definition wählen")
 
-        ttk.Button(toolbar, text="Alle Schemas anzeigen", command=self._load_all_schemas).pack(side=tk.LEFT, padx=10)
+        self.schema_all_btn = ttk.Button(toolbar, text=tr("Alle Schemas anzeigen"), command=self._load_all_schemas)
+        self.schema_all_btn.pack(side=tk.LEFT, padx=10)
+        add_tip(self.schema_all_btn, "Alle CREATE TABLE Schemata anzeigen")
 
         # Text-Widget für Schema
         text_frame = ttk.Frame(self.schema_frame)
@@ -503,12 +690,14 @@ class SqlViewer(tk.Tk):
         paned.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         # SQL-Eingabe
-        input_frame = ttk.LabelFrame(paned, text="SQL-Query", padding=5)
-        paned.add(input_frame, weight=1)
+        tr = getattr(self, "tr", lambda k: k)
+        add_tip = getattr(self, "_add_tooltip", lambda *args, **kwargs: None)
+        self.sql_input_frame = ttk.LabelFrame(paned, text=tr("SQL-Query"), padding=5)
+        paned.add(self.sql_input_frame, weight=1)
 
-        self.sql_text = tk.Text(input_frame, wrap=tk.NONE, font=("Consolas", 11),
+        self.sql_text = tk.Text(self.sql_input_frame, wrap=tk.NONE, font=("Consolas", 11),
                                  bg="#1e1e1e", fg="#d4d4d4", insertbackground="white", height=8)
-        sql_vsb = ttk.Scrollbar(input_frame, orient="vertical", command=self.sql_text.yview)
+        sql_vsb = ttk.Scrollbar(self.sql_input_frame, orient="vertical", command=self.sql_text.yview)
         self.sql_text.configure(yscrollcommand=sql_vsb.set)
 
         self.sql_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -522,27 +711,33 @@ class SqlViewer(tk.Tk):
         btn_frame = ttk.Frame(self.sql_frame, padding=5)
         btn_frame.pack(fill=tk.X)
 
-        ttk.Button(btn_frame, text="▶ Ausführen (F9)", command=self.execute_sql).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="🗑 Leeren", command=lambda: self.sql_text.delete("1.0", tk.END)).pack(side=tk.LEFT)
+        self.sql_run_btn = ttk.Button(btn_frame, text=tr("▶ Ausführen (F9)"), command=self.execute_sql)
+        self.sql_run_btn.pack(side=tk.LEFT, padx=5)
+        add_tip(self.sql_run_btn, "SQL-Abfrage ausführen (F9)")
+
+        self.sql_clear_btn = ttk.Button(btn_frame, text=tr("🗑 Leeren"), command=lambda: self.sql_text.delete("1.0", tk.END))
+        self.sql_clear_btn.pack(side=tk.LEFT)
+        add_tip(self.sql_clear_btn, "SQL-Eingabe leeren")
+
         self.sql_status = ttk.Label(btn_frame, text="")
         self.sql_status.pack(side=tk.RIGHT, padx=10)
 
         self.bind_all("<F9>", lambda e: self.execute_sql())
 
         # Ergebnis
-        result_frame = ttk.LabelFrame(paned, text="Ergebnis", padding=5)
-        paned.add(result_frame, weight=2)
+        self.sql_result_frame = ttk.LabelFrame(paned, text=tr("Ergebnis"), padding=5)
+        paned.add(self.sql_result_frame, weight=2)
 
-        self.sql_result_tree = ttk.Treeview(result_frame, show="headings")
-        result_vsb = ttk.Scrollbar(result_frame, orient="vertical", command=self.sql_result_tree.yview)
-        result_hsb = ttk.Scrollbar(result_frame, orient="horizontal", command=self.sql_result_tree.xview)
+        self.sql_result_tree = ttk.Treeview(self.sql_result_frame, show="headings")
+        result_vsb = ttk.Scrollbar(self.sql_result_frame, orient="vertical", command=self.sql_result_tree.yview)
+        result_hsb = ttk.Scrollbar(self.sql_result_frame, orient="horizontal", command=self.sql_result_tree.xview)
         self.sql_result_tree.configure(yscrollcommand=result_vsb.set, xscrollcommand=result_hsb.set)
 
         self.sql_result_tree.grid(row=0, column=0, sticky="nsew")
         result_vsb.grid(row=0, column=1, sticky="ns")
         result_hsb.grid(row=1, column=0, sticky="ew")
-        result_frame.grid_rowconfigure(0, weight=1)
-        result_frame.grid_columnconfigure(0, weight=1)
+        self.sql_result_frame.grid_rowconfigure(0, weight=1)
+        self.sql_result_frame.grid_columnconfigure(0, weight=1)
 
     def _build_statusbar(self):
         """Status-Leiste unten."""

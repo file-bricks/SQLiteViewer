@@ -2,7 +2,7 @@
 
 Canonical repository: https://github.com/file-bricks/SQLiteViewer
 Version: 2.1.0
-Stand: 2026-10-18
+Stand: 2026-11-01
 Organization: file-bricks
 Umbrella: open-bricks
 Microsoft Store: SQLite Viewer Pro (Store ID: 9P6H501XB8JT, Identity: Geiger.SQLiteViewerPro)
