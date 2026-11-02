@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Contract tests for SQLiteViewer metadata, discoverability, and documentation parity."""
 
+import pytest
 import re
 from pathlib import Path
 
@@ -108,7 +109,8 @@ def test_third_party_licenses_audit():
 def test_marketing_log_present():
     """Verify local MARKETING-LOG.txt exists and documents personas and invariants."""
     marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
-    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    if not marketing_file.is_file():
+        pytest.skip("MARKETING-LOG.txt is local-only (untracked per GITHUB-POLICY.md §4)")
     content = marketing_file.read_text(encoding="utf-8")
     assert "2026-09-14" in content
     for i in range(1, 5):
@@ -335,7 +337,8 @@ def test_level_1_sbom_currency_20261011():
 def test_marketing_log_section_7_pfad_b_20261011():
     """Verify local MARKETING-LOG.txt documents Section 7 Pfad B revision and 3 recommendations."""
     marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
-    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    if not marketing_file.is_file():
+        pytest.skip("MARKETING-LOG.txt is local-only (untracked per GITHUB-POLICY.md §4)")
     content = marketing_file.read_text(encoding="utf-8")
 
     assert "7. PFAD B MARKETING, DISCOVERABILITY & VISUELLE TOPOLOGIE REVISION (2026-10-11)" in content
@@ -392,7 +395,8 @@ def test_extended_gitignore_patterns():
 def test_subfolder_readme_inventory_documented():
     """Verify Unterordner-README inventory (web_companion) is documented in MARKETING-LOG.txt per P-006."""
     marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
-    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    if not marketing_file.is_file():
+        pytest.skip("MARKETING-LOG.txt is local-only (untracked per GITHUB-POLICY.md §4)")
     content = marketing_file.read_text(encoding="utf-8")
     assert "web_companion/README.md" in content, "web_companion README inventory must be documented"
     assert "web_companion/README_de.md" in content, "web_companion German parity status must be documented"
@@ -401,7 +405,8 @@ def test_subfolder_readme_inventory_documented():
 def test_marketing_log_section_8_pfad_a_20261018():
     """Verify Section 8 Pfad A technical hygiene entry exists in MARKETING-LOG.txt."""
     marketing_file = REPO_ROOT / "MARKETING-LOG.txt"
-    assert marketing_file.is_file(), "MARKETING-LOG.txt must exist"
+    if not marketing_file.is_file():
+        pytest.skip("MARKETING-LOG.txt is local-only (untracked per GITHUB-POLICY.md §4)")
     content = marketing_file.read_text(encoding="utf-8")
     assert "8. PFAD A REPOSITORY-HYGIENE, CI-MATRIX-HÄRTUNG & PEP 621 STANDARDISIERUNG (2026-10-18)" in content
 
