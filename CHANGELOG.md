@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- **Repository- & Git-Hygiene, GitHub-Dokumente & I18N-Härtung (Stand 2026-11-02):**
+  - Git- & Repository-Hygiene (T-20260926-455218633 / GITHUB-POLICY.md §4): MARKETING-LOG.txt aus Git-Tracking entkoppelt (git rm --cached), .gitignore um Pattern-Defense (MARKETING-LOG.txt, *MARKETING-LOG.txt, *STATUS-LOG.txt) gehärtet; lokales Log für Invarianten-Dokumentation vollständig erhalten.
+  - I18N-Laufzeitrobustheit: 	ranslator.py gehärtet; pp_dir fällt bei None standardmäßig auf Path(__file__).resolve().parent zurück (statt dynamisches Path.cwd()), sodass Übersetzungen auch bei Aufrufen außerhalb des Repo-Wurzelverzeichnisses zuverlässig geladen werden.
+  - GitHub-Governance & Automatisierung: .github/dependabot.yml (Security-only Updates, wöchentlich, PR-Limit 0) und .github/labels.yml (Standard-Labels nach GOVERNANCE.md §4.2) angelegt.
+  - Doku- & Badge-Aktualisierung: Verifikations-Badges in README.md und README_de.md sowie llms.txt auf Stand 2026-11-02 synchronisiert.
+  - Vertragstest-Erweiterung: 	ests/test_metadata.py um 	est_internal_marketing_log_not_tracked und 	est_github_docs_integrity erweitert; Testsuite umfasst 157 bestandene Tests (100% grün).
 - **UX & Accessibility Review (WCAG 2.1 AA / BITV 2.0 Tastatur-Ergonomie, Tooltips, Alt-Mnemonics, Shortcuts- & About-Dialog, 6-Sprachen-Parität & 7 Vertragstests - Stand 2026-11-01):**
   - Barrierefreie ToolTips (`class ToolTip`): Leichtgewichtiges Tooltip-Widget für Tkinter-Komponenten mit Maus-Hover (`<Enter>/<Leave>`), Tastaturfokus (`<FocusIn>/<FocusOut>`), Schließen per `<Escape>` und `<ButtonPress>` gemäß WCAG 2.1 AA 1.4.13 sowie Statusleisten-Rückmeldung; verknüpft mit Tabellenauswahl, Limit-Feld, Suchfeld, Aktualisieren-Button, Export-Button, Schema-Auswahl, Alle-Schemas-Button, SQL-Ausführen-Button und SQL-Leeren-Button.
   - Menüleisten-Mnemonics (Alt-Navigation): Mnemonics (`underline=0`) für Hauptmenüs `&Datei` (Alt+D), `&Bearbeiten` (Alt+B), `&Ansicht` (Alt+A) und `&Hilfe` (Alt+H) sowie Tastaturkürzel-Mnemonics in Untermenüs.

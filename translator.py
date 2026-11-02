@@ -37,7 +37,7 @@ class TranslationSystem:
         self.current_lang = default_lang if default_lang in self.SUPPORTED_LANGUAGES else 'de'
 
         if app_dir is None:
-            app_dir = Path.cwd()
+            app_dir = Path(__file__).resolve().parent
         self.app_dir = Path(app_dir)
 
         self.translations_file = self.app_dir / "locales" / "translations.json"
