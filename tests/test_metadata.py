@@ -349,8 +349,8 @@ def test_badges_recency_and_test_count_20261011():
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert any(v in content_en for v in ["Verified-2026--10--11-blue.svg", "Verified-2026--10--18-blue.svg", "Verified-2026--11--01-blue.svg"])
-    assert any(v in content_de for v in ["Gepr%C3%BCft-2026--10--11-blue.svg", "Gepr%C3%BCft-2026--10--18-blue.svg", "Gepr%C3%BCft-2026--11--01-blue.svg"])
+    assert any(v in content_en for v in ["Verified-2026--10--11-blue.svg", "Verified-2026--10--18-blue.svg", "Verified-2026--11--01-blue.svg", "Verified-2026--11--02-blue.svg"])
+    assert any(v in content_de for v in ["Gepr%C3%BCft-2026--10--11-blue.svg", "Gepr%C3%BCft-2026--10--18-blue.svg", "Gepr%C3%BCft-2026--11--01-blue.svg", "Gepr%C3%BCft-2026--11--02-blue.svg"])
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de
 
@@ -411,9 +411,28 @@ def test_badges_recency_and_test_count_20261018():
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert "Verified-2026--10--18-blue.svg" in content_en or "Verified-2026--11--01-blue.svg" in content_en
-    assert "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de or "Gepr%C3%BCft-2026--11--01-blue.svg" in content_de
+    assert any(b in content_en for b in ["Verified-2026--10--18-blue.svg", "Verified-2026--11--01-blue.svg", "Verified-2026--11--02-blue.svg"])
+    assert any(b in content_de for b in ["Gepr%C3%BCft-2026--10--18-blue.svg", "Gepr%C3%BCft-2026--11--01-blue.svg", "Gepr%C3%BCft-2026--11--02-blue.svg"])
     assert any(p in content_en for p in ["Tests-146%20passed", "Tests-153%20passed", "Tests-155%20passed"])
     assert any(p in content_de for p in ["Tests-146%20bestanden", "Tests-153%20bestanden", "Tests-155%20bestanden"])
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de
+
+
+def test_internal_marketing_log_not_tracked():
+    """Policy T-20260926-455218633 / GITHUB-POLICY.md §4: MARKETING-LOG.txt must never be tracked in git."""
+    import subprocess
+    proc = subprocess.run(["git", "ls-files", "MARKETING-LOG.txt"], cwd=REPO_ROOT, capture_output=True, text=True)
+    assert proc.stdout.strip() == "", "MARKETING-LOG.txt must not be tracked in git"
+
+
+def test_github_docs_integrity():
+    """Verify .github governance documents (dependabot.yml, labels.yml) exist and are valid."""
+    dependabot = REPO_ROOT / ".github" / "dependabot.yml"
+    labels = REPO_ROOT / ".github" / "labels.yml"
+    assert dependabot.is_file(), ".github/dependabot.yml must exist"
+    assert labels.is_file(), ".github/labels.yml must exist"
+    content_dep = dependabot.read_text(encoding="utf-8")
+    content_lbl = labels.read_text(encoding="utf-8")
+    assert 'package-ecosystem: "pip"' in content_dep
+    assert "name: bug" in content_lbl

@@ -126,3 +126,8 @@ web_companion/node_modules/
 # Staged MSIX build output (GITHUB-POLICY.md SS3, T-20260926-510472849) -- narrow
 # on purpose: _WARTUNG/generate_store_screenshots.py must stay tracked (maintenance script).
 _WARTUNG/msix_staging/
+
+# Interne Marketing- und Verarbeitungsdokumente (T-20260926-455218633 / GITHUB-POLICY.md §4)
+MARKETING-LOG.txt
+*MARKETING-LOG.txt
+*STATUS-LOG.txt
