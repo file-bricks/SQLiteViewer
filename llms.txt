@@ -7,7 +7,13 @@ Organization: file-bricks
 Umbrella: open-bricks
 Microsoft Store: SQLite Viewer Pro (Store ID: 9P6H501XB8JT, Identity: Geiger.SQLiteViewerPro)
 
-SQLiteViewer is a local-first Python/Tkinter desktop application for opening, browsing, searching, querying, and exporting SQLite database files. It operates with zero network egress, requires no external runtime dependencies, runs in unprivileged user space (RunAsInvoker), and includes full internationalization (English & German).
+SQLiteViewer is a local-first Python/Tkinter desktop application for opening, browsing, searching, querying, and exporting SQLite database files. It operates with zero network egress, requires no external runtime dependencies, runs in unprivileged user space (RunAsInvoker), and supports six runtime UI locales (German, English, Spanish, Chinese, Japanese, and Russian).
+
+## Documentation and Runtime Languages
+
+- Runtime UI locales: German (`de`), English (`en`), Spanish (`es`), Chinese (`zh`), Japanese (`ja`), and Russian (`ru`).
+- User guides: English (`README.md`), German (`README_de.md`), and Spanish (`README_es.md`).
+- `INV-LOCAL-09` keeps reciprocal English/German documentation as the baseline guarantee; runtime UI localization covers all six locales.
 
 ## Primary Use Cases
 
@@ -22,11 +28,12 @@ SQLiteViewer is a local-first Python/Tkinter desktop application for opening, br
 
 - `SQLiteViewer.py`: main desktop application entrypoint with separated table and SQL result export state, i18n support, and keyboard shortcuts.
 - `translator.py`: runtime internationalization engine supporting dynamic language switching.
-- `locales/translations.json`: localized UI strings for English (`en`) and German (`de`).
+- `locales/translations.json`: localized runtime UI strings for German (`de`), English (`en`), Spanish (`es`), Chinese (`zh`), Japanese (`ja`), and Russian (`ru`).
 - `NOTICE`: formal open-source attribution, copyright notice, § 521 BGB statutory liability disclaimer, and third-party license notices.
 - `CONTRIBUTING.md`: bilateral developer guidelines with Plan D workflow, 10 system invariants, § 521 BGB disclaimer, and 48h SLA.
-- `README.md`: primary English landing page with 16-point quick navigation, Section 3 Visual 4-View Topology, architecture diagrams, personas, and comparative matrix.
+- `README.md`: English user guide with 17-point quick navigation, architecture diagrams, personas, and comparative matrix.
 - `README_de.md`: reciprocal German user guide with full parity.
+- `README_es.md`: Spanish user guide.
 - `THIRD_PARTY_LICENSES.md`: license compliance audit certifying zero runtime external dependencies (Python standard library only) and zero-copyleft guarantees.
 - `THIRD_PARTY_LICENSES.txt`: Level 1 SBOM Plain-Text Companion with 5-field schema.
 - `MARKETING-LOG.txt`: discoverability log, 4 target personas, high-intent SEO queries, and comparative analysis.
@@ -54,7 +61,7 @@ SQLiteViewer enforces 10 core invariants (`INV-LOCAL-01` to `INV-LOCAL-10`):
 6. Offline Web Companion: client-side inspection in `web_companion/`.
 7. Microsoft Store Integration: official AppX package (ID `9P6H501XB8JT`).
 8. Permissive Open Source: 100% MIT License with zero copyleft contagion.
-9. Bilingual Parity: complete reciprocal English/German documentation and UI.
+9. Bilingual Parity: reciprocal English/German documentation baseline; runtime UI supports six locales (DE/EN/ES/ZH/JA/RU).
 10. Security SLA: documented 48-hour response SLA.
 
 ## Search Phrases
@@ -76,11 +83,11 @@ SQLite Viewer Pro Microsoft Store
 
 - SQLiteViewer is not DB Browser for SQLite, DBeaver, an Android SQLite viewer, an iOS debug library, a hosted SQL dashboard, or a web database admin panel.
 - It is strictly local-first and does not upload database content or metadata to the cloud.
-- CSV/JSON export follows the active UI context: Data tab exports table rows, SQL tab exports query results.
+- CSV/JSON export follows the active UI context: the Data tab exports table rows, and the SQL tab exports query results.
 - It is a lightweight desktop utility for exploration, triage, and export, not a distributed DBMS.
 
 ## License
 
 MIT License.
 
-## Last-checked: 2026-10-18 (PEP 621 compliant, Section 3 Visual 4-View Topology, 146 Pytest + 43 Node companion tests passed | 100% green, Level 1 SBOM companion verified)
+## Last-checked: 2026-11-02 (documentation-language index refreshed; 86 translation keys across six runtime locales verified with manage_translations.py --check)
