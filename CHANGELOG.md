@@ -45,6 +45,7 @@
 - **PWA & Mobile-Icon-Suite:** Vollständiges Icon-Inventar (`mobile_icons/` und `web_companion/icons/`) integriert mit Favicon, Maskable Icons und Apple Touch Icons.
 
 ### Changed
+- **Dokumentationssprachen und Laufzeitlokalisierung:** README-Sprachwahl und `llms.txt` verweisen jetzt auf englische, deutsche und spanische Benutzeranleitungen; die sechs Laufzeitsprachen DE/EN/ES/ZH/JA/RU werden davon getrennt ausgewiesen. `INV-LOCAL-09` behält die reziproken EN/DE-Anleitungen als Mindestgarantie und nennt die sechs UI-Sprachen. Veraltete Testdatei-Verweise in allen drei READMEs sind durch vorhandene Dateien ersetzt. Das spanische Badge übernimmt den Master-Stand von 155 Tests und 2026-11-01. `manage_translations.py --check` bestätigte 86 Schlüssel mit 100 % Abdeckung in allen sechs Laufzeitsprachen.
 - Configured `[tool.ruff]` linter in `pyproject.toml` and fixed unused imports/variables in `SQLiteViewer.py` and test modules (zero ruff lint warnings).
 - Updated test badge in `README.md` and `README_de.md` to reflect 107 passing tests (100% green).
 - Updated `llms.txt` Last-checked header to `2026-10-03` with 107 Pytest + 43 Node companion tests verified.

@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <b>Deutsch</b>
+  <a href="README.md">English</a> | <b>Deutsch</b> | <a href="README_es.md">Español</a>
 </p>
 
 > [!NOTE]
@@ -113,7 +113,7 @@ flowchart TD
     GUI --> TabData["Tabellen-Browser Tab (Sortierbares Grid & Paging)"]
     GUI --> TabSchema["Schema-Inspektor Tab (DDL Syntax-Anzeige)"]
     GUI --> TabSQL["SQL-Editor Tab (Interaktive Abfragen & F9)"]
-    GUI --> TabSettings["Einstellungen & i18n (DE / EN Sprachumschaltung)"]
+    GUI --> TabSettings["Einstellungen & i18n (6 Laufzeitsprachen: DE / EN / ES / ZH / JA / RU)"]
 
     TabData -->|"Lokale Lese-Abfrage"| DBEngine["Python sqlite3 Engine (Standardbibliothek)"]
     TabSchema -->|"sqlite_master Abfrage"| DBEngine
@@ -235,7 +235,7 @@ SQLiteViewer wurde als fokussiertes, lokales Desktop-Werkzeug konzipiert. Die Ge
 | **Offline Browser-Companion** (`INV-LOCAL-06`)| **JA (`web_companion/`)** | NEIN | NEIN | NEIN | Reine Web-App |
 | **Microsoft Store Paketierung** (`INV-LOCAL-07`) | **JA (`9P6H501XB8JT`)** | Winget / MSI | Winget / MSI | Zip / Setup | Keine Desktop-App |
 | **Permissive Lizenz** (`INV-LOCAL-08`) | **MIT (Zero Copyleft)** | GPLv3 (Copyleft) | Apache / Kommerziell | GPLv3 (Copyleft) | Proprietär |
-| **Zweisprachige Parität EN/DE** (`INV-LOCAL-09`) | **JA (100% Wechselseitig)**| Teilweise UI | Teilweise UI | Teilweise UI | Nur Englisch |
+| **Zweisprachige Parität EN/DE** (`INV-LOCAL-09`) | **Reziproke EN/DE-Handbücher; 6 Laufzeitsprachen (DE/EN/ES/ZH/JA/RU)**| Teilweise UI | Teilweise UI | Teilweise UI | Nur Englisch |
 | **Sicherheits-SLA** (`INV-LOCAL-10`) | **48h Reaktions-SLA** | Community Best Effort | Kommerzielles SLA | Community Best Effort | Anbieter-SLA |
 
 ---
@@ -248,7 +248,7 @@ SQLiteViewer wurde als fokussiertes, lokales Desktop-Werkzeug konzipiert. Die Ge
 - **SQL-Abfrage-Editor:** Mehrzeilige SQL-Konsole mit Ausführung per `F9`, Zeilenzähler und Laufzeitmessung.
 - **Echtzeit-Suche:** Schnelles Filtern sichtbarer Zeilen über alle Spalten hinweg.
 - **Kontextsensitiver Export:** Gezielter Export aktiver Tabellen- oder Abfragedaten als CSV oder strukturiertes JSON (`sqliteviewer-export-v1.json`).
-- **Dynamische Internationalisierung:** Umschaltung zwischen Deutsch und Englisch im laufenden Betrieb über das Menü.
+- **Dynamische Internationalisierung:** Sprachwechsel im laufenden Betrieb zwischen Deutsch, Englisch, Spanisch, Chinesisch, Japanisch und Russisch über das UI-Menü.
 - **Offline Web-Companion:** Analyse exportierter JSON-Datensätze im Browser ohne Server und ohne Netzwerkzugriff.
 - **Store-zertifiziert:** Vollständig vorbereitet für den Microsoft Store (`SQLite Viewer Pro`) und als eigenständiges Python-Skript nutzbar.
 
@@ -372,7 +372,7 @@ SQLiteViewer erfüllt alle zehn System-Invarianten des `open-bricks`- und `file-
 | `INV-LOCAL-06` | **Offline Browser-Companion** | Mitgeliefertes HTML/JS-Werkzeug (`web_companion/`) zur serverlosen Betrachtung. |
 | `INV-LOCAL-07` | **Standard Store-Paketierung** | Saubere AppX/MSIX-Kompatibilität mit registrierter Store-ID `9P6H501XB8JT`. |
 | `INV-LOCAL-08` | **100% Permissive Open-Source-Lizenz** | Reines MIT. Keine Copyleft-Verpflichtungen auf Benutzerdaten oder Pipelines. |
-| `INV-LOCAL-09` | **Zweisprachige Parität EN/DE** | Vollständig wechselseitige Dokumentation und dynamische Lokalisierung im Interface. |
+| `INV-LOCAL-09` | **Zweisprachige Parität EN/DE** | Die reziproken englischen und deutschen Benutzerhandbücher bleiben die Dokumentationsbasis; die Laufzeitoberfläche unterstützt sechs Sprachen (DE/EN/ES/ZH/JA/RU). |
 | `INV-LOCAL-10` | **Sicherheits- & Vulnerability-SLA** | Dokumentierte 48-Stunden-Reaktionszeit bei gemeldeten Sicherheitsvorfällen. |
 
 ---
@@ -422,11 +422,13 @@ pytest -ra -v
 ```
 
 Enthaltene Testmodule:
-- `tests/test_sql_execution.py`: Sichere Abfrageausführung, Fehlerbehandlung und Datentypen.
-- `tests/test_translations.py`: Vollständige Schlüsselparität zwischen deutscher und englischer Übersetzung.
+- `tests/test_execute_sql.py`: SQL-Ausführung sowie Verhalten von Abfrageergebnissen und Exporten.
+- `tests/test_i18n_translations_complete.py`: Vollständigkeit des Übersetzungskatalogs in sechs Laufzeitsprachen.
+- `tests/test_i18n_translator.py` und `tests/test_i18n_gui_contract.py`: Verträge für Translator und Sprachwechsel im Laufzeit-Interface.
+- `tests/test_ui_accessibility.py`: Tooltips, Tastaturnavigation, Tastenkürzel und Dialoge.
 - `tests/test_cli_db_argument.py`: Pfadvalidierung und CLI-Parameterprüfung.
 - `tests/test_store_screenshots.py`: Asset-Generierung für die Windows-Store-Präsenz.
-- `tests/test_metadata.py`: Vertragstests für Banner-Schutz (`HOOK-BANNER-ASSET-01`), Mermaid-Syntax, zweisprachige Parität, Zielgruppen und Vergleichsmatrix.
+- `tests/test_metadata.py`: Banner-Schutz (`HOOK-BANNER-ASSET-01`), Mermaid-Syntax, Repository-Metadaten und Dokumentationsstruktur, Zielgruppen und Vergleichsmatrix.
 
 ---
 

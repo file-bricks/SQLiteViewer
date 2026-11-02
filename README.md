@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <b>English</b> | <a href="README_de.md">Deutsch</a>
+  <b>English</b> | <a href="README_de.md">Deutsch</a> | <a href="README_es.md">Español</a>
 </p>
 
 > [!NOTE]
@@ -113,7 +113,7 @@ flowchart TD
     GUI --> TabData["Data Browser Tab (Sortable Treeview & Paging)"]
     GUI --> TabSchema["Schema Inspector Tab (DDL Syntax Highlighting)"]
     GUI --> TabSQL["SQL Editor Tab (Interactive Execution & F9)"]
-    GUI --> TabSettings["Settings & i18n (DE / EN Dynamic Switcher)"]
+    GUI --> TabSettings["Settings & i18n (6 Runtime Locales: EN / DE / ES / ZH / JA / RU)"]
 
     TabData -->|"Local Read-Only Query"| DBEngine["Python sqlite3 Engine (Standard Library)"]
     TabSchema -->|"sqlite_master Query"| DBEngine
@@ -235,7 +235,7 @@ SQLiteViewer is purpose-built as a local-first desktop viewer. It compares again
 | **Offline Browser Companion** (`INV-LOCAL-06`)| **YES (`web_companion/`)** | NO | NO | NO | Web Application |
 | **Microsoft Store Packaging** (`INV-LOCAL-07`) | **YES (`9P6H501XB8JT`)** | Winget / MSI | Winget / MSI | Zip / Setup | None |
 | **Permissive License** (`INV-LOCAL-08`) | **MIT (Zero Copyleft)** | GPLv3 (Copyleft) | Apache / Proprietary | GPLv3 (Copyleft) | Proprietary |
-| **Bilingual Parity EN/DE** (`INV-LOCAL-09`) | **YES (100% Reciprocal)** | Partial UI | Partial UI | Partial UI | English Only |
+| **Bilingual Parity EN/DE** (`INV-LOCAL-09`) | **Reciprocal EN/DE guide baseline; 6 runtime UI locales (EN/DE/ES/ZH/JA/RU)** | Partial UI | Partial UI | Partial UI | English Only |
 | **Security SLA** (`INV-LOCAL-10`) | **48-Hour Response SLA** | Community Best Effort | Commercial SLA | Community Best Effort | Vendor SLA |
 
 ---
@@ -248,7 +248,7 @@ SQLiteViewer is purpose-built as a local-first desktop viewer. It compares again
 - **SQL Query Editor:** Multi-line SQL console with query execution (`F9`), error highlighting, and timing metrics.
 - **Instant Search:** Dynamic column-based filtering across active table rows.
 - **Context-Aware Export:** Export visible rows directly to CSV or rich JSON (`sqliteviewer-export-v1.json`).
-- **Dynamic Internationalization:** Instant runtime language switching between English and German via the UI menu.
+- **Dynamic Internationalization:** Switch the runtime UI between English, German, Spanish, Chinese, Japanese, and Russian from the UI menu.
 - **Offline Web Companion:** Explore exported JSON datasets in any modern browser without installing software or running a local server.
 - **Single Executable & Store Ready:** Packaged for seamless Windows Store deployment (`SQLite Viewer Pro`) or standalone Python execution.
 
@@ -372,7 +372,7 @@ SQLiteViewer strictly adheres to the ten foundational system invariants of the `
 | `INV-LOCAL-06` | **Offline Browser Companion** | Includes zero-dependency HTML/JS companion (`web_companion/`) for client-side review. |
 | `INV-LOCAL-07` | **Standard Store Packaging** | Clean AppX/MSIX manifest compatibility with verified Store ID `9P6H501XB8JT`. |
 | `INV-LOCAL-08` | **100% Permissive Open Source** | Pure MIT License. Zero copyleft encumbrance on user databases or pipelines. |
-| `INV-LOCAL-09` | **Bilingual Parity EN/DE** | Full reciprocal English/German user guides and runtime UI localization. |
+| `INV-LOCAL-09` | **Bilingual Parity EN/DE** | Reciprocal English/German user guides remain the documentation baseline; runtime UI supports six locales (EN/DE/ES/ZH/JA/RU). |
 | `INV-LOCAL-10` | **Security & Vulnerability SLA** | Documented 48-hour response SLA for security and vulnerability disclosures. |
 
 ---
@@ -422,11 +422,13 @@ pytest -ra -v
 ```
 
 Test coverage includes:
-- `tests/test_sql_execution.py`: Safe query execution, error trapping, and data types.
-- `tests/test_translations.py`: Complete key parity across English and German locales.
+- `tests/test_execute_sql.py`: SQL execution and query-result/export behavior.
+- `tests/test_i18n_translations_complete.py`: Translation-catalog completeness across six runtime locales.
+- `tests/test_i18n_translator.py` and `tests/test_i18n_gui_contract.py`: Translator and runtime UI language-handling contracts.
+- `tests/test_ui_accessibility.py`: Tooltips, keyboard navigation, shortcuts, and dialogs.
 - `tests/test_cli_db_argument.py`: Filepath validation and CLI parameter handling.
 - `tests/test_store_screenshots.py`: High-resolution asset generation and Store guidelines.
-- `tests/test_metadata.py`: Automated contract verification for banner safety (`HOOK-BANNER-ASSET-01`), Mermaid diagram syntax, 16-point bilingual parity, target personas, and comparative matrix consistency.
+- `tests/test_metadata.py`: Banner safety (`HOOK-BANNER-ASSET-01`), Mermaid syntax, repository metadata and documentation contracts, target personas, and comparative-matrix consistency.
 
 ---
 
