@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Contract tests for SQLiteViewer metadata, discoverability, and documentation parity."""
 
-import pytest
 import re
 from pathlib import Path
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
