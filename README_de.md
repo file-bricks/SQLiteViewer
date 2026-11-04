@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <b>Deutsch</b>
+  <a href="README.md">English</a> | <b>Deutsch</b> | <a href="README_es.md">Español</a>
 </p>
 
 > [!NOTE]

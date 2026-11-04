@@ -10,36 +10,44 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 def test_readme_files_exist_and_not_empty():
     readme_en = REPO_ROOT / "README.md"
     readme_de = REPO_ROOT / "README_de.md"
+    readme_es = REPO_ROOT / "README_es.md"
     assert readme_en.is_file(), "README.md must exist"
     assert readme_de.is_file(), "README_de.md must exist"
+    assert readme_es.is_file(), "README_es.md must exist"
     assert readme_en.stat().st_size > 3000, "README.md should have full documentation"
     assert readme_de.stat().st_size > 3000, "README_de.md should have full documentation"
+    assert readme_es.stat().st_size > 3000, "README_es.md should have full documentation"
 
 
 def test_readme_bilingual_parity():
     content_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     content_de = (REPO_ROOT / "README_de.md").read_text(encoding="utf-8")
+    content_es = (REPO_ROOT / "README_es.md").read_text(encoding="utf-8")
 
     # Language switcher checks
     assert "README_de.md" in content_en, "README.md must link to README_de.md"
+    assert "README_es.md" in content_en, "README.md must link to README_es.md"
     assert "README.md" in content_de, "README_de.md must link to README.md"
+    assert "README_es.md" in content_de, "README_de.md must link to README_es.md"
+    assert "README.md" in content_es, "README_es.md must link to README.md"
+    assert "README_de.md" in content_es, "README_es.md must link to README_de.md"
 
-    # All 10 local invariants present in both
+    # All 10 local invariants present in all three
     for i in range(1, 11):
         inv = f"INV-LOCAL-{i:02d}"
         assert inv in content_en, f"{inv} missing in README.md"
         assert inv in content_de, f"{inv} missing in README_de.md"
+        assert inv in content_es, f"{inv} missing in README_es.md"
 
-    # Ecosystem links in both
-    assert "https://github.com/file-bricks" in content_en
-    assert "https://github.com/file-bricks" in content_de
-    assert "https://github.com/open-bricks" in content_en
-    assert "https://github.com/open-bricks" in content_de
+    # Ecosystem links in all three
+    for c in [content_en, content_de, content_es]:
+        assert "https://github.com/file-bricks" in c
+        assert "https://github.com/open-bricks" in c
 
 
 def test_banner_guardrails_compliance():
     """Verify exactly one banner reference exists on line 1 and no duplicate banners were added (HOOK-BANNER-ASSET-01)."""
-    for doc_name in ("README.md", "README_de.md"):
+    for doc_name in ("README.md", "README_de.md", "README_es.md"):
         content = (REPO_ROOT / doc_name).read_text(encoding="utf-8")
         banners = re.findall(r"<img\s+[^>]*banner[^>]*>", content, re.IGNORECASE)
         assert len(banners) == 1, f"Expected exactly 1 banner tag in {doc_name}, found {len(banners)}"
@@ -52,7 +60,7 @@ def test_mermaid_diagram_syntax():
     illegal_chars = set("()[]{}<>")
     edge_label_re = re.compile(r"((?:--+>|<-+>|-\.-+>|==+>)\|)([^|\r\n]+)(\|)")
 
-    for doc_name in ("README.md", "README_de.md"):
+    for doc_name in ("README.md", "README_de.md", "README_es.md"):
         content = (REPO_ROOT / doc_name).read_text(encoding="utf-8")
         blocks = re.findall(r"```mermaid\s*\n(.*?)\n```", content, re.DOTALL)
         assert len(blocks) == 2, f"{doc_name} should contain exactly 2 Mermaid diagrams"
@@ -75,7 +83,7 @@ def test_mermaid_diagram_syntax():
 
 def test_target_personas_present():
     """Verify all 4 target personas are documented in both README files."""
-    for doc_name in ("README.md", "README_de.md"):
+    for doc_name in ("README.md", "README_de.md", "README_es.md"):
         content = (REPO_ROOT / doc_name).read_text(encoding="utf-8")
         for i in range(1, 5):
             persona_id = f"[PERSONA-{i:02d}]"
@@ -85,7 +93,7 @@ def test_target_personas_present():
 def test_comparative_matrix_present():
     """Verify the 10-dimension comparative matrix covers key competitors."""
     competitors = ["DB Browser for SQLite", "DBeaver", "SQLiteStudio"]
-    for doc_name in ("README.md", "README_de.md"):
+    for doc_name in ("README.md", "README_de.md", "README_es.md"):
         content = (REPO_ROOT / doc_name).read_text(encoding="utf-8")
         for competitor in competitors:
             assert competitor in content, f"Competitor '{competitor}' missing in comparative matrix of {doc_name}"
@@ -148,11 +156,13 @@ def test_llms_txt_integrity():
         "Stand: 2026-10-11",
         "Stand: 2026-10-18",
         "Stand: 2026-11-01",
+        "Stand: 2026-11-04",
         "Last-checked: 2026-09-14",
         "Last-checked: 2026-09-22",
         "Last-checked: 2026-10-08",
         "Last-checked: 2026-10-11",
         "Last-checked: 2026-10-18",
+        "Last-checked: 2026-11-04",
     ])
     for i in range(1, 5):
         assert f"[PERSONA-{i:02d}]" in content
@@ -170,6 +180,7 @@ def test_store_package_consistency():
         data = json.load(f)
     assert data.get("store_id") == "9P6H501XB8JT"
     assert data.get("identity_name") == "Geiger.SQLiteViewerPro"
+    assert data.get("languages") == ["de-DE", "en-US", "es-ES", "zh-CN", "ja-JP", "ru-RU"]
 
 
 def test_changelog_recency():
@@ -417,3 +428,18 @@ def test_badges_recency_and_test_count_20261018():
     assert any(p in content_de for p in ["Tests-146%20bestanden", "Tests-153%20bestanden", "Tests-155%20bestanden"])
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de
+
+
+def test_store_manifest_and_listing_tier2_parity():
+    """Verify AppxManifest.xml and STORE_LISTING.md declare and provide all 6 Tier-2 languages."""
+    manifest_file = REPO_ROOT / "store_package" / "SQLite Viewer Pro" / "AppxManifest.xml"
+    assert manifest_file.is_file(), "AppxManifest.xml must exist"
+    manifest_content = manifest_file.read_text(encoding="utf-8")
+    for lang in ["de-DE", "en-US", "es-ES", "zh-CN", "ja-JP", "ru-RU"]:
+        assert f'<Resource Language="{lang}"/>' in manifest_content
+
+    listing_file = REPO_ROOT / "STORE_LISTING.md"
+    assert listing_file.is_file(), "STORE_LISTING.md must exist"
+    listing_content = listing_file.read_text(encoding="utf-8")
+    for heading in ["## Deutsch", "## English", "## Español", "## 简体中文", "## 日本語", "## Русский"]:
+        assert heading in listing_content, f"Section {heading} missing in STORE_LISTING.md"

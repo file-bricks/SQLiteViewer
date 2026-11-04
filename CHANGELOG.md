@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- **Tier-2 6-Sprachen Store- und Companion-Harmonisierung (SV-I18N-07..11 - Stand 2026-11-04):**
+  - Store-Manifest-Harmonisierung (`SV-I18N-07`): Deklaration aller 6 Zielsprachen (`de-DE`, `en-US`, `es-ES`, `zh-CN`, `ja-JP`, `ru-RU`) in `store_package.json` und `store_package/SQLite Viewer Pro/AppxManifest.xml` synchronisiert.
+  - Lokalisierte Store-Listings (`SV-I18N-08`): `STORE_LISTING.md` um authentische Store-Listing-Abschnitte für Spanisch (`## Español`), Chinesisch (`## 简体中文`), Japanisch (`## 日本語`) und Russisch (`## Русский`) erweitert (Kurzbeschreibung <= 100 Zeichen, Vollbeschreibung, Kernfunktionen, Vergleichsmerkmale, Keywords, Kategorie Developer Tools).
+  - Web-Companion 6-Sprachen-Parität (`SV-I18N-09`): `web_companion/i18n.js` und `web_companion/tests/i18n.test.mjs` auf alle 6 Sprachen erweitert mit 100% Parität über alle 54 Schlüssel; `web_companion/index.html` um Sprachwahltasten für ES, ZH, JA, RU erweitert; `web_companion/library.js` formatSourceSummary für alle 6 Sprachen lokalisiert; 46/46 Node-Tests grün.
+  - Spanische Gesamtdokumentation (`SV-I18N-10`): `README_es.md` mit 1:1 Abschnittsparität, Diagrammen und trilingualem Navigations-Header (`[English](README.md) · [Deutsch](README_de.md) · [Español](README_es.md)`) bereitgestellt; Banner- und Mermaid-Guardrails eingehalten.
+  - LLM-Metadaten & Vertragstests (`SV-I18N-11`): `llms.txt` auf den 6-Sprachen-Tier-2-Standard aktualisiert; `tests/test_metadata.py` mit 29/29 Tests grün; Pytest-Vollsuite 156/156 passed (100% grün).
 - **UX & Accessibility Review (WCAG 2.1 AA / BITV 2.0 Tastatur-Ergonomie, Tooltips, Alt-Mnemonics, Shortcuts- & About-Dialog, 6-Sprachen-Parität & 7 Vertragstests - Stand 2026-11-01):**
   - Barrierefreie ToolTips (`class ToolTip`): Leichtgewichtiges Tooltip-Widget für Tkinter-Komponenten mit Maus-Hover (`<Enter>/<Leave>`), Tastaturfokus (`<FocusIn>/<FocusOut>`), Schließen per `<Escape>` und `<ButtonPress>` gemäß WCAG 2.1 AA 1.4.13 sowie Statusleisten-Rückmeldung; verknüpft mit Tabellenauswahl, Limit-Feld, Suchfeld, Aktualisieren-Button, Export-Button, Schema-Auswahl, Alle-Schemas-Button, SQL-Ausführen-Button und SQL-Leeren-Button.
   - Menüleisten-Mnemonics (Alt-Navigation): Mnemonics (`underline=0`) für Hauptmenüs `&Datei` (Alt+D), `&Bearbeiten` (Alt+B), `&Ansicht` (Alt+A) und `&Hilfe` (Alt+H) sowie Tastaturkürzel-Mnemonics in Untermenüs.

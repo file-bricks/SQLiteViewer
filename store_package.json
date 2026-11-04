@@ -13,7 +13,11 @@
   "support_url": "https://github.com/file-bricks/SQLiteViewer/issues",
   "languages": [
     "de-DE",
-    "en-US"
+    "en-US",
+    "es-ES",
+    "zh-CN",
+    "ja-JP",
+    "ru-RU"
   ],
   "file_types": {
     "name": "sqlite",

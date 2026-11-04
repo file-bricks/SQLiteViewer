@@ -115,12 +115,38 @@ export function filterRows(exportData, options = {}) {
 
 export function formatSourceSummary(exportData, options = {}) {
   const locale = options.locale ?? options.lang ?? "de";
-  const exportedAt = exportData.exportedAt ?? (locale === "en" ? "unknown" : "unbekannt");
-  const databaseName = exportData.source.databaseName ?? (locale === "en" ? "unknown database" : "unbekannte Datenbank");
-  const pathNote = exportData.source.databasePath
-    ? (locale === "en" ? "full local path hidden in export" : "voller lokaler Pfad im Export ausgeblendet")
-    : (locale === "en" ? "no local path in export" : "kein lokaler Pfad im Export");
-  const sourcePrefix = locale === "en" ? "Source" : "Quelle";
+  let exportedAt, databaseName, pathNote, sourcePrefix;
+  if (locale === "en") {
+    exportedAt = exportData.exportedAt ?? "unknown";
+    databaseName = exportData.source.databaseName ?? "unknown database";
+    pathNote = exportData.source.databasePath ? "full local path hidden in export" : "no local path in export";
+    sourcePrefix = "Source";
+  } else if (locale === "es") {
+    exportedAt = exportData.exportedAt ?? "desconocido";
+    databaseName = exportData.source.databaseName ?? "base de datos desconocida";
+    pathNote = exportData.source.databasePath ? "ruta local completa oculta en la exportación" : "sin ruta local en la exportación";
+    sourcePrefix = "Origen";
+  } else if (locale === "zh") {
+    exportedAt = exportData.exportedAt ?? "未知";
+    databaseName = exportData.source.databaseName ?? "未知数据库";
+    pathNote = exportData.source.databasePath ? "导出中已隐藏完整的本地路径" : "导出中无本地路径";
+    sourcePrefix = "来源";
+  } else if (locale === "ja") {
+    exportedAt = exportData.exportedAt ?? "不明";
+    databaseName = exportData.source.databaseName ?? "不明なデータベース";
+    pathNote = exportData.source.databasePath ? "エクスポート内で完全なローカルパスは非表示" : "エクスポート内にローカルパスなし";
+    sourcePrefix = "ソース";
+  } else if (locale === "ru") {
+    exportedAt = exportData.exportedAt ?? "неизвестно";
+    databaseName = exportData.source.databaseName ?? "неизвестная база данных";
+    pathNote = exportData.source.databasePath ? "полный локальный путь скрыт в экспорте" : "нет локального пути в экспорте";
+    sourcePrefix = "Источник";
+  } else {
+    exportedAt = exportData.exportedAt ?? "unbekannt";
+    databaseName = exportData.source.databaseName ?? "unbekannte Datenbank";
+    pathNote = exportData.source.databasePath ? "voller lokaler Pfad im Export ausgeblendet" : "kein lokaler Pfad im Export";
+    sourcePrefix = "Quelle";
+  }
   const exportPrefix = "Export";
   return `${exportData.appName} ${exportData.appVersion} · ${exportPrefix}: ${exportedAt} · ${sourcePrefix}: ${databaseName} · ${pathNote}`;
 }

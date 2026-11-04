@@ -14,30 +14,40 @@ import {
   translateDocument,
 } from "../i18n.js";
 
-describe("i18n Core Contract", () => {
-  test("supported locales include de and en with de as default", () => {
-    assert.deepEqual(SUPPORTED_LOCALES, ["de", "en"]);
+describe("i18n Core Contract (Tier-2 6-Languages)", () => {
+  test("supported locales include de, en, es, zh, ja, ru with de as default", () => {
+    assert.deepEqual(SUPPORTED_LOCALES, ["de", "en", "es", "zh", "ja", "ru"]);
     assert.equal(DEFAULT_LOCALE, "de");
     assert.equal(STORAGE_KEY, "sqliteviewer-web-companion:language");
   });
 
-  test("translations dictionary contains all required keys for both de and en", () => {
-    const deKeys = Object.keys(TRANSLATIONS.de);
-    const enKeys = Object.keys(TRANSLATIONS.en);
+  test("translations dictionary contains all 54 required keys with 100% parity across all 6 languages", () => {
+    const deKeys = Object.keys(TRANSLATIONS.de).sort();
+    assert.equal(deKeys.length, 54, "DE should contain exactly 54 keys");
 
-    assert.ok(deKeys.length > 25, "DE should contain 25+ keys");
-    assert.deepEqual(deKeys.sort(), enKeys.sort(), "DE and EN should have identical key sets");
+    for (const lang of ["en", "es", "zh", "ja", "ru"]) {
+      const langKeys = Object.keys(TRANSLATIONS[lang]).sort();
+      assert.deepEqual(langKeys, deKeys, `${lang.toUpperCase()} keys should be identical to DE keys`);
+    }
   });
 
-  test("t() returns accurate translations for DE and EN", () => {
+  test("t() returns accurate translations for all 6 languages", () => {
     assert.equal(t("action_load_json", {}, "de"), "JSON laden");
     assert.equal(t("action_load_json", {}, "en"), "Load JSON");
+    assert.equal(t("action_load_json", {}, "es"), "Cargar JSON");
+    assert.equal(t("action_load_json", {}, "zh"), "加载 JSON");
+    assert.equal(t("action_load_json", {}, "ja"), "JSON 読み込み");
+    assert.equal(t("action_load_json", {}, "ru"), "Загрузить JSON");
 
     assert.equal(t("panel_source_title", {}, "de"), "Export-Metadaten");
     assert.equal(t("panel_source_title", {}, "en"), "Export Metadata");
+    assert.equal(t("panel_source_title", {}, "es"), "Metadatos de exportación");
+    assert.equal(t("panel_source_title", {}, "zh"), "导出元数据");
+    assert.equal(t("panel_source_title", {}, "ja"), "エクスポートメタデータ");
+    assert.equal(t("panel_source_title", {}, "ru"), "Метаданные экспорта");
   });
 
-  test("t() interpolates parameters properly", () => {
+  test("t() interpolates parameters properly across languages", () => {
     const formattedDe = t("status_export_loaded", {
       label: "Demo",
       name: "test.sqlite",
@@ -52,6 +62,13 @@ describe("i18n Core Contract", () => {
     }, "en");
     assert.equal(formattedEn, "Demo loaded: test.sqlite (42 visible rows).");
 
+    const formattedEs = t("status_export_loaded", {
+      label: "Demo",
+      name: "test.sqlite",
+      count: 42,
+    }, "es");
+    assert.equal(formattedEs, "Demo cargado: test.sqlite (42 filas visibles).");
+
     const emptyFiltered = t("empty_state_filtered", { query: "orders" }, "en");
     assert.equal(emptyFiltered, 'No rows match search filter "orders".');
   });
@@ -60,15 +77,20 @@ describe("i18n Core Contract", () => {
     // Nonexistent key returns key itself
     assert.equal(t("non_existent_key_xyz", {}, "de"), "non_existent_key_xyz");
     assert.equal(t("non_existent_key_xyz", {}, "en"), "non_existent_key_xyz");
+    assert.equal(t("non_existent_key_xyz", {}, "es"), "non_existent_key_xyz");
 
-    // Unsupported locale defaults to de/en fallback
+    // Unsupported locale defaults to de fallback
     assert.equal(t("action_load_json", {}, "fr"), "JSON laden");
   });
 
-  test("normalizeLocale handles full codes and case variations", () => {
+  test("normalizeLocale handles full codes and case variations for all 6 languages", () => {
     assert.equal(normalizeLocale("de-DE"), "de");
     assert.equal(normalizeLocale("EN_US"), "en");
-    assert.equal(normalizeLocale("es-ES"), "de"); // unsupported falls back to default
+    assert.equal(normalizeLocale("es-ES"), "es");
+    assert.equal(normalizeLocale("zh-CN"), "zh");
+    assert.equal(normalizeLocale("ja-JP"), "ja");
+    assert.equal(normalizeLocale("ru-RU"), "ru");
+    assert.equal(normalizeLocale("fr-FR"), "de"); // unsupported falls back to default
     assert.equal(normalizeLocale(null), "de");
   });
 
@@ -76,6 +98,22 @@ describe("i18n Core Contract", () => {
     setLocale("en");
     assert.equal(getLocale(), "en");
     assert.equal(t("action_open_demo"), "Open Demo");
+
+    setLocale("es");
+    assert.equal(getLocale(), "es");
+    assert.equal(t("action_open_demo"), "Abrir demo");
+
+    setLocale("zh");
+    assert.equal(getLocale(), "zh");
+    assert.equal(t("action_open_demo"), "打开演示");
+
+    setLocale("ja");
+    assert.equal(getLocale(), "ja");
+    assert.equal(t("action_open_demo"), "デモを開く");
+
+    setLocale("ru");
+    assert.equal(getLocale(), "ru");
+    assert.equal(t("action_open_demo"), "Открыть демо");
 
     setLocale("de");
     assert.equal(getLocale(), "de");
@@ -116,13 +154,13 @@ describe("i18n Core Contract", () => {
       }
     };
 
-    translateDocument(mockRoot, "en");
+    translateDocument(mockRoot, "es");
 
-    assert.equal(mockRoot.documentElement.lang, "en");
-    assert.equal(mockNodes[0].textContent, "Load JSON");
-    assert.equal(mockNodes[1].textContent, "Reset");
-    assert.equal(mockPlaceholders[0].placeholder, "Title, ID, query, BLOB notes …");
-    assert.equal(mockTitles[0].title, "Click to sort ascending");
-    assert.equal(mockAriaLabels[0]["aria-label"], "Search visible rows");
+    assert.equal(mockRoot.documentElement.lang, "es");
+    assert.equal(mockNodes[0].textContent, "Cargar JSON");
+    assert.equal(mockNodes[1].textContent, "Restablecer");
+    assert.equal(mockPlaceholders[0].placeholder, "Título, ID, consulta, notas BLOB …");
+    assert.equal(mockTitles[0].title, "Clic para ordenar ascendente");
+    assert.equal(mockAriaLabels[0]["aria-label"], "Buscar en filas visibles");
   });
 });
