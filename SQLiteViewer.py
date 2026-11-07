@@ -21,6 +21,7 @@ import math
 import base64
 import csv
 import sqlite3
+import tempfile
 from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -32,6 +33,7 @@ from export_atomic import atomic_export, database_files
 APP_TITLE = "SQLite Viewer Pro"
 APP_VERSION = "2.1.0"
 DEFAULT_LIMIT = 1000
+MAX_CELL_DISPLAY_LEN = 500
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 _CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
 _CSV_IGNORABLE_PREFIX = "".join(chr(code) for code in range(0x21)) + "\ufeff"
@@ -159,6 +161,7 @@ class SqlViewer(tk.Tk):
         self.sort_column: str | None = None
         self.sort_reverse: bool = False
         self._tooltips: List[Tuple[Any, str, str]] = []
+        self._sql_highlight_job: str | None = None
 
         # UI
         self._build_menu()
@@ -268,18 +271,33 @@ class SqlViewer(tk.Tk):
         return {}
 
     def _save_settings(self):
+        temp_p = None
         try:
             p = self._get_settings_path()
             p.parent.mkdir(parents=True, exist_ok=True)
             settings = {"language": getattr(self, "current_language", "de")}
-            temp_p = p.with_suffix(".tmp")
-            with open(temp_p, "w", encoding="utf-8") as f:
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=p.parent,
+                prefix=".sqliteviewer-settings-",
+                suffix=".tmp",
+                delete=False,
+            ) as f:
+                temp_p = Path(f.name)
                 json.dump(settings, f, indent=2)
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(temp_p, p)
+            temp_p = None
         except Exception:
             pass
+        finally:
+            if temp_p is not None:
+                try:
+                    temp_p.unlink()
+                except OSError:
+                    pass
 
     @staticmethod
     def _detect_system_language() -> str:
@@ -1227,7 +1245,33 @@ class SqlViewer(tk.Tk):
         self.schema_text.config(state=tk.DISABLED)
 
     def _highlight_sql(self, event=None):
-        """Einfaches SQL-Highlighting."""
+        """Einfaches SQL-Highlighting mit Debouncing gegen Eingabelatenz."""
+        if hasattr(self, "_sql_highlight_job") and self._sql_highlight_job is not None:
+            try:
+                self.after_cancel(self._sql_highlight_job)
+            except Exception:
+                pass
+            self._sql_highlight_job = None
+
+        if event is None:
+            self._do_highlight_sql()
+        else:
+            try:
+                self._sql_highlight_job = self.after(120, self._do_highlight_sql)
+            except Exception:
+                self._do_highlight_sql()
+
+    def _do_highlight_sql(self):
+        """Führt das Syntax-Highlighting im SQL-Textfeld aus."""
+        self._sql_highlight_job = None
+        if not hasattr(self, "sql_text") or not self.sql_text:
+            return
+        try:
+            if hasattr(self.sql_text, "winfo_exists") and not self.sql_text.winfo_exists():
+                return
+        except Exception:
+            return
+
         keywords = ["SELECT", "FROM", "WHERE", "AND", "OR", "INSERT", "UPDATE",
                     "DELETE", "CREATE", "DROP", "ALTER", "TABLE", "INTO", "VALUES",
                     "SET", "ORDER", "BY", "GROUP", "HAVING", "JOIN", "LEFT", "RIGHT",
@@ -1235,11 +1279,12 @@ class SqlViewer(tk.Tk):
                     "UNION", "EXCEPT", "INTERSECT", "NULL", "NOT", "IN", "LIKE",
                     "BETWEEN", "EXISTS", "CASE", "WHEN", "THEN", "ELSE", "END"]
 
-        # Entferne alte Tags
-        self.sql_text.tag_remove("keyword", "1.0", tk.END)
-
-        for keyword in keywords:
-            self._highlight_word(self.sql_text, keyword, "keyword")
+        try:
+            self.sql_text.tag_remove("keyword", "1.0", tk.END)
+            for keyword in keywords:
+                self._highlight_word(self.sql_text, keyword, "keyword")
+        except Exception:
+            pass
 
     # ==================== EXPORT ====================
     def export_csv(self):
@@ -1278,16 +1323,14 @@ class SqlViewer(tk.Tk):
                 # Bugsweep 23: BLOB/bytes base64-kodieren, sonst landet ein b'...'-Rohliteral in der
                 # CSV (konsistent mit dem JSON-Export, der BLOBs ebenfalls base64-kodiert).
                 writer.writerows(
-                    [
-                        [
-                            (
-                                base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else
-                                (base64.b64encode(bytes(v)).decode("ascii") if isinstance(v, (bytearray, memoryview)) else _csv_safe_value(v))
-                            )
-                            for v in row
-                        ]
-                        for row in rows
-                    ]
+                    (
+                        (
+                            base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else
+                            (base64.b64encode(bytes(v)).decode("ascii") if isinstance(v, (bytearray, memoryview)) else _csv_safe_value(v))
+                        )
+                        for v in row
+                    )
+                    for row in rows
                 )
 
             self._set_status(f"Exportiert: {os.path.basename(path)}")
@@ -1322,13 +1365,19 @@ class SqlViewer(tk.Tk):
         database_name = os.path.basename(database_path) if database_path else None
         result_rows = []
 
+        seen_cols: dict[str, int] = {}
+        col_keys: list[str] = []
+        for column in columns:
+            count = seen_cols.get(column, 0)
+            seen_cols[column] = count + 1
+            col_key = column if count == 0 else f"{column}_{count + 1}"
+            col_keys.append(col_key)
+
+        num_cols = len(columns)
         for row in rows:
             row_dict = {}
-            seen_cols: dict[str, int] = {}
-            for index, column in enumerate(columns):
-                count = seen_cols.get(column, 0)
-                seen_cols[column] = count + 1
-                col_key = column if count == 0 else f"{column}_{count + 1}"
+            for index in range(num_cols):
+                col_key = col_keys[index]
                 val = row[index] if index < len(row) else None
                 row_dict[col_key] = SqlViewer._serialize_export_value(self, val)
             result_rows.append(row_dict)
@@ -1460,11 +1509,12 @@ class SqlViewer(tk.Tk):
                 self.tree.heading(c, text=c + indicator, command=lambda col=c: self._sort_by_column(col))
                 self.tree.column(c, width=120, anchor="w")
 
+            num_cols = len(cols)
             for row in rows:
                 if isinstance(row, sqlite3.Row):
-                    values = [self._format_value(row[i]) for i in range(len(cols))]
+                    values = [self._format_value(row[idx]) for idx in range(num_cols)]
                 elif isinstance(row, (tuple, list)):
-                    values = [self._format_value(row[i] if i < len(row) else None) for i in range(len(cols))]
+                    values = [self._format_value(row[idx] if idx < len(row) else None) for idx in range(num_cols)]
                 else:
                     values = [self._format_value(v) for v in row]
                 self.tree.insert("", tk.END, values=values)
@@ -1534,22 +1584,26 @@ class SqlViewer(tk.Tk):
             self.tree.heading(c, text=c + indicator, command=lambda col=c: self._sort_by_column(col))
             self.tree.column(c, width=120, anchor="w")
 
+        num_cols = len(columns)
         for row in rows:
             if isinstance(row, sqlite3.Row):
-                values = [self._format_value(row[i]) for i in range(len(columns))]
+                values = [self._format_value(row[i]) for i in range(num_cols)]
             elif isinstance(row, (tuple, list)):
-                values = [self._format_value(row[i] if i < len(row) else None) for i in range(len(columns))]
+                values = [self._format_value(row[i] if i < len(row) else None) for i in range(num_cols)]
             else:
                 values = [self._format_value(v) for v in row]
             self.tree.insert("", tk.END, values=values)
 
     def _format_value(self, value: Any) -> str:
-        """Formatiert einen Wert für die Anzeige."""
+        """Formatiert einen Wert für die Anzeige im Treeview mit Längenbegrenzung zur GUI-Entlastung."""
         if value is None:
             return "NULL"
         if isinstance(value, (bytes, bytearray, memoryview)):
             return f"[BLOB {len(value)} bytes]"
-        return str(value)
+        s = str(value)
+        if len(s) > MAX_CELL_DISPLAY_LEN:
+            return f"{s[:MAX_CELL_DISPLAY_LEN]}… [{len(s)} chars]"
+        return s
 
     def _select_all(self):
         """Wählt alle Zeilen im Treeview aus."""
@@ -1595,7 +1649,13 @@ class SqlViewer(tk.Tk):
         self.status_var.set(text)
 
     def _on_close(self):
-        """Sauberes Schließen: DB schließen, dann Fenster zerstören."""
+        """Sauberes Schließen: DB schließen, laufende Jobs abbrechen, dann Fenster zerstören."""
+        if hasattr(self, "_sql_highlight_job") and self._sql_highlight_job is not None:
+            try:
+                self.after_cancel(self._sql_highlight_job)
+            except Exception:
+                pass
+            self._sql_highlight_job = None
         self.close_db()
         self.destroy()
 

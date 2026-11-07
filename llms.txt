@@ -84,4 +84,4 @@ SQLite Viewer Pro Microsoft Store
 
 MIT License.
 
-## Last-checked: 2026-11-04 (Tier-2 6-language store and companion parity, 155 Pytest + 46 Node companion tests passed | 100% green, Level 1 SBOM companion verified)
+## Last-checked: 2026-11-08 (High-End Refactoring & Architecture Hardening: Atomic Settings, Streaming CSV, Precomputed Export Keys, SQL Highlighting Debounce & Cell Guard; 162 Pytest + 46 Node companion tests passed | 100% green, Level 1 SBOM companion verified)

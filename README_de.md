@@ -6,7 +6,7 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-green.svg" alt="Lizenz: MIT"></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/Hinweis-Attribution-blue.svg" alt="Hinweis & Attribution"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/Tests-155%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Bestanden"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/Tests-162%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Tests 100% Bestanden"></a>
   <a href="tests/"><img src="https://img.shields.io/badge/Gepr%C3%BCft-2026--11--01-blue.svg" alt="Geprüft 2026-11-01"></a>
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Beitragsrichtlinie-Guidelines-green.svg" alt="Beitragsrichtlinie"></a>
   <a href="THIRD_PARTY_LICENSES.txt"><img src="https://img.shields.io/badge/Level%201%20SBOM-Plain%20Text-blue.svg" alt="Level 1 SBOM Plain Text"></a>

@@ -424,8 +424,8 @@ def test_badges_recency_and_test_count_20261018():
 
     assert "Verified-2026--10--18-blue.svg" in content_en or "Verified-2026--11--01-blue.svg" in content_en
     assert "Gepr%C3%BCft-2026--10--18-blue.svg" in content_de or "Gepr%C3%BCft-2026--11--01-blue.svg" in content_de
-    assert any(p in content_en for p in ["Tests-146%20passed", "Tests-153%20passed", "Tests-155%20passed"])
-    assert any(p in content_de for p in ["Tests-146%20bestanden", "Tests-153%20bestanden", "Tests-155%20bestanden"])
+    assert any(p in content_en for p in ["Tests-146%20passed", "Tests-153%20passed", "Tests-155%20passed", "Tests-162%20passed"])
+    assert any(p in content_de for p in ["Tests-146%20bestanden", "Tests-153%20bestanden", "Tests-155%20bestanden", "Tests-162%20bestanden"])
     assert "Contributing-Guidelines" in content_en
     assert "Beitragsrichtlinie" in content_de
 
