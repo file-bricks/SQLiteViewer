@@ -1,5 +1,5 @@
 """
-TranslationSystem - Multi-Language Support fuer Anwendungen
+TranslationSystem - Multi-Language Support für Anwendungen
 ============================================================
 Version: 1.1.0 (gehaertet & I18N-erweitert)
 Quelle: DATA/REL-PUB_SQLiteViewer/translator.py
