@@ -202,18 +202,18 @@ sequenceDiagram
     User->>UI: Tabelle auswaehlen oder SQL ausfuehren (F9)
     UI->>Core: SQL-Abfrage an lokaler Datei ausfuehren
     Core->>Disk: Zeilen aus .db / .sqlite lesen
-    Disk-->>Core: Tabellenzeilen & Spaltenmetadaten zurueckgeben
-    Core-->>UI: Treeview befuellen & Zeilenzaehler aktualisieren
+    Disk-->>Core: Tabellenzeilen & Spaltenmetadaten zurückgeben
+    Core-->>UI: Treeview befüllen & Zeilenzähler aktualisieren
 
-    User->>UI: Export ausloesen (Ctrl+E oder Menue)
-    UI->>Exp: Aktiven Kontext uebergeben (Tabelle vs. SQL-Ergebnis)
+    User->>UI: Export auslösen (Ctrl+E oder Menü)
+    UI->>Exp: Aktiven Kontext übergeben (Tabelle vs. SQL-Ergebnis)
     alt CSV-Export-Modus
         Exp->>Disk: Formatierte CSV-Daten lokal speichern
-        Disk-->>User: CSV-Datei einsatzbereit fuer Tabellenkalkulation
+        Disk-->>User: CSV-Datei einsatzbereit für Tabellenkalkulation
     else JSON-Companion-Modus (sqliteviewer-export-v1)
         Exp->>Exp: Spaltentypen, Metadaten & Base64-BLOBs serialisieren
         Exp->>Disk: sqliteviewer-export-v1.json Envelope schreiben
-        Disk-->>Comp: Lokal im Browser oeffnen ohne Upload
+        Disk-->>Comp: Lokal im Browser öffnen ohne Upload
         Comp-->>User: Interaktive Offline-Ansicht & Filterung
     end
 ```

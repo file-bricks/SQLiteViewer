@@ -1111,7 +1111,7 @@ class SqlViewer(tk.Tk):
             self.sql_result_tree.insert("", tk.END, values=values)
 
     def _set_current_view_data(self, columns: List[str], rows: List[Any]):
-        """Merkt sich die aktuell sichtbaren Daten fuer Export und Folgeaktionen."""
+        """Merkt sich die aktuell sichtbaren Daten für Export und Folgeaktionen."""
         self.current_columns = list(columns)
         self.current_data = [tuple(row) for row in rows]
 
