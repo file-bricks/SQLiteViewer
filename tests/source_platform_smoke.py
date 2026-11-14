@@ -1,6 +1,7 @@
 """Source-Platform Smoke-Test für SQLiteViewer.
 
-Prüft auf Linux und macOS (und Windows) ohne GUI-Fenster:
+Prüft auf Linux, macOS und Windows ohne GUI-Fenster (sowohl via `pytest` als auch
+als direkter Standalone-Aufruf `python tests/source_platform_smoke.py`):
 - Modul-Import (tkinter muss installiert sein, aber kein DISPLAY nötig)
 - Kernlogik über Fake-Infrastruktur
 - SQLite-Ausführung headless
@@ -86,9 +87,15 @@ def test_build_export_payload_bytes_row():
         current_columns=["blob_col"],
         current_data=[(b"\x00\xff",)],
         db_path="/tmp/blobs.sqlite",
-        export_context={"view": "query", "table": "t", "query": "SELECT blob_col FROM t",
-                        "row_limit": None, "search_term": None,
-                        "sort_column": None, "sort_descending": None},
+        export_context={
+            "view": "query",
+            "table": "t",
+            "query": "SELECT blob_col FROM t",
+            "row_limit": None,
+            "search_term": None,
+            "sort_column": None,
+            "sort_descending": None,
+        },
     )
     fake._serialize_export_value = lambda v: SQLiteViewer.SqlViewer._serialize_export_value(fake, v)
     fake._build_export_payload = lambda: SQLiteViewer.SqlViewer._build_export_payload(fake)
@@ -141,7 +148,38 @@ def test_execute_sql_headless():
 def test_ident_escaping():
     fake = SimpleNamespace(_SQLITE_KEYWORDS=SQLiteViewer.SqlViewer._SQLITE_KEYWORDS)
     # Einfache Namen ohne Keyword-Konflikt bleiben unquotiert
-    assert SQLiteViewer.SqlViewer._ident(fake, 'normal') == 'normal'
+    assert SQLiteViewer.SqlViewer._ident(fake, "normal") == "normal"
     # Namen mit Sonderzeichen oder SQLite-Keywords werden in doppelte Anführungszeichen gesetzt
     assert SQLiteViewer.SqlViewer._ident(fake, 'with"quote') == '"with""quote"'
-    assert SQLiteViewer.SqlViewer._ident(fake, 'SELECT') == '"SELECT"'
+    assert SQLiteViewer.SqlViewer._ident(fake, "SELECT") == '"SELECT"'
+
+
+SMOKE_CHECKS = (
+    test_app_constants_defined,
+    test_serialize_export_value_primitives,
+    test_serialize_export_value_bytes,
+    test_build_export_payload_basic,
+    test_build_export_payload_bytes_row,
+    test_execute_sql_headless,
+    test_ident_escaping,
+)
+
+
+def run_smoke_suite() -> int:
+    """Führt alle Source-Platform-Smoke-Checks direkt als CLI-Skript aus."""
+    passed = 0
+    failed = 0
+    for check_fn in SMOKE_CHECKS:
+        try:
+            check_fn()
+            print(f"[PASS] {check_fn.__name__}")
+            passed += 1
+        except Exception as exc:
+            print(f"[FAIL] {check_fn.__name__}: {exc}", file=sys.stderr)
+            failed += 1
+    print(f"Source-Platform-Smoke: {passed}/{len(SMOKE_CHECKS)} Checks bestanden ({sys.platform}).")
+    return 0 if failed == 0 else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(run_smoke_suite())

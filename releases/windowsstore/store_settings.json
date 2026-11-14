@@ -1,0 +1,168 @@
+{
+  "app_name": "SQLite Viewer Pro",
+  "package_id": "Geiger.SQLiteViewerPro",
+  "publisher": "CN=52596601-BAB4-4F3F-B182-E8F3F273B202",
+  "publisher_display": "Geiger",
+  "identity_name": "Geiger.SQLiteViewerPro",
+  "store_id": "9P6H501XB8JT",
+  "version": "2.1.0.0",
+  "description": "Leichtgewichtiger SQLite-Datenbank-Browser mit GUI, Read-only-Zugriff sowie CSV- und JSON-Export.",
+  "executable": "SQLiteViewer.exe",
+  "exe_name": "SQLiteViewer",
+  "msix_name": "SQLiteViewerPro-2.1.0.0.msix",
+  "execution_alias": "sqliteviewer.exe",
+  "output_dir": "store_package",
+  "license_files": [
+    "../../LICENSE",
+    "../../NOTICE"
+  ],
+  "enable_i18n": true,
+  "capabilities": "internetClient,runFullTrust",
+  "category": "Developer Tools",
+  "age_rating": "3+",
+  "license": "MIT",
+  "privacy_url": "https://github.com/file-bricks/SQLiteViewer/blob/master/PRIVACY_POLICY.md",
+  "support_url": "https://github.com/file-bricks/SQLiteViewer/issues",
+  "languages": [
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "zh-CN",
+    "ja-JP",
+    "ru-RU"
+  ],
+  "file_types": {
+    "name": "sqlite",
+    "display_name": "SQLite-Datenbank",
+    "info_tip": "Mit SQLite Viewer Pro öffnen",
+    "extensions": [
+      ".db",
+      ".sqlite",
+      ".sqlite3"
+    ]
+  },
+  "description_de": "Leichtgewichtiger SQLite-Browser: Datenbanken lokal öffnen, abfragen und exportieren.",
+  "description_en": "Lightweight SQLite browser: open, search, query, and export databases locally in seconds.",
+  "description_es": "Navegador SQLite ligero: abra, busque, consulte y exporte bases de datos localmente.",
+  "description_zh": "轻量级本地 SQLite 数据库浏览器：快速打开、检索、查询并安全导出数据。",
+  "description_ja": "軽量ローカル SQLite ブラウザ：データベースの閲覧・検索・SQL実行・出力を即座に実行。",
+  "description_ru": "Легковесный браузер SQLite: локальное открытие, поиск, SQL-запросы и экспорт данных.",
+  "keywords_de": [
+    "sqlite viewer",
+    "datenbank browser",
+    "sql abfrage",
+    "csv export",
+    "json export",
+    "tabellen schema",
+    "entwicklertools"
+  ],
+  "keywords_en": [
+    "sqlite viewer",
+    "database browser",
+    "sql query",
+    "csv export",
+    "json export",
+    "table schema",
+    "developer tools"
+  ],
+  "keywords_es": [
+    "visor sqlite",
+    "base de datos",
+    "consulta sql",
+    "exportar csv",
+    "exportar json",
+    "esquema tablas",
+    "desarrolladores"
+  ],
+  "keywords_zh": [
+    "sqlite查看器",
+    "数据库浏览器",
+    "sql查询",
+    "csv导出",
+    "json导出",
+    "数据表结构",
+    "开发者工具"
+  ],
+  "keywords_ja": [
+    "sqliteビューア",
+    "データベース閲覧",
+    "sqlクエリ",
+    "csv出力",
+    "json出力",
+    "テーブルスキーマ",
+    "開発ツール"
+  ],
+  "keywords_ru": [
+    "просмотр sqlite",
+    "браузер баз данных",
+    "sql запросы",
+    "экспорт csv",
+    "экспорт json",
+    "схема таблиц",
+    "разработка"
+  ],
+  "descriptions": {
+    "de-DE": "Leichtgewichtiger SQLite-Browser: Datenbanken lokal öffnen, abfragen und exportieren.",
+    "en-US": "Lightweight SQLite browser: open, search, query, and export databases locally in seconds.",
+    "es-ES": "Navegador SQLite ligero: abra, busque, consulte y exporte bases de datos localmente.",
+    "zh-CN": "轻量级本地 SQLite 数据库浏览器：快速打开、检索、查询并安全导出数据。",
+    "ja-JP": "軽量ローカル SQLite ブラウザ：データベースの閲覧・検索・SQL実行・出力を即座に実行。",
+    "ru-RU": "Легковесный браузер SQLite: локальное открытие, поиск, SQL-запросы и экспорт данных."
+  },
+  "keywords": {
+    "de-DE": [
+      "sqlite viewer",
+      "datenbank browser",
+      "sql abfrage",
+      "csv export",
+      "json export",
+      "tabellen schema",
+      "entwicklertools"
+    ],
+    "en-US": [
+      "sqlite viewer",
+      "database browser",
+      "sql query",
+      "csv export",
+      "json export",
+      "table schema",
+      "developer tools"
+    ],
+    "es-ES": [
+      "visor sqlite",
+      "base de datos",
+      "consulta sql",
+      "exportar csv",
+      "exportar json",
+      "esquema tablas",
+      "desarrolladores"
+    ],
+    "zh-CN": [
+      "sqlite查看器",
+      "数据库浏览器",
+      "sql查询",
+      "csv导出",
+      "json导出",
+      "数据表结构",
+      "开发者工具"
+    ],
+    "ja-JP": [
+      "sqliteビューア",
+      "データベース閲覧",
+      "sqlクエリ",
+      "csv出力",
+      "json出力",
+      "テーブルスキーマ",
+      "開発ツール"
+    ],
+    "ru-RU": [
+      "просмотр sqlite",
+      "браузер баз данных",
+      "sql запросы",
+      "экспорт csv",
+      "экспорт json",
+      "схема таблиц",
+      "разработка"
+    ]
+  }
+}
