@@ -55,3 +55,44 @@ def test_search_export_context_keeps_the_typed_term():
     finally:
         conn.close()
     assert fake.export_context["search_term"] == "Übersicht"
+
+
+def test_search_typing_is_debounced():
+    """Die Tabellensuche lief bei jedem Tastendruck (<KeyRelease>) als voller Tabellenscan — bei
+    200 000 Zeilen 0,2–0,8 s Verzögerung pro Taste. Tippen plant die Suche jetzt entprellt ein,
+    Enter sucht sofort, Schließen bricht eine geplante Suche ab."""
+    from types import SimpleNamespace
+
+    scheduled, cancelled, searched = [], [], []
+
+    class MockApp:
+        _search_job = None
+        _sql_highlight_job = None
+
+        def after(self, ms, callback):
+            scheduled.append((ms, callback))
+            return f"job_{len(scheduled)}"
+
+        def after_cancel(self, job_id):
+            cancelled.append(job_id)
+
+        def _search_data(self):
+            searched.append(True)
+
+        def close_db(self):
+            pass
+
+        def destroy(self):
+            pass
+
+    app = MockApp()
+    key = SimpleNamespace(keysym="a")
+    SQLiteViewer.SqlViewer._schedule_search(app, key)
+    SQLiteViewer.SqlViewer._schedule_search(app, key)
+    assert searched == [] and cancelled == ["job_1"] and app._search_job == "job_2"
+    assert scheduled[-1][0] == SQLiteViewer.SEARCH_DEBOUNCE_MS
+    SQLiteViewer.SqlViewer._search_now(app)  # Enter
+    assert searched == [True] and "job_2" in cancelled and app._search_job is None
+    SQLiteViewer.SqlViewer._schedule_search(app, key)
+    SQLiteViewer.SqlViewer._on_close(app)
+    assert "job_3" in cancelled

@@ -36,6 +36,7 @@ DEFAULT_LIMIT = 1000
 # Obergrenze für SQL-Tab-Ergebnisse: fetchall() lud bei „SELECT * FROM große_tabelle“ sonst Millionen
 # Zeilen in Speicher und Treeview und fror die App ein.
 SQL_RESULT_MAX_ROWS = 10_000
+SEARCH_DEBOUNCE_MS = 250  # Tabellensuche beim Tippen erst nach kurzer Pause starten
 MAX_CELL_DISPLAY_LEN = 500
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 _CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
@@ -610,8 +611,8 @@ class SqlViewer(tk.Tk):
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(bar, textvariable=self.search_var, width=20)
         self.search_entry.pack(side=tk.LEFT, padx=4)
-        self.search_entry.bind("<Return>", lambda e: self._search_data())
-        self.search_entry.bind("<KeyRelease>", lambda e: self._search_data())
+        self.search_entry.bind("<Return>", lambda e: SqlViewer._search_now(self))
+        self.search_entry.bind("<KeyRelease>", lambda e: SqlViewer._schedule_search(self, e))
         self.search_entry.bind("<Escape>", self._clear_search)
         add_tip(self.search_entry, "Volltextsuche in aktiver Tabelle (Eingabe / Escape zum Leeren)")
 
@@ -1552,6 +1553,25 @@ class SqlViewer(tk.Tk):
         except Exception as e:
             self._set_status(f"Suchfehler: {e}")
 
+    def _cancel_scheduled_search(self):
+        if getattr(self, "_search_job", None) is not None:
+            try:
+                self.after_cancel(self._search_job)
+            except Exception:
+                pass
+            self._search_job = None
+
+    def _schedule_search(self, _event=None):
+        """Tippen: Suche entprellt einplanen statt bei jedem Tastendruck die ganze Tabelle zu scannen
+        (200 000 Zeilen: 0,2–0,8 s pro Taste)."""
+        SqlViewer._cancel_scheduled_search(self)
+        self._search_job = self.after(SEARCH_DEBOUNCE_MS, lambda: SqlViewer._search_now(self))
+
+    def _search_now(self):
+        """Enter bzw. abgelaufene Entprellzeit: geplante Suche verwerfen und sofort suchen."""
+        SqlViewer._cancel_scheduled_search(self)
+        self._search_data()
+
     def _focus_search(self):
         self.search_entry.focus_set()
         self.search_entry.select_range(0, tk.END)
@@ -1681,6 +1701,7 @@ class SqlViewer(tk.Tk):
             except Exception:
                 pass
             self._sql_highlight_job = None
+        SqlViewer._cancel_scheduled_search(self)
         self.close_db()
         self.destroy()
 
