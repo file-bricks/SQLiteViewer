@@ -33,6 +33,9 @@ from export_atomic import atomic_export, database_files
 APP_TITLE = "SQLite Viewer Pro"
 APP_VERSION = "2.1.0"
 DEFAULT_LIMIT = 1000
+# Obergrenze für SQL-Tab-Ergebnisse: fetchall() lud bei „SELECT * FROM große_tabelle“ sonst Millionen
+# Zeilen in Speicher und Treeview und fror die App ein.
+SQL_RESULT_MAX_ROWS = 10_000
 MAX_CELL_DISPLAY_LEN = 500
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 _CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
@@ -1080,7 +1083,9 @@ class SqlViewer(tk.Tk):
             # Das ist robuster als ein Prefix-Check und fängt auch Kommentare
             # vor SELECT/WITH/PRAGMA/EXPLAIN korrekt ab.
             if cur.description is not None:
-                rows = cur.fetchall()
+                rows = cur.fetchmany(SQL_RESULT_MAX_ROWS + 1)
+                truncated = len(rows) > SQL_RESULT_MAX_ROWS
+                rows = rows[:SQL_RESULT_MAX_ROWS]
                 cols = [desc[0] for desc in cur.description]
                 SqlViewer._set_sql_result_state(
                     self,
@@ -1089,7 +1094,7 @@ class SqlViewer(tk.Tk):
                     view="query",
                     table=self.table_var.get() or None,
                     query=sql,
-                    row_limit=None,
+                    row_limit=SQL_RESULT_MAX_ROWS if truncated else None,
                     search_term=None,
                     sort_column=None,
                     sort_descending=None,
@@ -1097,7 +1102,12 @@ class SqlViewer(tk.Tk):
                 self._populate_sql_result(cols, rows)
                 SqlViewer._update_export_actions(self)
                 elapsed = (datetime.now() - start_time).total_seconds()
-                if rows:
+                if truncated:
+                    self.sql_status.config(
+                        text=f"✓ erste {len(rows)} Zeilen (Ergebnis hat {SQL_RESULT_MAX_ROWS}+; "
+                        f"mit LIMIT/WHERE eingrenzen) in {elapsed:.3f}s"
+                    )
+                elif rows:
                     self.sql_status.config(text=f"✓ {len(rows)} Zeilen in {elapsed:.3f}s")
                 else:
                     self.sql_status.config(text="✓ Keine Ergebnisse")
