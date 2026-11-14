@@ -42,6 +42,11 @@ _CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
 _CSV_IGNORABLE_PREFIX = "".join(chr(code) for code in range(0x21)) + "\ufeff"
 
 
+def _casefold_sql(value: Any):
+    """SQL-Funktion casefold(): Text Unicode-gefaltet, andere Typen unverändert (LIKE wandelt sie selbst)."""
+    return value.casefold() if isinstance(value, str) else value
+
+
 def _csv_safe_value(value: Any):
     """Neutralisiert Stringwerte, die Tabellenkalkulationen als Formel deuten können."""
     if not isinstance(value, str):
@@ -1487,13 +1492,23 @@ class SqlViewer(tk.Tk):
             if not cols:
                 return
 
-            conditions = " OR ".join([f"{self._ident(col)} LIKE ? ESCAPE '\\'" for col in cols])
+            # SQLite-LIKE ignoriert Groß/Klein nur bei ASCII: „übersicht“ fand „Übersicht“ nicht. Für
+            # Begriffe mit Nicht-ASCII beide Seiten per Python-casefold vergleichen; reine ASCII-Begriffe
+            # bleiben beim schnellen nativen LIKE (Suche läuft bei jedem Tastendruck).
+            if search_term.isascii():
+                column_expr, like_term = "{}", search_term
+            else:
+                self.conn.create_function("casefold", 1, _casefold_sql, deterministic=True)
+                column_expr, like_term = "casefold({})", search_term.casefold()
+            conditions = " OR ".join(
+                [f"{column_expr.format(self._ident(col))} LIKE ? ESCAPE '\\'" for col in cols]
+            )
             order_clause = ""
             if self.sort_column and self.sort_column in cols:
                 direction = "DESC" if self.sort_reverse else "ASC"
                 order_clause = f" ORDER BY {self._ident(self.sort_column)} {direction}"
             query = f"SELECT * FROM {self._ident(table)} WHERE {conditions}{order_clause} LIMIT ?"
-            escaped_term = self._escape_like_pattern(search_term)
+            escaped_term = self._escape_like_pattern(like_term)
             params = [f"%{escaped_term}%" for _ in cols]
             params.append(limit)
 
