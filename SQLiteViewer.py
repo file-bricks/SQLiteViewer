@@ -33,10 +33,19 @@ from export_atomic import atomic_export, database_files
 APP_TITLE = "SQLite Viewer Pro"
 APP_VERSION = "2.1.0"
 DEFAULT_LIMIT = 1000
+# Obergrenze für SQL-Tab-Ergebnisse: fetchall() lud bei „SELECT * FROM große_tabelle“ sonst Millionen
+# Zeilen in Speicher und Treeview und fror die App ein.
+SQL_RESULT_MAX_ROWS = 10_000
+SEARCH_DEBOUNCE_MS = 250  # Tabellensuche beim Tippen erst nach kurzer Pause starten
 MAX_CELL_DISPLAY_LEN = 500
 APP_ICON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SQLiteViewer.ico")
 _CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
 _CSV_IGNORABLE_PREFIX = "".join(chr(code) for code in range(0x21)) + "\ufeff"
+
+
+def _casefold_sql(value: Any):
+    """SQL-Funktion casefold(): Text Unicode-gefaltet, andere Typen unverändert (LIKE wandelt sie selbst)."""
+    return value.casefold() if isinstance(value, str) else value
 
 
 def _csv_safe_value(value: Any):
@@ -602,8 +611,8 @@ class SqlViewer(tk.Tk):
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(bar, textvariable=self.search_var, width=20)
         self.search_entry.pack(side=tk.LEFT, padx=4)
-        self.search_entry.bind("<Return>", lambda e: self._search_data())
-        self.search_entry.bind("<KeyRelease>", lambda e: self._search_data())
+        self.search_entry.bind("<Return>", lambda e: SqlViewer._search_now(self))
+        self.search_entry.bind("<KeyRelease>", lambda e: SqlViewer._schedule_search(self, e))
         self.search_entry.bind("<Escape>", self._clear_search)
         add_tip(self.search_entry, "Volltextsuche in aktiver Tabelle (Eingabe / Escape zum Leeren)")
 
@@ -1080,7 +1089,9 @@ class SqlViewer(tk.Tk):
             # Das ist robuster als ein Prefix-Check und fängt auch Kommentare
             # vor SELECT/WITH/PRAGMA/EXPLAIN korrekt ab.
             if cur.description is not None:
-                rows = cur.fetchall()
+                rows = cur.fetchmany(SQL_RESULT_MAX_ROWS + 1)
+                truncated = len(rows) > SQL_RESULT_MAX_ROWS
+                rows = rows[:SQL_RESULT_MAX_ROWS]
                 cols = [desc[0] for desc in cur.description]
                 SqlViewer._set_sql_result_state(
                     self,
@@ -1089,7 +1100,7 @@ class SqlViewer(tk.Tk):
                     view="query",
                     table=self.table_var.get() or None,
                     query=sql,
-                    row_limit=None,
+                    row_limit=SQL_RESULT_MAX_ROWS if truncated else None,
                     search_term=None,
                     sort_column=None,
                     sort_descending=None,
@@ -1097,7 +1108,12 @@ class SqlViewer(tk.Tk):
                 self._populate_sql_result(cols, rows)
                 SqlViewer._update_export_actions(self)
                 elapsed = (datetime.now() - start_time).total_seconds()
-                if rows:
+                if truncated:
+                    self.sql_status.config(
+                        text=f"✓ erste {len(rows)} Zeilen (Ergebnis hat {SQL_RESULT_MAX_ROWS}+; "
+                        f"mit LIMIT/WHERE eingrenzen) in {elapsed:.3f}s"
+                    )
+                elif rows:
                     self.sql_status.config(text=f"✓ {len(rows)} Zeilen in {elapsed:.3f}s")
                 else:
                     self.sql_status.config(text="✓ Keine Ergebnisse")
@@ -1477,13 +1493,23 @@ class SqlViewer(tk.Tk):
             if not cols:
                 return
 
-            conditions = " OR ".join([f"{self._ident(col)} LIKE ? ESCAPE '\\'" for col in cols])
+            # SQLite-LIKE ignoriert Groß/Klein nur bei ASCII: „übersicht“ fand „Übersicht“ nicht. Für
+            # Begriffe mit Nicht-ASCII beide Seiten per Python-casefold vergleichen; reine ASCII-Begriffe
+            # bleiben beim schnellen nativen LIKE (Suche läuft bei jedem Tastendruck).
+            if search_term.isascii():
+                column_expr, like_term = "{}", search_term
+            else:
+                self.conn.create_function("casefold", 1, _casefold_sql, deterministic=True)
+                column_expr, like_term = "casefold({})", search_term.casefold()
+            conditions = " OR ".join(
+                [f"{column_expr.format(self._ident(col))} LIKE ? ESCAPE '\\'" for col in cols]
+            )
             order_clause = ""
             if self.sort_column and self.sort_column in cols:
                 direction = "DESC" if self.sort_reverse else "ASC"
                 order_clause = f" ORDER BY {self._ident(self.sort_column)} {direction}"
             query = f"SELECT * FROM {self._ident(table)} WHERE {conditions}{order_clause} LIMIT ?"
-            escaped_term = self._escape_like_pattern(search_term)
+            escaped_term = self._escape_like_pattern(like_term)
             params = [f"%{escaped_term}%" for _ in cols]
             params.append(limit)
 
@@ -1526,6 +1552,25 @@ class SqlViewer(tk.Tk):
 
         except Exception as e:
             self._set_status(f"Suchfehler: {e}")
+
+    def _cancel_scheduled_search(self):
+        if getattr(self, "_search_job", None) is not None:
+            try:
+                self.after_cancel(self._search_job)
+            except Exception:
+                pass
+            self._search_job = None
+
+    def _schedule_search(self, _event=None):
+        """Tippen: Suche entprellt einplanen statt bei jedem Tastendruck die ganze Tabelle zu scannen
+        (200 000 Zeilen: 0,2–0,8 s pro Taste)."""
+        SqlViewer._cancel_scheduled_search(self)
+        self._search_job = self.after(SEARCH_DEBOUNCE_MS, lambda: SqlViewer._search_now(self))
+
+    def _search_now(self):
+        """Enter bzw. abgelaufene Entprellzeit: geplante Suche verwerfen und sofort suchen."""
+        SqlViewer._cancel_scheduled_search(self)
+        self._search_data()
 
     def _focus_search(self):
         self.search_entry.focus_set()
@@ -1656,6 +1701,7 @@ class SqlViewer(tk.Tk):
             except Exception:
                 pass
             self._sql_highlight_job = None
+        SqlViewer._cancel_scheduled_search(self)
         self.close_db()
         self.destroy()
 
