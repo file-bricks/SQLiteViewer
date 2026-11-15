@@ -1,4 +1,7 @@
 const CACHE_NAME = "sqliteviewer-companion-v5";
+// Inhalts-Hash aller OFFLINE_ASSETS-Dateien inkl. Manifest und Icons (web_companion/tests/sw_asset_hash.test.mjs prueft ihn):
+// aendert sich eine davon, CACHE_NAME erhoehen, sonst behalten installierte PWAs den alten Code.
+const ASSET_HASH = 'ba4caa95b77f'; // eslint-disable-line no-unused-vars
 const OFFLINE_ASSETS = [
   "./",
   "./index.html",
