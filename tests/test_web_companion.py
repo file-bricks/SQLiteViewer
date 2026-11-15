@@ -95,7 +95,7 @@ def test_web_companion_node_test_suite_passes():
         pytest.skip("Node.js ist in dieser Umgebung nicht installiert")
 
     proc = subprocess.run(
-        [node_bin, "--test", "tests/library.test.mjs", "tests/pwa.test.mjs", "tests/i18n.test.mjs"],
+        [node_bin, "--test", "tests/library.test.mjs", "tests/pwa.test.mjs", "tests/i18n.test.mjs", "tests/sw_asset_hash.test.mjs"],
         cwd=str(WEB_DIR),
         capture_output=True,
         text=True,
