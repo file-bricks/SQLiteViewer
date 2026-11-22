@@ -11,6 +11,7 @@ import argparse
 import json
 import re
 import os
+import stat
 import sys
 import tempfile
 
@@ -140,6 +141,12 @@ def _atomic_write_json(file_path, data):
             json.dump(data, f, indent=2, ensure_ascii=False)
             f.flush()
             os.fsync(f.fileno())
+        # NamedTemporaryFile legt unter POSIX 0600 an; bisherige Rechte beibehalten.
+        try:
+            mode = stat.S_IMODE(os.stat(file_path).st_mode)
+        except FileNotFoundError:
+            mode = 0o644
+        os.chmod(tmp_path, mode)
         os.replace(tmp_path, file_path)
     except Exception:
         if tmp_path and os.path.exists(tmp_path):
@@ -158,7 +165,7 @@ def manage_translations(source_dir="."):
         try:
             with open(trans_file, "r", encoding="utf-8") as f:
                 translations = json.load(f)
-        except (json.JSONDecodeError, OSError) as exc:
+        except (json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:
             print(f"[!] Fehler beim Laden von {trans_file}: {exc}", file=sys.stderr)
             return False
         if not isinstance(translations, dict):

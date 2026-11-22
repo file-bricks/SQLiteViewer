@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- **`manage_translations.py` Lade- und Rechtekante:** Eine nicht als UTF-8 lesbare `locales/translations.json` (z. B. UTF-16) endet jetzt mit der `[!]`-Meldung und Exit 1 statt mit Traceback; die atomare Schreibroutine übernimmt die bisherigen Dateirechte statt der `0600` von `NamedTemporaryFile`. Folge-Fix zu #8.
+
 ### Added
 - **Multi-Target Plattform-Transfer, Windows Store Tier-2 Staging & Policy-10.1.3-Preflight (Stand 2026-11-14):**
   - **Windows Store Tier-2 6-Sprachen-Staging (`TW-SV-01`):** `store_package.json`, `releases/windowsstore/store_settings.json` und `store_package/SQLite Viewer Pro/AppxManifest.xml` (`ProcessorArchitecture="x64"`, `Square310x310Logo="icons\icon_310x310.png"`, Paketversion `2.1.0.0` eingefroren synchron zu `APP_VERSION = "2.1.0"`) harmonisiert; fehlende `50x50` Store-Logo-Assets (`store_assets/StoreLogo.png`, `store_assets/Square50x50Logo.png`, `releases/windowsstore/StoreLogo.png`) ergänzt.
