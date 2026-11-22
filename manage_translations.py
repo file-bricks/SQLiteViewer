@@ -12,6 +12,7 @@ import json
 import re
 import os
 import sys
+import tempfile
 
 TRANSLATION_FILE = "locales/translations.json"
 
@@ -76,8 +77,8 @@ def check_translations(source_dir="."):
         print(f"[!] Fehler beim Laden von {trans_file}: {e}")
         return False
 
-    if not translations:
-        print(f"[!] {trans_file} ist leer.")
+    if not isinstance(translations, dict) or not translations:
+        print(f"[!] {trans_file} ist leer oder kein JSON-Objekt.")
         return False
 
     missing_by_lang = {lang: [] for lang in SUPPORTED_LANGUAGES}
@@ -121,15 +122,48 @@ def show_stats(source_dir="."):
         print(f"  {lang.upper()}: {count}/{total} ({pct:.1f}%)")
 
 
+def _atomic_write_json(file_path, data):
+    """Schreibt Übersetzungsdaten atomar über eine temporäre Datei im Zielordner."""
+    dirname = os.path.dirname(os.path.abspath(file_path))
+    os.makedirs(dirname, exist_ok=True)
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=dirname,
+            prefix=".translations.",
+            suffix=".tmp",
+            delete=False,
+        ) as f:
+            tmp_path = f.name
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, file_path)
+    except Exception:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+        raise
+
+
 def manage_translations(source_dir="."):
+    """Ergänzt gefundene Strings in locales/translations.json ohne defekte Dateien zu überschreiben."""
     trans_file = os.path.join(source_dir, TRANSLATION_FILE)
 
     if os.path.exists(trans_file):
         try:
             with open(trans_file, "r", encoding="utf-8") as f:
                 translations = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            translations = {}
+        except (json.JSONDecodeError, OSError) as exc:
+            print(f"[!] Fehler beim Laden von {trans_file}: {exc}", file=sys.stderr)
+            return False
+        if not isinstance(translations, dict):
+            print(f"[!] {trans_file} muss ein JSON-Objekt enthalten.", file=sys.stderr)
+            return False
     else:
         translations = {}
 
@@ -141,9 +175,7 @@ def manage_translations(source_dir="."):
             translations[s] = {lang: (s if lang == "de" else "") for lang in SUPPORTED_LANGUAGES}
             added.append(s)
 
-    os.makedirs(os.path.dirname(trans_file), exist_ok=True)
-    with open(trans_file, "w", encoding="utf-8") as f:
-        json.dump(translations, f, indent=2, ensure_ascii=False)
+    _atomic_write_json(trans_file, translations)
 
     if added:
         print(f"[+] {len(added)} neue Einträge hinzugefügt:")
@@ -155,6 +187,7 @@ def manage_translations(source_dir="."):
         print("[i] Keine neuen deutschen Strings gefunden.")
 
     show_stats(source_dir)
+    return True
 
 
 if __name__ == "__main__":
@@ -170,4 +203,4 @@ if __name__ == "__main__":
     elif args.stats:
         show_stats(args.source_dir)
     else:
-        manage_translations(args.source_dir)
+        sys.exit(0 if manage_translations(args.source_dir) else 1)
